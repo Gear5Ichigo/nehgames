@@ -14,3 +14,7 @@ import { Application } from './pixi'
 
     });
 })();
+
+document.querySelector("button[type='button']").addEventListener('click', (e) => {
+    alert("you got gameed");
+})
