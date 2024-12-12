@@ -1,3 +1,5 @@
+alert("LOADED");
+
 import { Application } from './pixi'
 
 (async () => {
