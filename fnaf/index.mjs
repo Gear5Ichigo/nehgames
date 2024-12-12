@@ -1,12 +1,10 @@
-import { Application } from './pixi.js'
+import { Application } from '../pixi.mjs';
 
 (async () => {
 
     const app = new Application();
 
-    await app.init({ background: "#1099bb", resizeTo: window });
-
-    alert(app);
+    await app.init({ background: "#000000", resizeTo: window });
 
     document.body.appendChild(app.canvas)
 
