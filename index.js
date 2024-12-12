@@ -6,6 +6,8 @@ import { Application } from './pixi'
 
     await app.init({ background: "#1099bb", resizeTo: window });
 
+    alert(app);
+
     document.body.appendChild(app.canvas)
 
     app.ticker.add((delta) => {
