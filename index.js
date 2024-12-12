@@ -1,6 +1,4 @@
-alert("LOADED");
-
-import { Application } from './pixi'
+import { Application } from './pixi.js'
 
 (async () => {
 
