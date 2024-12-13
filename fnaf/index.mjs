@@ -18,7 +18,7 @@ import { Application } from '../pixi.mjs';
 
     app.ticker.add((delta) => {
         if ( keys["w"] ) {
-            alert("moving");
+            console.log("moving");
         }
     });
 })();
