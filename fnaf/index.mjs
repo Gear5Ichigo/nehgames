@@ -10,6 +10,7 @@ import { Application } from '../pixi.mjs';
     document.body.appendChild(app.canvas)
 
     window.addEventListener("keydown", (e) => {
+        console.log(e.key.toLowerCase());
         keys[e.key.toLowerCase()] = true;
     });
     window.addEventListener("keyup", (e) => {
