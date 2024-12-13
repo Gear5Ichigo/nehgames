@@ -1,4 +1,4 @@
-import { Application } from '../pixi.mjs';
+import { Application, Text } from '../pixi.mjs';
 
 (async () => {
 
@@ -6,6 +6,19 @@ import { Application } from '../pixi.mjs';
     let keys = {}
 
     await app.init({ background: "#000000", resizeTo: window });
+
+    //**
+    // program here 
+    // */
+
+    const title = new Text({
+        text: "FNAF",
+        fill: "0xffffff",
+        align: "center",
+    });
+    title.anchor = 0.5;
+
+    app.stage.addChild(title);
 
     document.body.appendChild(app.canvas)
 
