@@ -17,6 +17,7 @@ import { Application, Text } from '../pixi.mjs';
         align: "center",
     });
     title.anchor = 0.5;
+    title.x = 250; title.y = 330;
 
     app.stage.addChild(title);
 
