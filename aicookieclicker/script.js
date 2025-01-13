@@ -26,7 +26,7 @@ function loadGameState() {
             factoryCost: 200,
             mineCost: 1000,
             globalUpgradeCost: 500, // Initialize globalUpgradeCost with default value
-            globalUpgradePurchases: 0, // Track global upgrade purchases
+            globalUpgradePurchases: 500, // Track global upgrade purchases
             achievements: [],
             globalUpgradeApplied: false,
             lootboxCost: 1000, // Lootbox cost
@@ -170,7 +170,7 @@ farmButton.addEventListener('click', () => {
         gameState.cookies -= gameState.farmCost;
         gameState.farmsOwned += 1;
         gameState.cookiesPerSecond += 10;
-        gameState.farmCost = Math.floor(gameState.farmCost * 1.5);
+        gameState.farmCost = Math.floor(gameState.farmsOwned * 2);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -187,7 +187,7 @@ factoryButton.addEventListener('click', () => {
         gameState.cookies -= gameState.factoryCost;
         gameState.factoriesOwned += 1;
         gameState.cookiesPerSecond += 25;
-        gameState.factoryCost = Math.floor(gameState.factoryCost * 1.5);
+        gameState.factoryCost = Math.floor(gameState.factoriesOwned * 2);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -204,7 +204,7 @@ mineButton.addEventListener('click', () => {
         gameState.cookies -= gameState.mineCost;
         gameState.minesOwned += 1;
         gameState.cookiesPerSecond += 50;
-        gameState.mineCost = Math.floor(gameState.mineCost * 1.5);
+        gameState.mineCost = Math.floor(gameState.minesOwned * 2);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -220,7 +220,7 @@ globalUpgradeButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.globalUpgradeCost) {
         gameState.cookies -= gameState.globalUpgradeCost;
         gameState.cookiesPerSecond *= 2; // Double cookies per second with each global upgrade
-        gameState.globalUpgradeCost = Math.floor(gameState.globalUpgradeCost * 1.5); // Increase global upgrade cost by 50%
+        gameState.globalUpgradeCost = Math.floor(gameState.globalUpgradePurchases * 2.5); // Increase global upgrade cost by 50%
         
         // Increment the global upgrade purchase counter
         gameState.globalUpgradePurchases += 1;
@@ -252,6 +252,9 @@ lootboxButton.addEventListener('click', () => {
         gameState.cookies -= gameState.lootboxCost;
         updateCookieCount();
         
+        // Disable the lootbox button during the animation
+        lootboxButton.disabled = true;
+
         // Start the spinning animation
         lootboxResult.classList.add('spinning');
         lootboxResult.textContent = "Spinning...";
@@ -275,6 +278,7 @@ lootboxButton.addEventListener('click', () => {
                 // Reward: Cookies
                 const cookiesReward = Math.floor(Math.random() * 1000) + 750;
                 gameState.cookies += cookiesReward;
+                gameState.updateCookieCount();
                 rewardMessage = `You received ${cookiesReward-750} cookies!`;
             } else if (rewardType === 1) {
                 // Reward: Upgrade
@@ -285,6 +289,7 @@ lootboxButton.addEventListener('click', () => {
                 } else {
                     const cpsRandom = Math.floor(Math.random() * 100);
                     gameState.cookiesPerSecond += cpsRandom;
+                    gameState.updateCookiesPerSecond();
                     rewardMessage = `${cpsRandom} cookies per second!`;
                 }
             } else if (rewardType === 2) {
@@ -292,6 +297,9 @@ lootboxButton.addEventListener('click', () => {
                 addAchievement("Lootbox Special!");
                 rewardMessage = "You earned an achievement! (YOU EARNED NOTHING LOL)";
             }
+
+            // 
+            lootboxButton.disabled = false;
 
             lootboxResult.textContent = rewardMessage; // Show the real reward
             saveGameState();
