@@ -275,14 +275,14 @@ lootboxButton.addEventListener('click', () => {
             // 
             lootboxButton.disabled = false;
             
-            rewardPercentage = Math.floor(Math.random() * 1001);
-            if (rewardType < 650)  { // 65 %
+            const rewardPercentage = Math.floor(Math.random() * 1001);
+            if (rewardPercentage < 650)  { // 65 %
                 // Reward: Cookies
                 const cookiesReward = Math.floor(Math.random() * 1000) + 750;
                 gameState.cookies += cookiesReward;
                 gameState.updateCookieCount();
                 rewardMessage = `You received ${cookiesReward-750} cookies!`;
-            } else if (rewardType < 300) { // %30
+            } else if (rewarrewardPercentagedType < 300) { // %30
                 // Reward: Upgrade
                 const upgradeReward = Math.floor(Math.random() * 2);
                 if (upgradeReward === 0) {
@@ -308,10 +308,7 @@ lootboxButton.addEventListener('click', () => {
             saveGameState();
         }, rewardChosenDelay);
 
-        // Optionally, add a spinning effect message for feedback
-        setTimeout(() => {
-            lootboxResult.textContent = "Lootbox Spinning..."; // Set message while spinning
-        }, 500); // Change message after the first 500ms of spinning
+
 
     } else {
         alert("Not enough cookies to open the lootbox!");
