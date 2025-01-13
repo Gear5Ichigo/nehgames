@@ -272,6 +272,8 @@ lootboxButton.addEventListener('click', () => {
         setTimeout(() => {
             // Stop the spinning and show the actual reward
             lootboxResult.classList.remove('spinning');
+            // 
+            lootboxButton.disabled = false;
             
             rewardType = Math.floor(Math.random() * 3); // Randomly choose between cookies, upgrade, or achievement
             if (rewardType === 0) {
@@ -298,9 +300,6 @@ lootboxButton.addEventListener('click', () => {
                 addAchievement("Lootbox Special!");
                 rewardMessage = "You earned an achievement! (YOU EARNED NOTHING LOL)";
             }
-
-            // 
-            // lootboxButton.disabled = false;
 
             lootboxResult.textContent = rewardMessage; // Show the real reward
             saveGameState();
