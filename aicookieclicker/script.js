@@ -170,7 +170,7 @@ farmButton.addEventListener('click', () => {
         gameState.cookies -= gameState.farmCost;
         gameState.farmsOwned += 1;
         gameState.cookiesPerSecond += 10;
-        gameState.farmCost = Math.floor(gameState.farmsOwned * 50);
+        gameState.farmCost = Math.floor((gameState.farmsOwned+1 ) * 50);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -187,7 +187,7 @@ factoryButton.addEventListener('click', () => {
         gameState.cookies -= gameState.factoryCost;
         gameState.factoriesOwned += 1;
         gameState.cookiesPerSecond += 25;
-        gameState.factoryCost = Math.floor(gameState.factoriesOwned * 500);
+        gameState.factoryCost = Math.floor((gameState.factoriesOwned+1) * 500);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -204,7 +204,7 @@ mineButton.addEventListener('click', () => {
         gameState.cookies -= gameState.mineCost;
         gameState.minesOwned += 1;
         gameState.cookiesPerSecond += 50;
-        gameState.mineCost = Math.floor(gameState.minesOwned * 1000);
+        gameState.mineCost = Math.floor((gameState.minesOwned+1) * 1000);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -220,7 +220,7 @@ globalUpgradeButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.globalUpgradeCost) {
         gameState.cookies -= gameState.globalUpgradeCost;
         gameState.cookiesPerSecond *= 2; // Double cookies per second with each global upgrade
-        gameState.globalUpgradeCost = Math.floor(gameState.globalUpgradePurchases * 500); // Increase global upgrade cost by 50%
+        gameState.globalUpgradeCost = Math.floor((gameState.globalUpgradePurchases+1) * 500); // Increase global upgrade cost by 50%
         
         // Increment the global upgrade purchase counter
         gameState.globalUpgradePurchases += 1;
@@ -260,7 +260,6 @@ lootboxButton.addEventListener('click', () => {
         lootboxResult.textContent = "Spinning...";
 
         // Generate random lootbox reward and stop after some time
-        let rewardType;
         let rewardMessage = "";
         let rewardTextOptions = ["Loading...", "Cookies", "Upgrade", "Achievement"];
 
@@ -270,6 +269,7 @@ lootboxButton.addEventListener('click', () => {
 
         // Set a timeout to stop the spinning and show the reward after the specified duration
         setTimeout(() => {
+            rewardMessage = "joe";
             // Stop the spinning and show the actual reward
             lootboxResult.classList.remove('spinning');
             // 
