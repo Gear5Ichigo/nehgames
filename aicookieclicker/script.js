@@ -29,7 +29,7 @@ function loadGameState() {
             globalUpgradePurchases: 500, // Track global upgrade purchases
             achievements: [],
             globalUpgradeApplied: false,
-            lootboxCost: 1000, // Lootbox cost
+            lootboxCost: 750, // Lootbox cost
         };
     }
 }
