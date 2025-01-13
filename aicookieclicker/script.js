@@ -18,9 +18,9 @@ function loadGameState() {
             cookies: 0,
             cookiesPerClick: 1,
             cookiesPerSecond: 0,
-            farmsOwned: 0,
-            factoriesOwned: 0,
-            minesOwned: 0,
+            farmsOwned: 1,
+            factoriesOwned: 1,
+            minesOwned: 1,
             upgradeCost: 10,
             farmCost: 50,
             factoryCost: 200,
@@ -78,9 +78,9 @@ function updateCookiesPerSecond() {
 
 // Function to update farms, factories, and mines count
 function updateUpgradeCounts() {
-    cookieFarmCountElement.textContent = gameState.farmsOwned;
-    factoryCountElement.textContent = gameState.factoriesOwned;
-    mineCountElement.textContent = gameState.minesOwned;
+    cookieFarmCountElement.textContent = gameState.farmsOwned-1;
+    factoryCountElement.textContent = gameState.factoriesOwned-1;
+    mineCountElement.textContent = gameState.minesOwned-1;
 }
 
 // Add achievement
@@ -170,7 +170,7 @@ farmButton.addEventListener('click', () => {
         gameState.cookies -= gameState.farmCost;
         gameState.farmsOwned += 1;
         gameState.cookiesPerSecond += 10;
-        gameState.farmCost = Math.floor((gameState.farmsOwned+1 ) * 50);
+        gameState.farmCost = Math.floor((gameState.farmsOwned) * 50);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -187,7 +187,7 @@ factoryButton.addEventListener('click', () => {
         gameState.cookies -= gameState.factoryCost;
         gameState.factoriesOwned += 1;
         gameState.cookiesPerSecond += 25;
-        gameState.factoryCost = Math.floor((gameState.factoriesOwned+1) * 500);
+        gameState.factoryCost = Math.floor((gameState.factoriesOwned) * 500);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
@@ -204,7 +204,7 @@ mineButton.addEventListener('click', () => {
         gameState.cookies -= gameState.mineCost;
         gameState.minesOwned += 1;
         gameState.cookiesPerSecond += 50;
-        gameState.mineCost = Math.floor((gameState.minesOwned+1) * 1000);
+        gameState.mineCost = Math.floor((gameState.minesOwned) * 1000);
         updateUpgradeCounts();
         updateCookiesPerSecond();
         updateUpgradeButtons(); // Update button text after purchase
