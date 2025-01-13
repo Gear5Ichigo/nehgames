@@ -10,7 +10,7 @@ function loadGameState() {
             savedState.globalUpgradePurchases = 0; // Initialize purchase count if missing
         }
         if (savedState.lootboxCost === undefined) {
-            savedState.lootboxCost = 1000; // Initialize lootbox cost if missing
+            savedState.lootboxCost = 750; // Initialize lootbox cost if missing
         }
         return savedState;
     } else {
@@ -169,7 +169,7 @@ farmButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.farmCost) {
         gameState.cookies -= gameState.farmCost;
         gameState.farmsOwned += 1;
-        gameState.cookiesPerSecond += 1;
+        gameState.cookiesPerSecond += 10;
         gameState.farmCost = Math.floor(gameState.farmCost * 1.5);
         updateUpgradeCounts();
         updateCookiesPerSecond();
@@ -186,7 +186,7 @@ factoryButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.factoryCost) {
         gameState.cookies -= gameState.factoryCost;
         gameState.factoriesOwned += 1;
-        gameState.cookiesPerSecond += 5;
+        gameState.cookiesPerSecond += 25;
         gameState.factoryCost = Math.floor(gameState.factoryCost * 1.5);
         updateUpgradeCounts();
         updateCookiesPerSecond();
@@ -203,7 +203,7 @@ mineButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.mineCost) {
         gameState.cookies -= gameState.mineCost;
         gameState.minesOwned += 1;
-        gameState.cookiesPerSecond += 20;
+        gameState.cookiesPerSecond += 50;
         gameState.mineCost = Math.floor(gameState.mineCost * 1.5);
         updateUpgradeCounts();
         updateCookiesPerSecond();
@@ -273,23 +273,24 @@ lootboxButton.addEventListener('click', () => {
             rewardType = Math.floor(Math.random() * 3); // Randomly choose between cookies, upgrade, or achievement
             if (rewardType === 0) {
                 // Reward: Cookies
-                const cookiesReward = Math.floor(Math.random() * 1000) + 1000;
+                const cookiesReward = Math.floor(Math.random() * 1000) + 750;
                 gameState.cookies += cookiesReward;
-                rewardMessage = `You received ${cookiesReward} cookies!`;
+                rewardMessage = `You received ${cookiesReward-750} cookies!`;
             } else if (rewardType === 1) {
                 // Reward: Upgrade
                 const upgradeReward = Math.floor(Math.random() * 2);
                 if (upgradeReward === 0) {
-                    gameState.cookiesPerClick += 1;
-                    rewardMessage = "1 additional click power!";
+                    gameState.cookiesPerClick += 77;
+                    rewardMessage = "77 additional click power!";
                 } else {
-                    gameState.cookiesPerSecond += 5;
-                    rewardMessage = "5 cookies per second!";
+                    const cpsRandom = Math.floor(Math.random() * 100);
+                    gameState.cookiesPerSecond += cpsRandom;
+                    rewardMessage = `${cpsRandom} cookies per second!`;
                 }
             } else if (rewardType === 2) {
                 // Reward: Achievement
                 addAchievement("Lootbox Special!");
-                rewardMessage = "You earned an achievement!";
+                rewardMessage = "You earned an achievement! (YOU EARNED NOTHING LOL)";
             }
 
             lootboxResult.textContent = rewardMessage; // Show the real reward
