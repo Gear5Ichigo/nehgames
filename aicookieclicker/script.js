@@ -285,6 +285,7 @@ lootboxButton.addEventListener('click', () => {
                 const upgradeReward = Math.floor(Math.random() * 2);
                 if (upgradeReward === 0) {
                     gameState.cookiesPerClick += 77;
+                    cookiesPerClickElement.textContent = gameState.cookiesPerClick;
                     rewardMessage = "77 additional click power!";
                 } else {
                     const cpsRandom = Math.floor(Math.random() * 100);
