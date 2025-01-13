@@ -253,7 +253,7 @@ lootboxButton.addEventListener('click', () => {
         updateCookieCount();
         
         // Disable the lootbox button during the animation
-        lootboxButton.disabled = true;
+        // lootboxButton.disabled = true;
 
         // Start the spinning animation
         lootboxResult.classList.add('spinning');
@@ -300,7 +300,7 @@ lootboxButton.addEventListener('click', () => {
             }
 
             // 
-            lootboxButton.disabled = false;
+            // lootboxButton.disabled = false;
 
             lootboxResult.textContent = rewardMessage; // Show the real reward
             saveGameState();
