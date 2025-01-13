@@ -275,14 +275,14 @@ lootboxButton.addEventListener('click', () => {
             // 
             lootboxButton.disabled = false;
             
-            rewardType = Math.floor(Math.random() * 3); // Randomly choose between cookies, upgrade, or achievement
-            if (rewardType === 0) {
+            rewardPercentage = Math.floor(Math.random() * 1001);
+            if (rewardType < 650)  { // 65 %
                 // Reward: Cookies
                 const cookiesReward = Math.floor(Math.random() * 1000) + 750;
                 gameState.cookies += cookiesReward;
                 gameState.updateCookieCount();
                 rewardMessage = `You received ${cookiesReward-750} cookies!`;
-            } else if (rewardType === 1) {
+            } else if (rewardType < 300) { // %30
                 // Reward: Upgrade
                 const upgradeReward = Math.floor(Math.random() * 2);
                 if (upgradeReward === 0) {
@@ -295,10 +295,13 @@ lootboxButton.addEventListener('click', () => {
                     gameState.updateCookiesPerSecond();
                     rewardMessage = `${cpsRandom} cookies per second!`;
                 }
-            } else if (rewardType === 2) {
+            } else if (rewardPercentage < 45 ) { // %4.5
                 // Reward: Achievement
                 addAchievement("Lootbox Special!");
-                rewardMessage = "You earned an achievement! (YOU EARNED NOTHING LOL)";
+                rewardMessage = "You earned an achievement!";
+            } else { // %0.5
+                addAchievement("Lootbox God!");
+                rewardMessage = "You earned an achievement!";
             }
 
             lootboxResult.textContent = rewardMessage; // Show the real reward
