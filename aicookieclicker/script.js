@@ -169,7 +169,7 @@ farmButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.farmCost) {
         gameState.cookies -= gameState.farmCost;
         gameState.farmsOwned += 1;
-        gameState.cookiesPerSecond += 10;
+        gameState.cookiesPerSecond += 5;
         gameState.farmCost = Math.floor((gameState.farmsOwned) * 50);
         updateUpgradeCounts();
         updateCookiesPerSecond();
@@ -186,7 +186,7 @@ factoryButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.factoryCost) {
         gameState.cookies -= gameState.factoryCost;
         gameState.factoriesOwned += 1;
-        gameState.cookiesPerSecond += 25;
+        gameState.cookiesPerSecond += 15;
         gameState.factoryCost = Math.floor((gameState.factoriesOwned) * 500);
         updateUpgradeCounts();
         updateCookiesPerSecond();
@@ -203,7 +203,7 @@ mineButton.addEventListener('click', () => {
     if (gameState.cookies >= gameState.mineCost) {
         gameState.cookies -= gameState.mineCost;
         gameState.minesOwned += 1;
-        gameState.cookiesPerSecond += 50;
+        gameState.cookiesPerSecond += 40;
         gameState.mineCost = Math.floor((gameState.minesOwned) * 1000);
         updateUpgradeCounts();
         updateCookiesPerSecond();
