@@ -29,32 +29,32 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         }
     }
 
-    class Animatronic {
-        constructor(aiLevel) {
-            this.aiLevel = aiLevel
-            this.movementInterval = 4.5
-        }
+    // class Animatronic {
+    //     constructor(aiLevel) {
+    //         this.aiLevel = aiLevel
+    //         this.movementInterval = 4.5
+    //     }
 
-        movement() {
-            const movementOppurtunity = (Math.random()*20)+1
-            if (movementOppurtunity >= 1 && movementOppurtunity <= this.aiLevel)
-                return true;
-        }
-    }
+    //     movement() {
+    //         const movementOppurtunity = (Math.random()*20)+1
+    //         if (movementOppurtunity >= 1 && movementOppurtunity <= this.aiLevel)
+    //             return true;
+    //     }
+    // }
 
-    class Game {
-        constructor(fr, bo, ch, fo) {
-            this.battery = 100;
-            this.batteryDrain = 1;
-            this.batteryDrainInterval = 4.9;
+    // class Game {
+    //     constructor(fr, bo, ch, fo) {
+    //         this.battery = 100;
+    //         this.batteryDrain = 1;
+    //         this.batteryDrainInterval = 4.9;
 
-            this.rightDoorClosed = false;
-            this.leftDoorClosed = false;
+    //         this.rightDoorClosed = false;
+    //         this.leftDoorClosed = false;
 
-            this.hourLength = 89; // in seconds
-            this.currentHour = 12;
-        }
-    }
+    //         this.hourLength = 89; // in seconds
+    //         this.currentHour = 12;
+    //     }
+    // }
 
     //
 
@@ -103,9 +103,10 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
 
     let totalDelta = 0;
     const t = new Text({
-        text: totalDelta,
+        text: `${totalDelta}`,
         style: {
             fill: 0xffffff,
+            align: 'center',
         }
     });
 
