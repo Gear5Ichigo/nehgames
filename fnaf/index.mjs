@@ -1,9 +1,5 @@
 import { Application, Container, Graphics, Text } from '../pixi.mjs';
 
-window.onerror = function(e){
-    document.getElementById('prompt').innerHTML = e.toString();
-}
-
 (async () => {
 
     class Button extends Container {
@@ -113,7 +109,7 @@ window.onerror = function(e){
         }
     });
 
-    app.stage.add(t);
+    app.stage.addChild(t);
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
