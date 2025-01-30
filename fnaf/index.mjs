@@ -47,6 +47,9 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         });
     }
 
+    const bgMusic = new Audio('./1-04. Thank You For Your Patience.wav')
+    bgMusic.play();
+
     const GameRender = new Container();
     const MenuRender = new Container();
 
