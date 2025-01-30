@@ -29,15 +29,50 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         }
     }
 
+    // class Animatronic {
+    //     constructor(aiLevel) {
+    //         this.aiLevel = aiLevel
+    //         this.movementInterval = 4.5
+    //     }
+
+    //     movement() {
+    //         const movementOppurtunity = (Math.random()*20)+1
+    //         if (movementOppurtunity >= 1 && movementOppurtunity <= this.aiLevel)
+    //             return true;
+    //     }
+    // }
+
+    // class Game {
+    //     constructor(fr, bo, ch, fo) {
+    //         this.battery = 100;
+    //         this.batteryDrain = 1;
+    //         this.batteryDrainInterval = 4.9;
+
+    //         this.rightDoorClosed = false;
+    //         this.leftDoorClosed = false;
+
+    //         this.hourLength = 89; // in seconds
+    //         this.currentHour = 12;
+    //     }
+    // }
+
+    //
+
     const app = new Application();
-
-    let keys = {}
-
     await app.init({ background: "#000000", resizeTo: window });
 
     //**
     // program here 
     // */
+
+    let keys = {}
+
+    const GameRender = new Container();
+    const MenuRender = new Container();
+
+    const SettingsMenu = new Container();
+    const NightsMenu = new Container();
+    const MainMenu = new Container();
 
     function setRenderState(render, state) {
         render.children.forEach(element => {
@@ -46,16 +81,6 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
             } else element.visible = true;
         });
     }
-
-    const bgMusic = new Audio('./1-04. Thank You For Your Patience.wav')
-    bgMusic.play();
-
-    const GameRender = new Container();
-    const MenuRender = new Container();
-
-    const SettingsMenu = new Container();
-    const NightsMenu = new Container();
-    const MainMenu = new Container();
 
     const StartGameButton = new Button(innerWidth/2, innerHeight/2, 250, 80, "Start", MainMenu);
     StartGameButton.onpointerdown = (event) => {
@@ -76,6 +101,17 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         NightsSelection.push(b);
     }
 
+    let totalDelta = 0;
+    const t = new Text({
+        text: `${totalDelta}`,
+        style: {
+            fill: 0xffffff,
+            align: 'center',
+        }
+    });
+
+    app.stage.addChild(t);
+
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
     app.stage.addChild(GameRender, MenuRender);
@@ -91,7 +127,16 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         keys[e.key.toLowerCase()] = false;
     })
 
-    app.ticker.add((delta) => {
+    app.ticker.add((ticker) => {
+        totalDelta+=ticker.deltaTime;
+        t = new Text({
+            text: `${totalDelta}`,
+            style: {
+                fill: 0xffffff,
+                align: 'center',
+            }
+        });
+    
         if ( keys["w"] ) {
             console.log("moving");
         }
