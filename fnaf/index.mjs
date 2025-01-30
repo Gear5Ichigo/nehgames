@@ -129,7 +129,7 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
 
     app.ticker.add((ticker) => {
         totalDelta+=ticker.deltaTime;
-        t.text = totalDelta;
+        t.text = ticker.deltaTime;
         if ( keys["w"] ) {
             console.log("moving");
         }
