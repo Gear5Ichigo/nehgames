@@ -127,8 +127,8 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         keys[e.key.toLowerCase()] = false;
     })
 
-    app.ticker.add((delta) => {
-        totalDelta+=delta;
+    app.ticker.add((ticker) => {
+        totalDelta+=ticker.deltaTime;
         t.text = totalDelta;
         if ( keys["w"] ) {
             console.log("moving");
