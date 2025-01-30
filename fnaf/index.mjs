@@ -1,5 +1,9 @@
 import { Application, Container, Graphics, Text } from '../pixi.mjs';
 
+window.onerror = function(e){
+    document.getElementById('prompt').innerHTML = e.toString();
+}
+
 (async () => {
 
     class Button extends Container {
