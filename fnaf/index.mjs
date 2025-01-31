@@ -225,7 +225,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        t.text = `Bonnie is now at : ${bon.currentState}`;
+        t.text = `Chica is now at : ${ch.currentState}`;
         t2.text = `Chica is now at : ${ch.currentState}`;
         if (GameRender.visible) {
             bon.movement(ticker);
