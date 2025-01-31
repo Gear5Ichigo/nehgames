@@ -207,7 +207,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     //
 
-    OfficeRender.addChild(officeSprite, t);
+    OfficeRender.addChild(officeSprite, t, t2);
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
