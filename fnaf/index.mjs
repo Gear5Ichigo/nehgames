@@ -216,7 +216,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     const t2 = new Text({
         text: `har har`,
         style: {
-            fill: 0xffffff,
+            fill: 0xffe135,
             align: 'center',
         }
     });
