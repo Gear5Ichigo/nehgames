@@ -81,7 +81,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         }
     }
 
-    class Chica extends Bonnie {
+    class Chica extends Animatronic {
 
         #possibleLocations = {
             CAM1A : ["CAM1B"],
@@ -94,8 +94,19 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         }
 
         constructor(aiLevel) {
-            super(aiLevel)
-            this.movementInterval = 4.9;
+            super(aiLevel, 4.9)
+
+            this.currentState = "CAM1A"
+        }
+
+        movement(delta) {
+            super.movement(delta, () => {
+                const currentCam = this.#possibleLocations[this.currentState]
+                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
+                console.log(moveTo)
+                if (moveTo && moveTo!='')
+                    this.currentState = moveTo;
+            })
         }
     }
 
@@ -225,7 +236,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        t.text = `Chica is now at : ${ch.currentState}`;
+        t.text = `Bonnie is now at : ${bon.currentState}`;
         t2.text = `Chica is now at : ${ch.currentState}`;
         if (GameRender.visible) {
             bon.movement(ticker);
