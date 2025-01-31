@@ -54,18 +54,20 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     class Bonnie extends Animatronic {
 
+        #footsteps = new Audio('./assets/audio/deep steps.wav');
+
         #possibleLocations = {
             CAM1A : ["CAM1B", "CAM5"],
             CAM1B : ["CAM2A", "CAM5"],
             CAM5 : ["CAM2A", "CAM1B"],
             CAM2A : ["CAM3", "CAM2B"],
-            CAM3 : ["CAM2B", ],
+            CAM3 : ["CAM2B"],
             CAM2B : ["CAM3", "ATDOOR"],
             ATDOOR : ["CAM1B"]
         }
 
         constructor(aiLevel) {
-            super(aiLevel, 5);
+            super(aiLevel, 4.98);
             
             this.currentState = "CAM1A"
         }
@@ -77,6 +79,8 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
                 console.log(moveTo)
                 if (moveTo && moveTo!='')
                     this.currentState = moveTo;
+                if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
+                    this.#footsteps.play();
             })
         }
     }
@@ -94,7 +98,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         }
 
         constructor(aiLevel) {
-            super(aiLevel, 4.9)
+            super(aiLevel, 4.97)
 
             this.currentState = "CAM1A"
         }
@@ -127,7 +131,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
             this.currentHour = 12;
         }
 
-        gameLoop() {
+        update() {
 
         }
     }
