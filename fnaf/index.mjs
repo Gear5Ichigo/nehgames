@@ -43,7 +43,6 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         movement(ticker, callBack) {
             const dt = ticker.deltaTime/ticker.FPS;
             this.timeElapsed+=dt;
-            // console.log(this.timeElapsed)
             if (this.timeElapsed >= this.movementInterval) {
                 this.timeElapsed = 0;
                 const chance = (Math.random()*20)+1
@@ -57,27 +56,46 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
         #possibleLocations = {
             CAM1A : ["CAM1B", "CAM5"],
-            CAM1B : ["CAM2A"],
-            CAM5 : ["CAM2A"],
+            CAM1B : ["CAM2A", "CAM5"],
+            CAM5 : ["CAM2A", "CAM1B"],
             CAM2A : ["CAM3", "CAM2B"],
             CAM3 : ["CAM2B", ],
-            CAM2B : ["CAM3", ""],
+            CAM2B : ["CAM3", "ATDOOR"],
+            ATDOOR : ["CAM1B"]
         }
 
         constructor(aiLevel) {
-            super(aiLevel, 4.9);
+            super(aiLevel, 5);
             
             this.currentState = "CAM1A"
         }
 
-        async movement(delta) {
-            super.movement(delta, async () => {
+        movement(delta) {
+            super.movement(delta, () => {
                 const currentCam = this.#possibleLocations[this.currentState]
                 const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
                 console.log(moveTo)
                 if (moveTo && moveTo!='')
                     this.currentState = moveTo;
             })
+        }
+    }
+
+    class Chica extends Bonnie {
+
+        #possibleLocations = {
+            CAM1A : ["CAM1B"],
+            CAM1B : ["CAM7", "CAM6", "CAM4A"],
+            CAM6 : ["CAM1B", "CAM7"],
+            CAM7 : ["CAM1B", "CAM6"],
+            CAM4A : ["CAM4B"],
+            CAM4B : ["ATDOOR"],
+            ATDOOR : ["CAM1B"]
+        }
+
+        constructor(aiLevel) {
+            super(aiLevel)
+            this.movementInterval = 4.9;
         }
     }
 
@@ -116,6 +134,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     bgMusic.play();
 
     const bon = new Bonnie(20);
+    const ch = new Chica(20);
 
     const officepng = await Assets.load('./assets/sprites/office/39.png')
     const officeSprite = new Sprite(officepng);
@@ -165,6 +184,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     }
 
     let totalDelta = 0;
+    const actionLog = [];
     const t = new Text({
         text: `har har`,
         style: {
@@ -173,6 +193,14 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         }
     });
     t.x = 1, t.y = 1;
+    const t2 = new Text({
+        text: `har har`,
+        style: {
+            fill: 0xffffff,
+            align: 'center',
+        }
+    });
+    t2.x = 1, t2.y = 51;
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
@@ -194,12 +222,15 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
+        if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
         t.text = `Bonnie is now at : ${bon.currentState}`;
+        t2.text = `Chica is now at : ${ch.currentState}`;
         if (GameRender.visible) {
             bon.movement(ticker);
-            if (bon.currentState == "CAM2B") scare.play();
+            ch.movement(ticker);
+            if (bon.currentState === "ATDOOR") scare.play();
         }
     });
 })();
