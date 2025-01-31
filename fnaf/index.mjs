@@ -189,7 +189,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     app.ticker.add((ticker) => {
         totalDelta+=ticker.deltaTime;
-        t.text = totalDelta;
+        t.text = bon.currentState;
         bon.movement(ticker.deltaTime);
     });
 })();
