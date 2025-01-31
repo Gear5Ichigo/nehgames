@@ -31,6 +31,8 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     }
 
     class Animatronic {
+
+
         constructor(aiLevel, movementInterval) {
             this.aiLevel = aiLevel
             this.timeElapsed = 0;
@@ -38,7 +40,10 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
             this.currentState = null;
         }
 
-        movement(delta, callBack) {
+        movement(ticker, callBack) {
+            const dt = ticker.deltaTime/ticker.FPS;
+            this.timeElapsed+=dt;
+            // console.log(this.timeElapsed)
             if (this.timeElapsed >= this.movementInterval) {
                 this.timeElapsed = 0;
                 const chance = (Math.random()*20)+1
@@ -61,12 +66,12 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
         constructor(aiLevel) {
             super(aiLevel, 4.9);
-
+            
             this.currentState = "CAM1A"
         }
 
-        movement() {
-            super.movement(() => {
+        async movement(delta) {
+            super.movement(delta, async () => {
                 const currentCam = this.#possibleLocations[this.currentState]
                 const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
                 console.log(moveTo)
@@ -111,7 +116,6 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     bgMusic.play();
 
     const bon = new Bonnie(20);
-    bon.movement();
 
     const officepng = await Assets.load('./assets/sprites/office/39.png')
     const officeSprite = new Sprite(officepng);
@@ -162,21 +166,20 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     let totalDelta = 0;
     const t = new Text({
-        text: `${totalDelta}`,
+        text: `har har`,
         style: {
             fill: 0xffffff,
             align: 'center',
         }
     });
-
-    app.stage.addChild(t);
+    t.x = 1, t.y = 1;
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
-    
+
     //
 
-    OfficeRender.addChild(officeSprite);
+    OfficeRender.addChild(officeSprite, t);
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
@@ -187,9 +190,16 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     app.canvas.style.display = "block";
     document.body.appendChild(app.canvas)
 
+    const scare = new Audio('assets/sounds/windowscare.wav')
+
+    app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
+        const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        t.text = bon.currentState;
-        bon.movement(ticker.deltaTime);
+        t.text = `Bonnie is now at : ${bon.currentState}`;
+        if (GameRender.visible) {
+            bon.movement(ticker);
+            if (bon.currentState == "CAM2B") scare.play();
+        }
     });
 })();
