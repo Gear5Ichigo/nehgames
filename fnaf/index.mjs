@@ -86,7 +86,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
         #possibleLocations = {
             CAM1A : ["CAM1B"],
             CAM1B : ["CAM7", "CAM6", "CAM4A"],
-            CAM6 : ["CAM1B", "CAM7"],
+            CAM6 : ["CAM4A"],
             CAM7 : ["CAM1B", "CAM6"],
             CAM4A : ["CAM4B"],
             CAM4B : ["ATDOOR"],
