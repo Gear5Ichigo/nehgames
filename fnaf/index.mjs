@@ -1,4 +1,5 @@
-import { Application, Container, Graphics, Text } from '../pixi.mjs';
+
+import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.mjs';
 
 (async () => {
 
@@ -29,32 +30,73 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
         }
     }
 
-    // class Animatronic {
-    //     constructor(aiLevel) {
-    //         this.aiLevel = aiLevel
-    //         this.movementInterval = 4.5
-    //     }
+    class Animatronic {
+        constructor(aiLevel, movementInterval) {
+            this.aiLevel = aiLevel
+            this.timeElapsed = 0;
+            this.movementInterval = movementInterval;
+            this.currentState = null;
+        }
 
-    //     movement() {
-    //         const movementOppurtunity = (Math.random()*20)+1
-    //         if (movementOppurtunity >= 1 && movementOppurtunity <= this.aiLevel)
-    //             return true;
-    //     }
-    // }
+        movement(delta, callBack) {
+            if (this.timeElapsed >= this.movementInterval) {
+                this.timeElapsed = 0;
+                const chance = (Math.random()*20)+1
+                if (chance >= 1 && chance <= this.aiLevel)
+                    callBack();
+            }
+        }
+    }
 
-    // class Game {
-    //     constructor(fr, bo, ch, fo) {
-    //         this.battery = 100;
-    //         this.batteryDrain = 1;
-    //         this.batteryDrainInterval = 4.9;
+    class Bonnie extends Animatronic {
 
-    //         this.rightDoorClosed = false;
-    //         this.leftDoorClosed = false;
+        #possibleLocations = {
+            CAM1A : ["CAM1B", "CAM5"],
+            CAM1B : ["CAM2A"],
+            CAM5 : ["CAM2A"],
+            CAM2A : ["CAM3", "CAM2B"],
+            CAM3 : ["CAM2B", ],
+            CAM2B : ["CAM3", ""],
+        }
 
-    //         this.hourLength = 89; // in seconds
-    //         this.currentHour = 12;
-    //     }
-    // }
+        constructor(aiLevel) {
+            super(aiLevel, 4.9);
+
+            this.currentState = "CAM1A"
+        }
+
+        movement() {
+            super.movement(() => {
+                const currentCam = this.#possibleLocations[this.currentState]
+                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
+                console.log(moveTo)
+                if (moveTo && moveTo!='')
+                    this.currentState = moveTo;
+            })
+        }
+    }
+
+    class Game {
+        constructor(fr, bo, ch, fo) {
+            this.animatronics = {
+
+            }
+
+            this.battery = 100;
+            this.batteryDrain = 1;
+            this.batteryDrainInterval = 4.9;
+
+            this.rightDoorClosed = false;
+            this.leftDoorClosed = false;
+
+            this.hourLength = 89; // in seconds
+            this.currentHour = 12;
+        }
+
+        gameLoop() {
+
+        }
+    }
 
     //
 
@@ -65,10 +107,24 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
     // program here 
     // */
 
-    let keys = {}
+    const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
+    bgMusic.play();
+
+    const bon = new Bonnie(20);
+    bon.movement();
+
+    const officepng = await Assets.load('./assets/sprites/office/39.png')
+    const officeSprite = new Sprite(officepng);
+    officeSprite.anchor = 0.5;
+    officeSprite.x = innerWidth/2, officeSprite.y = innerHeight/2;
+    officeSprite.height = window.innerHeight;
+    officeSprite.width = window.innerWidth*1.5;
 
     const GameRender = new Container();
     const MenuRender = new Container();
+
+    const OfficeRender = new Container();
+    const CameraRender = new Container();
 
     const SettingsMenu = new Container();
     const NightsMenu = new Container();
@@ -98,6 +154,9 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
     let NightsSelection = [];
     for (let night = 0; night < 5; night++) {
         const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu)
+        b.onpointerdown = (event) => {
+            setRenderState(app.stage, GameRender);
+        }
         NightsSelection.push(b);
     }
 
@@ -114,31 +173,23 @@ import { Application, Container, Graphics, Text } from '../pixi.mjs';
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
-    app.stage.addChild(GameRender, MenuRender);
+    
+    //
 
+    OfficeRender.addChild(officeSprite);
+    GameRender.addChild(OfficeRender, CameraRender);
+    setRenderState(GameRender, OfficeRender);
+
+    //
+
+    app.stage.addChild(GameRender, MenuRender);
+    setRenderState(app.stage, MenuRender);
     app.canvas.style.display = "block";
     document.body.appendChild(app.canvas)
 
-    window.addEventListener("keydown", (e) => {
-        console.log(e.key.toLowerCase());
-        keys[e.key.toLowerCase()] = true;
-    });
-    window.addEventListener("keyup", (e) => {
-        keys[e.key.toLowerCase()] = false;
-    })
-
     app.ticker.add((ticker) => {
         totalDelta+=ticker.deltaTime;
-        t = new Text({
-            text: `${totalDelta}`,
-            style: {
-                fill: 0xffffff,
-                align: 'center',
-            }
-        });
-    
-        if ( keys["w"] ) {
-            console.log("moving");
-        }
+        t.text = totalDelta;
+        bon.movement(ticker.deltaTime);
     });
 })();
