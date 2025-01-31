@@ -161,7 +161,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
     const camflipbutton = new Sprite(camflipbuttonpng);
     camflipbutton.anchor - 0.5;
-    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight+camflipbutton.height+10;
+    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height-10;
 
     const GameRender = new Container();
     const MenuRender = new Container();
