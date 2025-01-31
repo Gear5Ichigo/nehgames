@@ -154,6 +154,11 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     officeSprite.height = window.innerHeight;
     officeSprite.width = window.innerWidth*1.5;
 
+    const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
+    const camflipbutton = new Sprite(camflipbuttonpng);
+    camflipbutton.anchor - 0.5;
+    officeSprite.x = innerWidth/2, officeSprite.y = innerHeight+camflipbutton.height+10;
+
     const GameRender = new Container();
     const MenuRender = new Container();
 
@@ -218,7 +223,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     //
 
-    OfficeRender.addChild(officeSprite, t, t2);
+    OfficeRender.addChild(officeSprite, camflipbutton, t, t2);
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
