@@ -1,5 +1,6 @@
-
 import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.mjs';
+import { sound } from '../pixi-sound.mjs';
+import { PixelateFilter } from '../pixi-filters.mjs';
 
 (async () => {
 
@@ -140,6 +141,10 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
     const app = new Application();
     await app.init({ background: "#000000", resizeTo: window });
+
+    window.onresize = (event) => {
+        
+    }
 
     //**
     // program here 
