@@ -1,5 +1,6 @@
 
-import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.mjs';
+import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Spritesheet, Text } from '../../pixi.mjs';
+import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
 
 (async () => {
 
@@ -27,90 +28,6 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
 
             this.addChild(this.text, this.rect);
             container.addChild(this);
-        }
-    }
-
-    class Animatronic {
-
-
-        constructor(aiLevel, movementInterval) {
-            this.aiLevel = aiLevel
-            this.timeElapsed = 0;
-            this.movementInterval = movementInterval;
-            this.currentState = null;
-        }
-
-        movement(ticker, callBack) {
-            const dt = ticker.deltaTime/ticker.FPS;
-            this.timeElapsed+=dt;
-            if (this.timeElapsed >= this.movementInterval) {
-                this.timeElapsed = 0;
-                const chance = (Math.random()*20)+1
-                if (chance >= 1 && chance <= this.aiLevel)
-                    callBack();
-            }
-        }
-    }
-
-    class Bonnie extends Animatronic {
-
-        #footsteps = new Audio('./assets/audio/deep steps.wav');
-
-        #possibleLocations = {
-            CAM1A : ["CAM1B", "CAM5"],
-            CAM1B : ["CAM2A", "CAM5"],
-            CAM5 : ["CAM2A", "CAM1B"],
-            CAM2A : ["CAM3", "CAM2B"],
-            CAM3 : ["CAM2B"],
-            CAM2B : ["CAM3", "ATDOOR"],
-            ATDOOR : ["CAM1B"]
-        }
-
-        constructor(aiLevel) {
-            super(aiLevel, 4.98);
-            
-            this.currentState = "CAM1A"
-        }
-
-        movement(delta) {
-            super.movement(delta, () => {
-                const currentCam = this.#possibleLocations[this.currentState]
-                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-                console.log(moveTo)
-                if (moveTo && moveTo!='')
-                    this.currentState = moveTo;
-                if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
-                    this.#footsteps.play();
-            })
-        }
-    }
-
-    class Chica extends Animatronic {
-
-        #possibleLocations = {
-            CAM1A : ["CAM1B"],
-            CAM1B : ["CAM7", "CAM6", "CAM4A"],
-            CAM6 : ["CAM4A"],
-            CAM7 : ["CAM1B", "CAM6"],
-            CAM4A : ["CAM4B"],
-            CAM4B : ["ATDOOR"],
-            ATDOOR : ["CAM1B"]
-        }
-
-        constructor(aiLevel) {
-            super(aiLevel, 4.97)
-
-            this.currentState = "CAM1A"
-        }
-
-        movement(delta) {
-            super.movement(delta, () => {
-                const currentCam = this.#possibleLocations[this.currentState]
-                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-                console.log(moveTo)
-                if (moveTo && moveTo!='')
-                    this.currentState = moveTo;
-            })
         }
     }
 
@@ -158,10 +75,21 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     officeSprite.height = window.innerHeight;
     officeSprite.width = window.innerWidth*1.5;
 
+    Assets.add({
+        alias: 'camflip.png', src: './assets/sprites/camflip/camflip.png'
+    });
+
+
+
     const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
     const camflipbutton = new Sprite(camflipbuttonpng);
-    camflipbutton.anchor - 0.5;
-    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height-10;
+    camflipbutton.anchor = 0.5;
+    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height+20;
+
+    const animjson = await Assets.load('./assets/sprites/camflip/camflip.json');
+    console.log(animjson.data.meta.image);
+    const camflipanim = new Spritesheet(await Assets.load('camflip.png'), animjson.data);
+    await camflipanim.parse();
 
     const GameRender = new Container();
     const MenuRender = new Container();
@@ -172,6 +100,10 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     const SettingsMenu = new Container();
     const NightsMenu = new Container();
     const MainMenu = new Container();
+
+    const anim = new AnimatedSprite(camflipanim.animations.flip);
+    anim.anchor = 0;
+    anim.animationSpeed = 0.77;
 
     function setRenderState(render, state) {
         render.children.forEach(element => {
@@ -226,8 +158,7 @@ import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.
     setRenderState(MenuRender, MainMenu);
 
     //
-
-    OfficeRender.addChild(officeSprite, camflipbutton, t, t2);
+    OfficeRender.addChild(officeSprite, anim, camflipbutton, t, t2); anim.play();
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
