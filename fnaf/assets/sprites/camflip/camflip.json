@@ -213,6 +213,6 @@
 		"scale": "1"
 	},
 	"animations": {
-		"flip": ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "f8.png", "f9.png"]
+		"flip": ["f1.png", "f2.png", "f3.png", "f4.png", "f5.png", "f6.png", "f7.png", "f8.png", "f9.png", "download.png"]
 	}
 }

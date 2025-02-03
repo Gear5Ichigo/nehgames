@@ -1,6 +1,7 @@
 
 import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Spritesheet, Text } from '../../pixi.mjs';
-import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
+import './game.mjs';
+import Game from './game.mjs';
 
 (async () => {
 
@@ -31,32 +32,24 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
         }
     }
 
-    class Game {
-        constructor(fr, bo, ch, fo) {
-            this.animatronics = {
-
-            }
-
-            this.battery = 100;
-            this.batteryDrain = 1;
-            this.batteryDrainInterval = 4.9;
-
-            this.rightDoorClosed = false;
-            this.leftDoorClosed = false;
-
-            this.hourLength = 89; // in seconds
-            this.currentHour = 12;
-        }
-
-        update() {
-
-        }
-    }
-
     //
+
+    const nativeResolution  = [1920, 1080];
+    const nativeRatio = nativeResolution[0] / nativeResolution[1];
 
     const app = new Application();
     await app.init({ background: "#000000", resizeTo: window });
+
+    const GameRender = new Container();
+    await Game.init(GameRender);
+
+    Assets.addBundle('fonts', [
+        {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
+    ]); Assets.loadBundle('fonts');
+
+    window.onresize = (event) => {
+        app.renderer.resize(window);
+    }
 
     //**
     // program here 
@@ -64,9 +57,6 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
 
     const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
     bgMusic.play();
-
-    const bon = new Bonnie(20);
-    const ch = new Chica(20);
 
     const officepng = await Assets.load('./assets/sprites/office/39.png')
     const officeSprite = new Sprite(officepng);
@@ -79,19 +69,11 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
         alias: 'camflip.png', src: './assets/sprites/camflip/camflip.png'
     });
 
-
-
     const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
     const camflipbutton = new Sprite(camflipbuttonpng);
     camflipbutton.anchor = 0.5;
     camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height+20;
 
-    const animjson = await Assets.load('./assets/sprites/camflip/camflip.json');
-    console.log(animjson.data.meta.image);
-    const camflipanim = new Spritesheet(await Assets.load('camflip.png'), animjson.data);
-    await camflipanim.parse();
-
-    const GameRender = new Container();
     const MenuRender = new Container();
 
     const OfficeRender = new Container();
@@ -101,9 +83,9 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
     const NightsMenu = new Container();
     const MainMenu = new Container();
 
-    const anim = new AnimatedSprite(camflipanim.animations.flip);
-    anim.anchor = 0;
-    anim.animationSpeed = 0.77;
+    // const anim = new AnimatedSprite(camflipanim.animations.flip);
+    // anim.x = innerWidth/2-(anim.width/2); anim.y = innerHeight- anim.height;
+    // anim.animationSpeed = 0.7;
 
     function setRenderState(render, state) {
         render.children.forEach(element => {
@@ -130,6 +112,10 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
     for (let night = 0; night < 5; night++) {
         const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu)
         b.onpointerdown = (event) => {
+            Game.start({
+                bonnieLevel: 20,
+                chicaLevel: 20
+            });
             setRenderState(app.stage, GameRender);
         }
         NightsSelection.push(b);
@@ -158,7 +144,7 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
     setRenderState(MenuRender, MainMenu);
 
     //
-    OfficeRender.addChild(officeSprite, anim, camflipbutton, t, t2); anim.play();
+    OfficeRender.addChild(officeSprite, camflipbutton, t, t2, Game._clockText);
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
@@ -176,12 +162,11 @@ import { Animatronic, Bonnie, Chica } from './animatronics.mjs';
         if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        t.text = `Bonnie is now at : ${bon.currentState}`;
-        t2.text = `Chica is now at : ${ch.currentState}`;
         if (GameRender.visible) {
-            bon.movement(ticker);
-            ch.movement(ticker);
-            if (bon.currentState === "ATDOOR") scare.play();
+            Game.updateLoop(ticker);
+            t.text = `Bonnie is now at : ${Game.animatronics.bonnie.currentState}`;
+            t2.text = `Chica is now at : ${Game.animatronics.chica.currentState}`;
+            if (Game.animatronics.bonnie.currentState === "ATDOOR") scare.play();
         }
     });
 })();
