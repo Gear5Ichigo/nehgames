@@ -1,6 +1,13 @@
+<<<<<<< HEAD:fnaf/index.mjs
 import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.mjs';
 import { sound } from '../pixi-sound.mjs';
 import { PixelateFilter } from '../pixi-filters.mjs';
+=======
+
+import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Spritesheet, Text } from '../../pixi.mjs';
+import './game.mjs';
+import Game from './game.mjs';
+>>>>>>> 5970153f93320056927b494077b15f26924d7373:fnaf/js/index.mjs
 
 (async () => {
 
@@ -31,119 +38,28 @@ import { PixelateFilter } from '../pixi-filters.mjs';
         }
     }
 
-    class Animatronic {
-
-
-        constructor(aiLevel, movementInterval) {
-            this.aiLevel = aiLevel
-            this.timeElapsed = 0;
-            this.movementInterval = movementInterval;
-            this.currentState = null;
-        }
-
-        movement(ticker, callBack) {
-            const dt = ticker.deltaTime/ticker.FPS;
-            this.timeElapsed+=dt;
-            if (this.timeElapsed >= this.movementInterval) {
-                this.timeElapsed = 0;
-                const chance = (Math.random()*20)+1
-                if (chance >= 1 && chance <= this.aiLevel)
-                    callBack();
-            }
-        }
-    }
-
-    class Bonnie extends Animatronic {
-
-        #footsteps = new Audio('./assets/audio/deep steps.wav');
-
-        #possibleLocations = {
-            CAM1A : ["CAM1B", "CAM5"],
-            CAM1B : ["CAM2A", "CAM5"],
-            CAM5 : ["CAM2A", "CAM1B"],
-            CAM2A : ["CAM3", "CAM2B"],
-            CAM3 : ["CAM2B"],
-            CAM2B : ["CAM3", "ATDOOR"],
-            ATDOOR : ["CAM1B"]
-        }
-
-        constructor(aiLevel) {
-            super(aiLevel, 4.98);
-            
-            this.currentState = "CAM1A"
-        }
-
-        movement(delta) {
-            super.movement(delta, () => {
-                const currentCam = this.#possibleLocations[this.currentState]
-                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-                console.log(moveTo)
-                if (moveTo && moveTo!='')
-                    this.currentState = moveTo;
-                if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
-                    this.#footsteps.play();
-            })
-        }
-    }
-
-    class Chica extends Animatronic {
-
-        #possibleLocations = {
-            CAM1A : ["CAM1B"],
-            CAM1B : ["CAM7", "CAM6", "CAM4A"],
-            CAM6 : ["CAM4A"],
-            CAM7 : ["CAM1B", "CAM6"],
-            CAM4A : ["CAM4B"],
-            CAM4B : ["ATDOOR"],
-            ATDOOR : ["CAM1B"]
-        }
-
-        constructor(aiLevel) {
-            super(aiLevel, 4.97)
-
-            this.currentState = "CAM1A"
-        }
-
-        movement(delta) {
-            super.movement(delta, () => {
-                const currentCam = this.#possibleLocations[this.currentState]
-                const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-                console.log(moveTo)
-                if (moveTo && moveTo!='')
-                    this.currentState = moveTo;
-            })
-        }
-    }
-
-    class Game {
-        constructor(fr, bo, ch, fo) {
-            this.animatronics = {
-
-            }
-
-            this.battery = 100;
-            this.batteryDrain = 1;
-            this.batteryDrainInterval = 4.9;
-
-            this.rightDoorClosed = false;
-            this.leftDoorClosed = false;
-
-            this.hourLength = 89; // in seconds
-            this.currentHour = 12;
-        }
-
-        update() {
-
-        }
-    }
-
     //
+
+    const nativeResolution  = [1920, 1080];
+    const nativeRatio = nativeResolution[0] / nativeResolution[1];
 
     const app = new Application();
     await app.init({ background: "#000000", resizeTo: window });
 
+<<<<<<< HEAD:fnaf/index.mjs
     window.onresize = (event) => {
         
+=======
+    const GameRender = new Container();
+    await Game.init(GameRender);
+
+    Assets.addBundle('fonts', [
+        {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
+    ]); Assets.loadBundle('fonts');
+
+    window.onresize = (event) => {
+        app.renderer.resize(window);
+>>>>>>> 5970153f93320056927b494077b15f26924d7373:fnaf/js/index.mjs
     }
 
     //**
@@ -153,9 +69,6 @@ import { PixelateFilter } from '../pixi-filters.mjs';
     const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
     bgMusic.play();
 
-    const bon = new Bonnie(20);
-    const ch = new Chica(20);
-
     const officepng = await Assets.load('./assets/sprites/office/39.png')
     const officeSprite = new Sprite(officepng);
     officeSprite.anchor = 0.5;
@@ -163,12 +76,15 @@ import { PixelateFilter } from '../pixi-filters.mjs';
     officeSprite.height = window.innerHeight;
     officeSprite.width = window.innerWidth*1.5;
 
+    Assets.add({
+        alias: 'camflip.png', src: './assets/sprites/camflip/camflip.png'
+    });
+
     const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
     const camflipbutton = new Sprite(camflipbuttonpng);
-    camflipbutton.anchor - 0.5;
-    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height-10;
+    camflipbutton.anchor = 0.5;
+    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height+20;
 
-    const GameRender = new Container();
     const MenuRender = new Container();
 
     const OfficeRender = new Container();
@@ -177,6 +93,10 @@ import { PixelateFilter } from '../pixi-filters.mjs';
     const SettingsMenu = new Container();
     const NightsMenu = new Container();
     const MainMenu = new Container();
+
+    // const anim = new AnimatedSprite(camflipanim.animations.flip);
+    // anim.x = innerWidth/2-(anim.width/2); anim.y = innerHeight- anim.height;
+    // anim.animationSpeed = 0.7;
 
     function setRenderState(render, state) {
         render.children.forEach(element => {
@@ -203,6 +123,10 @@ import { PixelateFilter } from '../pixi-filters.mjs';
     for (let night = 0; night < 5; night++) {
         const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu)
         b.onpointerdown = (event) => {
+            Game.start({
+                bonnieLevel: 20,
+                chicaLevel: 20
+            });
             setRenderState(app.stage, GameRender);
         }
         NightsSelection.push(b);
@@ -231,8 +155,7 @@ import { PixelateFilter } from '../pixi-filters.mjs';
     setRenderState(MenuRender, MainMenu);
 
     //
-
-    OfficeRender.addChild(officeSprite, camflipbutton, t, t2);
+    OfficeRender.addChild(officeSprite, camflipbutton, t, t2, Game._clockText);
     GameRender.addChild(OfficeRender, CameraRender);
     setRenderState(GameRender, OfficeRender);
 
@@ -250,12 +173,11 @@ import { PixelateFilter } from '../pixi-filters.mjs';
         if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        t.text = `Bonnie is now at : ${bon.currentState}`;
-        t2.text = `Chica is now at : ${ch.currentState}`;
         if (GameRender.visible) {
-            bon.movement(ticker);
-            ch.movement(ticker);
-            if (bon.currentState === "ATDOOR") scare.play();
+            Game.updateLoop(ticker);
+            t.text = `Bonnie is now at : ${Game.animatronics.bonnie.currentState}`;
+            t2.text = `Chica is now at : ${Game.animatronics.chica.currentState}`;
+            if (Game.animatronics.bonnie.currentState === "ATDOOR") scare.play();
         }
     });
 })();
