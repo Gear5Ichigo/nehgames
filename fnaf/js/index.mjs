@@ -1,13 +1,6 @@
-<<<<<<< HEAD:fnaf/index.mjs
-import { Application, Assets, Container, Graphics, Sprite, Text } from '../pixi.mjs';
-import { sound } from '../pixi-sound.mjs';
-import { PixelateFilter } from '../pixi-filters.mjs';
-=======
-
-import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Spritesheet, Text } from '../../pixi.mjs';
+import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Text } from '../../pixi.mjs';
 import './game.mjs';
 import Game from './game.mjs';
->>>>>>> 5970153f93320056927b494077b15f26924d7373:fnaf/js/index.mjs
 
 (async () => {
 
@@ -46,20 +39,16 @@ import Game from './game.mjs';
     const app = new Application();
     await app.init({ background: "#000000", resizeTo: window });
 
-<<<<<<< HEAD:fnaf/index.mjs
-    window.onresize = (event) => {
-        
-=======
-    const GameRender = new Container();
-    await Game.init(GameRender);
-
     Assets.addBundle('fonts', [
         {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
-    ]); Assets.loadBundle('fonts');
+    ]); await Assets.loadBundle('fonts');
+
+    const GameRender = new Container();
+    GameRender.sortableChildren = true;
+    await Game.init(GameRender);
 
     window.onresize = (event) => {
         app.renderer.resize(window);
->>>>>>> 5970153f93320056927b494077b15f26924d7373:fnaf/js/index.mjs
     }
 
     //**
@@ -67,28 +56,17 @@ import Game from './game.mjs';
     // */
 
     const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
+    bgMusic.loop = true;
     bgMusic.play();
 
     const officepng = await Assets.load('./assets/sprites/office/39.png')
     const officeSprite = new Sprite(officepng);
-    officeSprite.anchor = 0.5;
+    officeSprite.anchor = 0.6;
     officeSprite.x = innerWidth/2, officeSprite.y = innerHeight/2;
     officeSprite.height = window.innerHeight;
     officeSprite.width = window.innerWidth*1.5;
 
-    Assets.add({
-        alias: 'camflip.png', src: './assets/sprites/camflip/camflip.png'
-    });
-
-    const camflipbuttonpng = await Assets.load('./assets/sprites/420.png');
-    const camflipbutton = new Sprite(camflipbuttonpng);
-    camflipbutton.anchor = 0.5;
-    camflipbutton.x = innerWidth/2, camflipbutton.y = innerHeight-camflipbutton.height+20;
-
     const MenuRender = new Container();
-
-    const OfficeRender = new Container();
-    const CameraRender = new Container();
 
     const SettingsMenu = new Container();
     const NightsMenu = new Container();
@@ -127,7 +105,8 @@ import Game from './game.mjs';
                 bonnieLevel: 20,
                 chicaLevel: 20
             });
-            setRenderState(app.stage, GameRender);
+            bgMusic.pause();
+            setRenderState(app.stage, Game.render);
         }
         NightsSelection.push(b);
     }
@@ -155,13 +134,13 @@ import Game from './game.mjs';
     setRenderState(MenuRender, MainMenu);
 
     //
-    OfficeRender.addChild(officeSprite, camflipbutton, t, t2, Game._clockText);
-    GameRender.addChild(OfficeRender, CameraRender);
-    setRenderState(GameRender, OfficeRender);
+
+    Game.displayHUDContainer.addChild(t, t2)
+    setRenderState(Game.render, Game.officeRender);
 
     //
 
-    app.stage.addChild(GameRender, MenuRender);
+    app.stage.addChild(Game.render, MenuRender);
     setRenderState(app.stage, MenuRender);
     app.canvas.style.display = "block";
     document.body.appendChild(app.canvas)
@@ -173,7 +152,7 @@ import Game from './game.mjs';
         if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
-        if (GameRender.visible) {
+        if (Game.render.visible) {
             Game.updateLoop(ticker);
             t.text = `Bonnie is now at : ${Game.animatronics.bonnie.currentState}`;
             t2.text = `Chica is now at : ${Game.animatronics.chica.currentState}`;
