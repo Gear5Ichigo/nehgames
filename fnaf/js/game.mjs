@@ -20,7 +20,12 @@ export default class Game {
     _clockText;
     _camFlipButton;
     _officesprite;
+    _officeSpritesheet;
+    _all_office_sprites;
     _bear5;
+
+    _leftButtonSprite;
+    _all_left_button_sprites;
 
     animatronics;
 
@@ -64,11 +69,29 @@ export default class Game {
         this._cameraGUI = new Container();
         this.cameraRender.visible = false;
 
-        const office_texture = await Assets.load('./assets/sprites/office/39.png')
-        this._officesprite = new Sprite(office_texture);
-        this._officesprite.setSize(innerWidth*1.5, innerHeight);
-        this._officesprite.anchor = 0.5;
-        this._officesprite.position.set(innerWidth/2, innerHeight/2);
+        const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
+        this._officeSpritesheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet.png'), officejson.data);
+        await this._officeSpritesheet.parse();
+
+        this._all_office_sprites = {};
+        for (const [key, value] of Object.entries(this._officeSpritesheet.textures)) {
+            this._all_office_sprites[key] = new Sprite(value);
+            const entry = this._all_office_sprites[key];
+            entry.setSize(innerWidth*1.5, innerHeight);
+            entry.anchor = 0.5;
+            entry.position.set(innerWidth/2, innerHeight/2);
+        };
+        this._officesprite = this._all_office_sprites["58goku.png"];
+
+        const leftbuttonjson = await Assets.load('./assets/sprites/buttons/left/spritesheet.json');
+        const leftbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/left/spritesheet.png'), leftbuttonjson.data);
+        await leftbuttonsheet.parse();
+        this._all_left_button_sprites = {};
+        for (const [key, value] of Object.entries(leftbuttonsheet.textures)) {
+            this._all_left_button_sprites[key] = new Sprite(value);
+            const entry = this._all_left_button_sprites[key];
+            entry.position.set(0, innerHeight/2);
+        }
 
         const officeMovement = new Container();
 
@@ -154,7 +177,7 @@ export default class Game {
         this._camFlipButton.anchor = 0.5; this._camFlipButton.alpha = 0.5;
         this._camFlipButton.position.set(innerWidth/2, innerHeight-this._camFlipButton.height+20);
         this._camFlipButton.eventMode = 'static';
-        this._camFlipButton.onmouseenter = (event) => {
+        this._camFlipButton.onpointerenter = (event) => {
             this.camUp = true;
             this.SOUNDS.camFlip.play({});
             if (!this.camSwitch) {
@@ -170,7 +193,7 @@ export default class Game {
                 this.cameraRender.visible = false;
             }
         }; 
-        this._camFlipButton.onmouseleave = (event) => {
+        this._camFlipButton.onpointerleave = (event) => {
             this.camUp = false;
         };
 
@@ -178,7 +201,7 @@ export default class Game {
         this._cameraShow.addChild(this._bear5);
         this._cameraGUI.addChild(mapSprite);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
-        this.officeContainer.addChild(this._officesprite, officeMovement, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
+        this.officeContainer.addChild(this._officesprite, this._all_left_button_sprites['122.png'], officeMovement, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
         this.officeRender.addChild(this.baseContainer, this.officeContainer, this.displayHUDContainer);
 
         this.render.addChild(this.officeRender);
