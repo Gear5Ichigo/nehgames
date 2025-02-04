@@ -48,7 +48,7 @@ export default class Game {
         }
 
         this.clock = 12;
-        this.movePercent = innerWidth*0.0033;
+        this.movePercent = innerWidth*0.0044;
         this.camUp = false;
         this.camSwitch = false;
 
@@ -174,6 +174,7 @@ export default class Game {
             this.camUp = false;
         };
 
+        this.displayHUDContainer.addChild(this._clockText);
         this._cameraShow.addChild(this._bear5);
         this._cameraGUI.addChild(mapSprite);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
