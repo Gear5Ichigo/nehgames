@@ -1,4 +1,4 @@
-import { AnimatedSprite, Assets, Container, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
+import { AnimatedSprite, Assets, Container, Graphics, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
 import { Sound } from "../../pixi-sound.mjs";
 import { Bonnie, Chica } from "./animatronics.mjs";
 
@@ -28,6 +28,10 @@ export default class Game {
 
     camUp; camSwitch;
 
+    movePercent;
+    _moveLeft; _moveRight;
+    _innerMoveLeft; _innerMoveRight;
+
     _MAX_BATTERY; battery; batteryDrain;
 
     SOUNDS;
@@ -43,6 +47,7 @@ export default class Game {
         }
 
         this.clock = 12;
+        this.movePercent = innerWidth*0.0033;
         this.camUp = false;
         this.camSwitch = false;
 
@@ -55,6 +60,44 @@ export default class Game {
 
         this.cameraRender = new Container();
         this.cameraRender.visible = false;
+
+        const office_texture = await Assets.load('./assets/sprites/office/39.png')
+        this._officesprite = new Sprite(office_texture);
+        this._officesprite.setSize(innerWidth*1.5, innerHeight);
+        this._officesprite.anchor = 0.5;
+        this._officesprite.position.set(innerWidth/2, innerHeight/2);
+
+        const officeMovement = new Container();
+
+        const leftBox = new Graphics()
+        .rect(0, 0, innerWidth/3, innerHeight)
+        .fill(0xff0000); leftBox.alpha = 0; 
+        leftBox.eventMode = 'static';
+        leftBox.onpointerenter = (event) => this._moveLeft = true;
+        leftBox.onpointerleave = (event) => this._moveLeft = false;
+
+        const innerLeftBox = new Graphics()
+        .rect(0, 0, leftBox.width/2, innerHeight)
+        .fill(0x00ff00); innerLeftBox.alpha = 0;
+        innerLeftBox.eventMode = 'static';
+        innerLeftBox.onpointerenter = (event) => this._innerMoveLeft = true;
+        innerLeftBox.onpointerleave = (event) => this._innerMoveLeft = false;
+
+        const rightBox = new Graphics()
+        .rect(innerWidth-innerWidth/3, 0, innerWidth/3, innerHeight)
+        .fill(0x0000ff); rightBox.alpha = 0; 
+        rightBox.eventMode = 'static';
+        rightBox.onpointerenter = (event) => this._moveRight = true;
+        rightBox.onpointerleave = (event) => this._moveRight = false;
+
+        const innerRightBox = new Graphics()
+        .rect(innerWidth-rightBox.width/2, 0, rightBox.width/2, innerHeight)
+        .fill(0x00ff00); innerRightBox.alpha = 0;
+        innerRightBox.eventMode = 'static';
+        innerRightBox.onpointerenter = (event) => this._innerMoveRight = true;
+        innerRightBox.onpointerleave = (event) => this._innerMoveRight = false;
+
+        officeMovement.addChild(leftBox, innerLeftBox, rightBox, innerRightBox);
         
         this._clockText = new Text({
             text: `${this.clock} AM`,
@@ -125,14 +168,8 @@ export default class Game {
             this.camUp = false;
         };
 
-        const office_texture = await Assets.load('./assets/sprites/office/39.png')
-        this._officesprite = new Sprite(office_texture);
-        this._officesprite.setSize(innerWidth*1.5, innerHeight);
-        this._officesprite.anchor = 0.5;
-        this._officesprite.position.set(innerWidth/2, innerHeight/2);
-
         this.cameraRender.addChild(this._bear5);
-        this.officeContainer.addChild(this._officesprite, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
+        this.officeContainer.addChild(this._officesprite, officeMovement, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
         this.officeRender.addChild(this.baseContainer, this.officeContainer, this.displayHUDContainer);
 
         this.render.addChild(this.officeRender);
@@ -173,16 +210,28 @@ export default class Game {
         }
     }
 
+    static _officemove() {
+        if (this._officesprite.x > this._officesprite.width*0.17) {
+            if (this._moveRight) this._officesprite.x-=this.movePercent;
+            if (this._innerMoveRight) this._officesprite.x-=this.movePercent*2;
+        }
+        if (this._officesprite.x < this._officesprite.width/2) {
+            if (this._moveLeft) this._officesprite.x+=this.movePercent;
+            if (this._innerMoveLeft) this._officesprite.x+=this.movePercent*2;
+        }
+    }
+
     static updateLoop(ticker) {
         if (this._gameActive) {
             this.updateClock(ticker);
+            this._officemove();
 
             this._bear5.filters[0].seed = Math.random();
 
             if (this.cameraRender.visible) {
                 this.cameraRender.children.forEach(sprite => {
-                    if (sprite.visible && sprite.x < 0) {
-                        sprite.x += 1;
+                    if (sprite.visible) {
+                        if (sprite.x < 0) {sprite.x += innerWidth*0.0012;}
                     }
                 });
             }
