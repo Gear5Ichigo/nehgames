@@ -14,6 +14,7 @@ export default class Game {
     displayHUDContainer;
 
     cameraRender;
+    _cameraShow; _cameraGUI;
 
     _cameraTablet;
     _clockText;
@@ -59,6 +60,8 @@ export default class Game {
         this.displayHUDContainer = new Container();
 
         this.cameraRender = new Container();
+        this._cameraShow = new Container();
+        this._cameraGUI = new Container();
         this.cameraRender.visible = false;
 
         const office_texture = await Assets.load('./assets/sprites/office/39.png')
@@ -109,6 +112,9 @@ export default class Game {
         });
         this._clockText.position.set(50, 120);
 
+        const mapSprite = new Sprite(await Assets.load('./assets/sprites/cams/MAp.png'));
+        mapSprite.position.set(innerWidth-mapSprite.width, innerHeight-mapSprite.height)
+
         const bear5texture = await Assets.load('./assets/sprites/484bear5.png');
         this._bear5 = new Sprite(bear5texture);
         this._bear5.filters = [
@@ -130,7 +136,7 @@ export default class Game {
         camFlipAnim.setSize(innerWidth, innerHeight);
         camFlipAnim.onComplete = () => {
             this.cameraRender.visible = true
-            this.cameraRender.children.forEach(sprite => {
+            this._cameraShow.children.forEach(sprite => {
                 if (sprite.visible) {
                     sprite.x = -innerWidth*0.2;
                 }
@@ -145,7 +151,7 @@ export default class Game {
 
         const cf_texture = await Assets.load('./assets/sprites/420.png');
         this._camFlipButton = new Sprite(cf_texture);
-        this._camFlipButton.anchor = 0.5;
+        this._camFlipButton.anchor = 0.5; this._camFlipButton.alpha = 0.5;
         this._camFlipButton.position.set(innerWidth/2, innerHeight-this._camFlipButton.height+20);
         this._camFlipButton.eventMode = 'static';
         this._camFlipButton.onmouseenter = (event) => {
@@ -168,7 +174,9 @@ export default class Game {
             this.camUp = false;
         };
 
-        this.cameraRender.addChild(this._bear5);
+        this._cameraShow.addChild(this._bear5);
+        this._cameraGUI.addChild(mapSprite);
+        this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
         this.officeContainer.addChild(this._officesprite, officeMovement, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
         this.officeRender.addChild(this.baseContainer, this.officeContainer, this.displayHUDContainer);
 
@@ -229,7 +237,7 @@ export default class Game {
             this._bear5.filters[0].seed = Math.random();
 
             if (this.cameraRender.visible) {
-                this.cameraRender.children.forEach(sprite => {
+                this._cameraShow.children.forEach(sprite => {
                     if (sprite.visible) {
                         if (sprite.x < 0) {sprite.x += innerWidth*0.0012;}
                     }
