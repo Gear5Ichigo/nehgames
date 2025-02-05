@@ -41,7 +41,7 @@ export default class OfficeButtons {
         this._ldSpriteConainer.addChild(this._leftDoorCurrentSprite);
         this._leftDoorClick.addChild(this._ldSpriteConainer, l_doorClick, l_lightClick);
 
-        const rightbuttonjson = await Assets.load('./assets/sprites/buttons/right/spritesheet.json');
+        // const rightbuttonjson = await Assets.load('./assets/sprites/buttons/right/spritesheet.json');
     }
 
     static __lightdown(event) {
