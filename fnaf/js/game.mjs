@@ -3,6 +3,7 @@ import { Sound } from "../../pixi-sound.mjs";
 import { Bonnie, Chica } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
+import OfficeButtons from "./officebuttons.mjs";
 
 export default class Game {
     static async init(gameContainer) {
@@ -21,6 +22,8 @@ export default class Game {
         this.camUp = false;
         this.camSwitch = false;
 
+        this.scale = {x: innerWidth/1600, y: innerHeight/720};
+
         this.render = new Container();
 
         this.officeRender = new Container();
@@ -28,7 +31,7 @@ export default class Game {
         this.officeContainer = new Container();
         this.displayHUDContainer = new Container();
 
-        const officeSpritesContainer = new Container();
+        this.officeSpritesContainer = new Container();
 
         this._doorContainer = new Container();
         this._buttonsContainer = new Container();
@@ -40,39 +43,41 @@ export default class Game {
 
         await CameraTablet.init();
         await Office.init();
+        await OfficeButtons.init(this);
 
-        officeSpritesContainer.addChild(Office._currentSprite);
+        this.officeSpritesContainer.addChild(Office._currentSprite);
 
         const leftbuttonjson = await Assets.load('./assets/sprites/buttons/left/spritesheet.json');
         const leftbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/left/spritesheet.png'), leftbuttonjson.data);
         await leftbuttonsheet.parse();
-        this._all_left_button_sprites = {};
-        for (const [key, value] of Object.entries(leftbuttonsheet.textures)) {
-            this._all_left_button_sprites[key] = new Sprite(value);
-            const entry = this._all_left_button_sprites[key];
-            entry.eventMode = 'static';
-            entry.position.set(-Office._currentSprite.width*0.16, innerHeight/2);
-            console.log(entry.onpointerdown )
-            entry.onpointerdown  = (event) => {
-                this.SOUNDS.lightsHum.play(); this.powerUsage+=1;
-                if (this.animatronics.bonnie.currentState === "ATDOOR") {
-                    const random = Math.random()*100;
-                    if (random <= 10) {
-                        officeSpritesContainer.addChild(Office._sprites["58goku.png"]);
-                        this.SOUNDS.gokuscare.play({volume: 2});
-                        return;
-                    }
-                    officeSpritesContainer.addChild(Office._sprites["225.png"]);
-                    this.SOUNDS.windowscare.play({});
-                } else {
-                    officeSpritesContainer.addChild(Office._sprites["58.png"]);
-                }
-            }
-            entry.onpointerup = (event) => {
-                this.SOUNDS.lightsHum.stop(); this.powerUsage-=1;
-                officeSpritesContainer.removeChild(officeSpritesContainer.children[1]);
-            }
-        }
+        // this._all_left_button_sprites = {};
+        // for (const [key, value] of Object.entries(leftbuttonsheet.textures)) {
+        //     this._all_left_button_sprites[key] = new Sprite(value);
+        //     const entry = this._all_left_button_sprites[key];
+        //     entry.eventMode = 'static';
+        //     entry.setSize(entry.width*this.scale.x, entry.height*this.scale.y);
+        //     entry.position.set(-Office._currentSprite.width*0.16, innerHeight/2);
+        //     console.log(entry.onpointerdown )
+        //     entry.onpointerdown  = (event) => {
+        //         this.SOUNDS.lightsHum.play(); this.powerUsage+=1;
+        //         if (this.animatronics.bonnie.currentState === "ATDOOR") {
+        //             const random = Math.random()*100;
+        //             if (random <= 10) {
+        //                 officeSpritesContainer.addChild(Office._sprites["58goku.png"]);
+        //                 this.SOUNDS.gokuscare.play({volume: 2});
+        //                 return;
+        //             }
+        //             officeSpritesContainer.addChild(Office._sprites["225.png"]);
+        //             this.SOUNDS.windowscare.play({});
+        //         } else {
+        //             officeSpritesContainer.addChild(Office._sprites["58.png"]);
+        //         }
+        //     }
+        //     entry.onpointerup = (event) => {
+        //         this.SOUNDS.lightsHum.stop(); this.powerUsage-=1;
+        //         officeSpritesContainer.removeChild(officeSpritesContainer.children[1]);
+        //     }
+        // }
         
         this._clockText = new Text({
             text: `${this.clock} AM`,
@@ -167,8 +172,8 @@ export default class Game {
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
-        this._buttonsContainer.addChild(this._all_left_button_sprites["122.png"])
-        this.officeContainer.addChild(this._doorContainer, officeSpritesContainer, this._buttonsContainer);
+        this._buttonsContainer.addChild(OfficeButtons._leftDoorClick);
+        this.officeContainer.addChild(this._doorContainer, this.officeSpritesContainer, this._buttonsContainer);
 
         this.officeRender.addChild(Office._movementContainer, this.officeContainer, this.camTabletContainer, this.cameraRender, this.displayHUDContainer);
 
@@ -220,9 +225,9 @@ export default class Game {
         if (this._powerTimer >= 1) {
             this._powerTimer = 0;
             this.powerLevel -= this.powerUsage/10;
-            this.powerLevelDisplay.text = `Power Level: ${Math.ceil(this.powerLevel)}%`;
             this.usageDisplay.text = `Usage: ${Math.ceil(this.powerUsage)}`;
         }
+        this.powerLevelDisplay.text = `Power Level: ${Math.ceil(this.powerLevel)}%`;
     }
 
     static _officemove() {
