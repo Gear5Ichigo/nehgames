@@ -202,6 +202,7 @@ export default class Game {
         this._camFlipButton.position.set(innerWidth/2, innerHeight-this._camFlipButton.height+20);
         this._camFlipButton.eventMode = 'static';
         this._camFlipButton.onpointerenter = (event) => {
+            if (camFlipAnim.playing || reverseFlipAnim.playing) return;
             this.camUp = true;
             this.SOUNDS.camFlip.play({});
             if (!this.camSwitch) {
