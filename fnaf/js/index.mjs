@@ -41,6 +41,7 @@ import Game from './game.mjs';
 
     Assets.addBundle('fonts', [
         {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
+        {alias: 'Volter', src: './assets/fonts/Volter__28Goldfish_29.ttf', data: { family: "Volter" }}
     ]); await Assets.loadBundle('fonts');
 
     const GameRender = new Container();
@@ -58,13 +59,6 @@ import Game from './game.mjs';
     const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
     bgMusic.loop = true;
     bgMusic.play();
-
-    const officepng = await Assets.load('./assets/sprites/office/39.png')
-    const officeSprite = new Sprite(officepng);
-    officeSprite.anchor = 0.6;
-    officeSprite.x = innerWidth/2, officeSprite.y = innerHeight/2;
-    officeSprite.height = window.innerHeight;
-    officeSprite.width = window.innerWidth*1.5;
 
     const MenuRender = new Container();
 
@@ -85,21 +79,24 @@ import Game from './game.mjs';
     }
 
     const StartGameButton = new Button(innerWidth/2, innerHeight/2, 250, 80, "Start", MainMenu);
+    StartGameButton.pivot.set(250/2, 80/2);
     StartGameButton.onpointerdown = (event) => {
        setRenderState(MenuRender, NightsMenu);
     }
     const SettingsButton = new Button(innerWidth/2, innerHeight/2+100, 250, 80, "Settings", MainMenu);
+    SettingsButton.pivot.set(250/2, 80/2);
     SettingsButton.onpointerdown = (event) => {
         setRenderState(MenuRender, SettingsMenu)
     }
-    const NightsBackButton = new Button(innerWidth/2-250, innerHeight/2-220, 140, 40, "Back", NightsMenu);
+    const NightsBackButton = new Button(innerWidth/2-333, innerHeight/2-220, 140, 40, "Back", NightsMenu);
     NightsBackButton.onpointerdown = (event) => {
         setRenderState(MenuRender, MainMenu)
     }
 
     let NightsSelection = [];
     for (let night = 0; night < 5; night++) {
-        const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu)
+        const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu);
+        b.pivot.set(40, b.height/2);
         b.onpointerdown = (event) => {
             Game.start({
                 bonnieLevel: 20,
@@ -118,6 +115,7 @@ import Game from './game.mjs';
         style: {
             fill: 0xffffff,
             align: 'center',
+            fontFamily: 'Volter',
         }
     });
     t.x = 1, t.y = 1;
@@ -126,9 +124,15 @@ import Game from './game.mjs';
         style: {
             fill: 0xffe135,
             align: 'center',
+            fontFamily: 'Volter'
         }
     });
     t2.x = 1, t2.y = 51;
+    const changelog = new Text({
+        text: `${await fetch('./assets/changelog.txt').then(res => {return res.text()})}`,
+        style: { fill: 0xffffff, fontFamily: 'Volter' }
+    });
+    changelog.position.set(10, 10); MainMenu.addChild(changelog)
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
@@ -145,8 +149,6 @@ import Game from './game.mjs';
     app.canvas.style.display = "block";
     document.body.appendChild(app.canvas)
 
-    const scare = new Audio('assets/sounds/windowscare.wav')
-
     app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
         if (actionLog.length > 6) actionLog.pop()
@@ -156,7 +158,6 @@ import Game from './game.mjs';
             Game.updateLoop(ticker);
             t.text = `Bonnie is now at : ${Game.animatronics.bonnie.currentState}`;
             t2.text = `Chica is now at : ${Game.animatronics.chica.currentState}`;
-            if (Game.animatronics.bonnie.currentState === "ATDOOR") scare.play();
         }
     });
 })();

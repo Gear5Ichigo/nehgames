@@ -9,7 +9,7 @@ export default class Game {
     render;
 
     officeRender;
-    baseContainer;
+    camTabletContainer;
     officeContainer;
     displayHUDContainer;
 
@@ -47,9 +47,10 @@ export default class Game {
             officeNoise: Sound.from({
                 url: './assets/sounds/Buzz_Fan_Florescent2.wav'
             }),
-            camFlip: Sound.from({
-                url: './assets/sounds/put down.wav'
-            })
+            camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
+            windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
+            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3'}),
+            lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav'})
         }
 
         this.clock = 12;
@@ -60,9 +61,14 @@ export default class Game {
         this.render = new Container();
 
         this.officeRender = new Container();
-        this.baseContainer = new Container();
+        this.camTabletContainer = new Container();
         this.officeContainer = new Container();
         this.displayHUDContainer = new Container();
+
+        const officeSpritesContainer = new Container();
+
+        this._doorContainer = new Container();
+        this._buttonsContainer = new Container();
 
         this.cameraRender = new Container();
         this._cameraShow = new Container();
@@ -81,7 +87,8 @@ export default class Game {
             entry.anchor = 0.5;
             entry.position.set(innerWidth/2, innerHeight/2);
         };
-        this._officesprite = this._all_office_sprites["58goku.png"];
+        this._officesprite = this._all_office_sprites["39.png"];
+        officeSpritesContainer.addChild(this._officesprite);
 
         const leftbuttonjson = await Assets.load('./assets/sprites/buttons/left/spritesheet.json');
         const leftbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/left/spritesheet.png'), leftbuttonjson.data);
@@ -90,7 +97,24 @@ export default class Game {
         for (const [key, value] of Object.entries(leftbuttonsheet.textures)) {
             this._all_left_button_sprites[key] = new Sprite(value);
             const entry = this._all_left_button_sprites[key];
-            entry.position.set(0, innerHeight/2);
+            entry.eventMode = 'static';
+            entry.position.set(-this._officesprite.width*0.16, innerHeight/2);
+            console.log(entry.onpointerdown )
+            entry.onpointerdown  = (event) => {
+                if (this.animatronics.bonnie.currentState === "ATDOOR") {
+                    const random = Math.random()*100;
+                    if (random <= 10) {
+                        officeSpritesContainer.addChild(this._all_office_sprites["58goku.png"]);
+                        this.SOUNDS.gokuscare.play({});
+                        return;
+                    }
+                    officeSpritesContainer.addChild(this._all_office_sprites["225.png"]);
+                    this.SOUNDS.windowscare.play({});
+                } else {
+                    officeSpritesContainer.addChild(this._all_office_sprites["58.png"]);
+                }
+            }
+            entry.onpointerup = (event) => officeSpritesContainer.removeChild(officeSpritesContainer.children[1])
         }
 
         const officeMovement = new Container();
@@ -129,7 +153,7 @@ export default class Game {
             text: `${this.clock} AM`,
             style: {
                 fill: 0xffffff,
-                fontFamily: 'Press Start',
+                fontFamily: 'Volter',
                 align: 'center',
             }
         });
@@ -154,7 +178,7 @@ export default class Game {
         await this._cameraTablet.parse();
 
         const camFlipAnim = new AnimatedSprite(this._cameraTablet.animations.flip);
-        camFlipAnim.animspeed = 0.5; camFlipAnim.loop = false;
+        camFlipAnim.animationSpeed = 0.66; camFlipAnim.loop = false;
         camFlipAnim.visible = false;
         camFlipAnim.setSize(innerWidth, innerHeight);
         camFlipAnim.onComplete = () => {
@@ -167,7 +191,7 @@ export default class Game {
         };
 
         const reverseFlipAnim = new AnimatedSprite(this._cameraTablet.animations.reverseFlip);
-        reverseFlipAnim.animspeed = 0.5; reverseFlipAnim.loop = false;
+        reverseFlipAnim.animationSpeed = 0.66; reverseFlipAnim.loop = false;
         reverseFlipAnim.visible = false;
         reverseFlipAnim.setSize(innerWidth, innerHeight);
         reverseFlipAnim.onComplete = () => reverseFlipAnim.visible = false;
@@ -197,12 +221,17 @@ export default class Game {
             this.camUp = false;
         };
 
-        this.displayHUDContainer.addChild(this._clockText);
+        this.displayHUDContainer.addChild(this._clockText, this._camFlipButton);
+
         this._cameraShow.addChild(this._bear5);
         this._cameraGUI.addChild(mapSprite);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
-        this.officeContainer.addChild(this._officesprite, this._all_left_button_sprites['122.png'], officeMovement, camFlipAnim, reverseFlipAnim, this.cameraRender, this._camFlipButton);
-        this.officeRender.addChild(this.baseContainer, this.officeContainer, this.displayHUDContainer);
+
+        this.camTabletContainer.addChild(camFlipAnim, reverseFlipAnim);
+        this._buttonsContainer.addChild(this._all_left_button_sprites["122.png"])
+        this.officeContainer.addChild(this._doorContainer, officeSpritesContainer, this._buttonsContainer);
+
+        this.officeRender.addChild(officeMovement, this.officeContainer, this.camTabletContainer, this.cameraRender, this.displayHUDContainer);
 
         this.render.addChild(this.officeRender);
     }
@@ -243,13 +272,14 @@ export default class Game {
     }
 
     static _officemove() {
-        if (this._officesprite.x > this._officesprite.width*0.17) {
-            if (this._moveRight) this._officesprite.x-=this.movePercent;
-            if (this._innerMoveRight) this._officesprite.x-=this.movePercent*2;
+        const margin = (this._officesprite.width-this._officesprite.width/1.5)/2;
+        if (this.officeContainer.x > -margin ) {
+            if (this._moveRight) this.officeContainer.x-=this.movePercent;
+            if (this._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
         }
-        if (this._officesprite.x < this._officesprite.width/2) {
-            if (this._moveLeft) this._officesprite.x+=this.movePercent;
-            if (this._innerMoveLeft) this._officesprite.x+=this.movePercent*2;
+        if (this.officeContainer.x < margin ) {
+            if (this._moveLeft) this.officeContainer.x+=this.movePercent;
+            if (this._innerMoveLeft) this.officeContainer.x+=this.movePercent*2;
         }
     }
 
@@ -263,7 +293,7 @@ export default class Game {
             if (this.cameraRender.visible) {
                 this._cameraShow.children.forEach(sprite => {
                     if (sprite.visible) {
-                        if (sprite.x < 0) {sprite.x += innerWidth*0.0012;}
+                        if (sprite.x < 0) {sprite.x += innerWidth*0.001;}
                     }
                 });
             }

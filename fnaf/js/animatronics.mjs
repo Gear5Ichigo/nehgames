@@ -81,4 +81,10 @@ class Chica extends Animatronic {
     }
 }
 
-export {Animatronic, Bonnie, Chica}
+class Goku extends Animatronic {
+    constructor(aiLevel) {
+        super(aiLevel, 5.02);
+    }
+}
+
+export {Animatronic, Bonnie, Chica, Goku}
