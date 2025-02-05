@@ -29,7 +29,7 @@ class Bonnie extends Animatronic {
         CAM5 : ["CAM2A", "CAM1B"],
         CAM2A : ["CAM3", "CAM2B"],
         CAM3 : ["CAM2B"],
-        CAM2B : ["CAM3", "ATDOOR"],
+        CAM2B : ["ATDOOR"],
         ATDOOR : ["CAM1B"]
     }
 

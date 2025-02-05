@@ -1,47 +1,10 @@
 import { AnimatedSprite, Assets, Container, Graphics, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
 import { Sound } from "../../pixi-sound.mjs";
 import { Bonnie, Chica } from "./animatronics.mjs";
+import CameraTablet from "./cameratablet.mjs";
+import Office from "./office.mjs";
 
 export default class Game {
-
-    _gameActive;
-
-    render;
-
-    officeRender;
-    camTabletContainer;
-    officeContainer;
-    displayHUDContainer;
-
-    cameraRender;
-    _cameraShow; _cameraGUI;
-
-    _cameraTablet;
-    _clockText;
-    _camFlipButton;
-    _officesprite;
-    _officeSpritesheet;
-    _all_office_sprites;
-    _bear5;
-
-    _leftButtonSprite;
-    _all_left_button_sprites;
-
-    animatronics;
-
-    _ONE_HOUR; // one in-game hour = 69 seconds
-    timeElapsed; clock;
-
-    camUp; camSwitch;
-
-    movePercent;
-    _moveLeft; _moveRight;
-    _innerMoveLeft; _innerMoveRight;
-
-    _MAX_BATTERY; battery; batteryDrain;
-
-    SOUNDS;
-
     static async init(gameContainer) {
         this.SOUNDS = {
             officeNoise: Sound.from({
@@ -75,20 +38,10 @@ export default class Game {
         this._cameraGUI = new Container();
         this.cameraRender.visible = false;
 
-        const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
-        this._officeSpritesheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet.png'), officejson.data);
-        await this._officeSpritesheet.parse();
+        await CameraTablet.init();
+        await Office.init();
 
-        this._all_office_sprites = {};
-        for (const [key, value] of Object.entries(this._officeSpritesheet.textures)) {
-            this._all_office_sprites[key] = new Sprite(value);
-            const entry = this._all_office_sprites[key];
-            entry.setSize(innerWidth*1.5, innerHeight);
-            entry.anchor = 0.5;
-            entry.position.set(innerWidth/2, innerHeight/2);
-        };
-        this._officesprite = this._all_office_sprites["39.png"];
-        officeSpritesContainer.addChild(this._officesprite);
+        officeSpritesContainer.addChild(Office._currentSprite);
 
         const leftbuttonjson = await Assets.load('./assets/sprites/buttons/left/spritesheet.json');
         const leftbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/left/spritesheet.png'), leftbuttonjson.data);
@@ -98,56 +51,28 @@ export default class Game {
             this._all_left_button_sprites[key] = new Sprite(value);
             const entry = this._all_left_button_sprites[key];
             entry.eventMode = 'static';
-            entry.position.set(-this._officesprite.width*0.16, innerHeight/2);
+            entry.position.set(-Office._currentSprite.width*0.16, innerHeight/2);
             console.log(entry.onpointerdown )
             entry.onpointerdown  = (event) => {
+                this.SOUNDS.lightsHum.play(); this.powerUsage+=1;
                 if (this.animatronics.bonnie.currentState === "ATDOOR") {
                     const random = Math.random()*100;
                     if (random <= 10) {
-                        officeSpritesContainer.addChild(this._all_office_sprites["58goku.png"]);
-                        this.SOUNDS.gokuscare.play({});
+                        officeSpritesContainer.addChild(Office._sprites["58goku.png"]);
+                        this.SOUNDS.gokuscare.play({volume: 2});
                         return;
                     }
-                    officeSpritesContainer.addChild(this._all_office_sprites["225.png"]);
+                    officeSpritesContainer.addChild(Office._sprites["225.png"]);
                     this.SOUNDS.windowscare.play({});
                 } else {
-                    officeSpritesContainer.addChild(this._all_office_sprites["58.png"]);
+                    officeSpritesContainer.addChild(Office._sprites["58.png"]);
                 }
             }
-            entry.onpointerup = (event) => officeSpritesContainer.removeChild(officeSpritesContainer.children[1])
+            entry.onpointerup = (event) => {
+                this.SOUNDS.lightsHum.stop(); this.powerUsage-=1;
+                officeSpritesContainer.removeChild(officeSpritesContainer.children[1]);
+            }
         }
-
-        const officeMovement = new Container();
-
-        const leftBox = new Graphics()
-        .rect(0, 0, innerWidth/3, innerHeight)
-        .fill(0xff0000); leftBox.alpha = 0; 
-        leftBox.eventMode = 'static';
-        leftBox.onpointerenter = (event) => this._moveLeft = true;
-        leftBox.onpointerleave = (event) => this._moveLeft = false;
-
-        const innerLeftBox = new Graphics()
-        .rect(0, 0, leftBox.width/2, innerHeight)
-        .fill(0x00ff00); innerLeftBox.alpha = 0;
-        innerLeftBox.eventMode = 'static';
-        innerLeftBox.onpointerenter = (event) => this._innerMoveLeft = true;
-        innerLeftBox.onpointerleave = (event) => this._innerMoveLeft = false;
-
-        const rightBox = new Graphics()
-        .rect(innerWidth-innerWidth/3, 0, innerWidth/3, innerHeight)
-        .fill(0x0000ff); rightBox.alpha = 0; 
-        rightBox.eventMode = 'static';
-        rightBox.onpointerenter = (event) => this._moveRight = true;
-        rightBox.onpointerleave = (event) => this._moveRight = false;
-
-        const innerRightBox = new Graphics()
-        .rect(innerWidth-rightBox.width/2, 0, rightBox.width/2, innerHeight)
-        .fill(0x00ff00); innerRightBox.alpha = 0;
-        innerRightBox.eventMode = 'static';
-        innerRightBox.onpointerenter = (event) => this._innerMoveRight = true;
-        innerRightBox.onpointerleave = (event) => this._innerMoveRight = false;
-
-        officeMovement.addChild(leftBox, innerLeftBox, rightBox, innerRightBox);
         
         this._clockText = new Text({
             text: `${this.clock} AM`,
@@ -172,16 +97,11 @@ export default class Game {
         ]
         this._bear5.setSize(innerWidth*1.2, innerHeight);
 
-        Assets.add({alias: 'camflip.png', src: './assets/sprites/camflip/camflip.png'});
-        const camflipJson = await Assets.load('./assets/sprites/camflip/camflip.json');
-        this._cameraTablet = new Spritesheet(await Assets.load('camflip.png'), camflipJson.data);
-        await this._cameraTablet.parse();
+        /**
+         * Camera Tablet animations
+         */
 
-        const camFlipAnim = new AnimatedSprite(this._cameraTablet.animations.flip);
-        camFlipAnim.animationSpeed = 0.66; camFlipAnim.loop = false;
-        camFlipAnim.visible = false;
-        camFlipAnim.setSize(innerWidth, innerHeight);
-        camFlipAnim.onComplete = () => {
+        CameraTablet._flipUp.onComplete = () => {
             this.cameraRender.visible = true
             this._cameraShow.children.forEach(sprite => {
                 if (sprite.visible) {
@@ -190,51 +110,72 @@ export default class Game {
             })
         };
 
-        const reverseFlipAnim = new AnimatedSprite(this._cameraTablet.animations.reverseFlip);
-        reverseFlipAnim.animationSpeed = 0.66; reverseFlipAnim.loop = false;
-        reverseFlipAnim.visible = false;
-        reverseFlipAnim.setSize(innerWidth, innerHeight);
-        reverseFlipAnim.onComplete = () => reverseFlipAnim.visible = false;
+        CameraTablet._flipDown.onComplete = () => CameraTablet._flipDown.visible = false;
 
-        const cf_texture = await Assets.load('./assets/sprites/420.png');
-        this._camFlipButton = new Sprite(cf_texture);
-        this._camFlipButton.anchor = 0.5; this._camFlipButton.alpha = 0.5;
-        this._camFlipButton.position.set(innerWidth/2, innerHeight-this._camFlipButton.height+20);
-        this._camFlipButton.eventMode = 'static';
-        this._camFlipButton.onpointerenter = (event) => {
-            if (camFlipAnim.playing || reverseFlipAnim.playing) return;
+        CameraTablet._camFlipButton.onpointerenter = (event) => {
+            if (CameraTablet._flipUp.playing || CameraTablet._flipDown.playing) return;
             this.camUp = true;
             this.SOUNDS.camFlip.play({});
             if (!this.camSwitch) {
                 this.camSwitch = true;
-                camFlipAnim.visible = true;
-                camFlipAnim.gotoAndPlay(0);
+                this.powerUsage+=1;
+                CameraTablet._flipUp.visible = true;
+                CameraTablet._flipUp.gotoAndPlay(0);
             } else {
+                this.powerUsage-=1;
                 this.camSwitch = false;
-                camFlipAnim.visible = false;
-                reverseFlipAnim.visible = true;
-                reverseFlipAnim.gotoAndPlay(0);
+                CameraTablet._flipUp.visible = false;
+                CameraTablet._flipDown.visible = true;
+                CameraTablet._flipDown.gotoAndPlay(0);
 
                 this.cameraRender.visible = false;
             }
-        }; 
-        this._camFlipButton.onpointerleave = (event) => {
+        };
+        CameraTablet._camFlipButton.onpointerleave = (event) => {
             this.camUp = false;
         };
 
-        this.displayHUDContainer.addChild(this._clockText, this._camFlipButton);
+        //================================================
+        //
+
+        /**
+         * TEXT
+         */
+
+        this.powerLevelDisplay = new Text({
+            text: `Power Level: 100%`,
+            style: {
+                fontFamily: 'FNAF',
+                fill: 0xffffff,
+                fontSize: 60,
+            }
+        }); this.powerLevelDisplay.position.set(10, innerHeight-120);
+        this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 32}});
+        this.usageDisplay.position.set(this.powerLevelDisplay.position.x, this.powerLevelDisplay.position.y-32)
+
+        //
+        //
+
+        /**
+         * Container layering
+         */
+
+        this.displayHUDContainer.addChild(this._clockText, this.usageDisplay, this.powerLevelDisplay, CameraTablet._camFlipButton);
 
         this._cameraShow.addChild(this._bear5);
         this._cameraGUI.addChild(mapSprite);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
 
-        this.camTabletContainer.addChild(camFlipAnim, reverseFlipAnim);
+        this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
         this._buttonsContainer.addChild(this._all_left_button_sprites["122.png"])
         this.officeContainer.addChild(this._doorContainer, officeSpritesContainer, this._buttonsContainer);
 
-        this.officeRender.addChild(officeMovement, this.officeContainer, this.camTabletContainer, this.cameraRender, this.displayHUDContainer);
+        this.officeRender.addChild(Office._movementContainer, this.officeContainer, this.camTabletContainer, this.cameraRender, this.displayHUDContainer);
 
         this.render.addChild(this.officeRender);
+
+        //
+
     }
 
     static start(options) {
@@ -244,9 +185,10 @@ export default class Game {
         this._ONE_HOUR = 69;
         this.clock = 12;
 
-        this._MAX_BATTERY = 100;
-        this.battery = this._MAX_BATTERY;
-        this.batteryDrain = 1;
+        this._MAX_POWER_LEVEL = 100;
+        this.powerLevel = this._MAX_POWER_LEVEL;
+        this.powerUsage = 1;
+        this._powerTimer = 0;
 
         this.animatronics = {};
 
@@ -272,21 +214,33 @@ export default class Game {
         }
     }
 
+    static _updatePower(ticker) {
+        const dt = ticker.deltaTime/ticker.FPS;
+        this._powerTimer += dt;
+        if (this._powerTimer >= 1) {
+            this._powerTimer = 0;
+            this.powerLevel -= this.powerUsage/10;
+            this.powerLevelDisplay.text = `Power Level: ${Math.ceil(this.powerLevel)}%`;
+            this.usageDisplay.text = `Usage: ${Math.ceil(this.powerUsage)}`;
+        }
+    }
+
     static _officemove() {
-        const margin = (this._officesprite.width-this._officesprite.width/1.5)/2;
+        const margin = (Office._currentSprite.width-Office._currentSprite.width/1.5)/2;
         if (this.officeContainer.x > -margin ) {
-            if (this._moveRight) this.officeContainer.x-=this.movePercent;
-            if (this._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
+            if (Office._moveRight) this.officeContainer.x-=this.movePercent;
+            if (Office._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
         }
         if (this.officeContainer.x < margin ) {
-            if (this._moveLeft) this.officeContainer.x+=this.movePercent;
-            if (this._innerMoveLeft) this.officeContainer.x+=this.movePercent*2;
+            if (Office._moveLeft) this.officeContainer.x+=this.movePercent;
+            if (Office._innerMoveLeft) this.officeContainer.x+=this.movePercent*2;
         }
     }
 
     static updateLoop(ticker) {
         if (this._gameActive) {
             this.updateClock(ticker);
+            this._updatePower(ticker);
             this._officemove();
 
             this._bear5.filters[0].seed = Math.random();

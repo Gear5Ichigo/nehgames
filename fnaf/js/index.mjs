@@ -41,7 +41,8 @@ import Game from './game.mjs';
 
     Assets.addBundle('fonts', [
         {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
-        {alias: 'Volter', src: './assets/fonts/Volter__28Goldfish_29.ttf', data: { family: "Volter" }}
+        {alias: 'Volter', src: './assets/fonts/Volter__28Goldfish_29.ttf', data: { family: "Volter" }},
+        {alias: 'fnaf', src: './assets/fonts/five-nights-at-freddys.ttf', data: { family: "FNAF" }}
     ]); await Assets.loadBundle('fonts');
 
     const GameRender = new Container();
@@ -65,10 +66,6 @@ import Game from './game.mjs';
     const SettingsMenu = new Container();
     const NightsMenu = new Container();
     const MainMenu = new Container();
-
-    // const anim = new AnimatedSprite(camflipanim.animations.flip);
-    // anim.x = innerWidth/2-(anim.width/2); anim.y = innerHeight- anim.height;
-    // anim.animationSpeed = 0.7;
 
     function setRenderState(render, state) {
         render.children.forEach(element => {
@@ -115,7 +112,8 @@ import Game from './game.mjs';
         style: {
             fill: 0xffffff,
             align: 'center',
-            fontFamily: 'Volter',
+            fontFamily: 'FNAF',
+            fontSize: 60,
         }
     });
     t.x = 1, t.y = 1;
