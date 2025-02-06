@@ -33,9 +33,6 @@ import Game from './game.mjs';
 
     //
 
-    const nativeResolution  = [1920, 1080];
-    const nativeRatio = nativeResolution[0] / nativeResolution[1];
-
     const app = new Application();
     await app.init({ background: "#000000", resizeTo: window });
 
@@ -128,7 +125,7 @@ import Game from './game.mjs';
     t2.x = 1, t2.y = 51;
     const changelog = new Text({
         text: `${await fetch('./assets/changelog.txt').then(res => {return res.text()})}`,
-        style: { fill: 0xffffff, fontFamily: 'Volter' }
+        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.02 }
     });
     changelog.position.set(10, 10); MainMenu.addChild(changelog)
 
@@ -138,7 +135,6 @@ import Game from './game.mjs';
     //
 
     Game.displayHUDContainer.addChild(t, t2)
-    setRenderState(Game.render, Game.officeRender);
 
     //
 

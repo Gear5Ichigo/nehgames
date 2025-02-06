@@ -1,7 +1,8 @@
-import {Assets, Container, Sprite, Spritesheet, Graphics} from '../../pixi.mjs';
+import {Assets, Container, Sprite, Spritesheet, Graphics, Filter, GlProgram} from '../../pixi.mjs';
 
 export default class Office {
     static async init() {
+
         const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
         this._spriteSheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet.png'), officejson.data);
         await this._spriteSheet.parse();
@@ -47,5 +48,6 @@ export default class Office {
         innerRightBox.onpointerleave = (event) => this._innerMoveRight = false;
 
         this._movementContainer.addChild(leftBox, innerLeftBox, rightBox, innerRightBox);
+        this.container = new Container();
     }
 }
