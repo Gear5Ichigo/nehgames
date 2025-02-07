@@ -4,6 +4,7 @@ import { Bonnie, Chica } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
+import Doors from "./doors.mjs";
 
 export default class Game {
     static async init(gameContainer) {
@@ -14,7 +15,8 @@ export default class Game {
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
             gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3'}),
-            lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav'})
+            lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav'}),
+            doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
         }
 
         this.clock = 12;
@@ -49,7 +51,8 @@ export default class Game {
 
         await CameraTablet.init();
         await Office.init();
-        await OfficeButtons.init(this);
+        await OfficeButtons.init();
+        await Doors.init();
 
         this.officeSpritesContainer.addChild(Office._currentSprite);
         
@@ -64,6 +67,7 @@ export default class Game {
         this._clockText.position.set(50, 120);
 
         const mapSprite = new Sprite(await Assets.load('./assets/sprites/cams/MAp.png'));
+        mapSprite.scale.set(Game.scale.x, Game.scale.y);
         mapSprite.position.set(innerWidth-mapSprite.width, innerHeight-mapSprite.height)
 
         const bear5texture = await Assets.load('./assets/sprites/484bear5.png');
@@ -147,7 +151,8 @@ export default class Game {
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
         this._buttonsContainer.addChild(OfficeButtons._leftButtonClick, OfficeButtons._rightButtonClick);
-        this.officeContainer.addChild(this.officeSpritesContainer, this._buttonsContainer);
+        this._doorContainer.addChild(Doors.leftDoorContainer,);
+        this.officeContainer.addChild(this.officeSpritesContainer, this._doorContainer, this._buttonsContainer);
 
         this.officeRender.addChild(
             Office._movementContainer,

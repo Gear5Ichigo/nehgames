@@ -1,4 +1,5 @@
 import { Assets, Spritesheet, Sprite, Container, Graphics } from '../../pixi.mjs';
+import Doors from './doors.mjs';
 import Game from './game.mjs'
 import Office from './office.mjs';
 
@@ -26,7 +27,7 @@ export default class OfficeButtons {
         //
 
         this._leftButtonClick = new Container();
-        this._ldSpriteConainer = new Container();
+        this._lbSpriteConainer = new Container();
 
         const leftX = this._leftButtonCurrentSprite.x+(30*Game.scale.x*bScale);
         const bY = this._leftButtonCurrentSprite.y+(52*Game.scale.y*bScale);
@@ -35,18 +36,22 @@ export default class OfficeButtons {
         const l_doorClick = new Graphics()
         .rect(leftX, bY, btnSize[0], btnSize[1]).fill(0xff00ff); l_doorClick.alpha = 0.0;
         l_doorClick.eventMode = 'static';
-        l_doorClick.onpointerdown = this.__doordown;
+        l_doorClick.onpointerdown = () => {
+            this.__left_door();
+            this.__updateLeftButtons();
+        }
 
         const l_lightClick = new Graphics()
         .rect(leftX, bY2, btnSize[0], btnSize[1]).fill(0xff00ff); l_lightClick.alpha = 0.0;
         l_lightClick.eventMode = 'static';
         l_lightClick.onpointerdown = () => {
             this.__left_light();
-            this.__updateSprites();
+            this.__updateOffice();
+            this.__updateLeftButtons();
         };
         
-        this._ldSpriteConainer.addChild(this._leftButtonCurrentSprite);
-        this._leftButtonClick.addChild(this._ldSpriteConainer, l_doorClick, l_lightClick);
+        this._lbSpriteConainer.addChild(this._leftButtonCurrentSprite);
+        this._leftButtonClick.addChild(this._lbSpriteConainer, l_doorClick, l_lightClick);
 
         //
 
@@ -73,13 +78,18 @@ export default class OfficeButtons {
         const r_doorClick = new Graphics()
         .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0.0;
         r_doorClick.eventMode = 'static';
+        r_doorClick.onpointerdown = () => {
+
+            this.__updateRightButtons();
+        }
 
         const r_lightClick = new Graphics()
         .rect(rightX, bY2, btnSize[0], btnSize[1]).fill(0x00ff00); r_lightClick.alpha = 0.0;
         r_lightClick.eventMode = 'static';
         r_lightClick.onpointerdown = (event) => {
             this.__right_light();
-            this.__updateSprites();
+            this.__updateOffice();
+            this.__updateRightButtons();
         }
 
         this._rbSpriteContainer.addChild(this._rightButtonCurrentSprite);
@@ -88,7 +98,7 @@ export default class OfficeButtons {
         this.container = new Container();
     }
 
-    static __updateSprites() {
+    static __updateOffice() {
         if (Game.rightLightOn) {
             if (Game.animatronics.chica.currentState === "ATDOOR") {
                 Game.SOUNDS.windowscare.play();
@@ -108,6 +118,29 @@ export default class OfficeButtons {
         } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
     }
 
+    static __updateLeftButtons() {
+        if (Game.leftLightOn && Game.leftDoorOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["130.png"])
+        } else if (Game.leftLightOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["125.png"])
+        } else if (Game.leftDoorOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["124.png"])
+        } else {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["122.png"])
+        }
+    }
+
+    static __updateRightButtons() {
+        if (Game.rightLightOn && Game.rightDoorOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["47.png"])
+        } else if (Game.rightLightOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["131.png"])
+        } else if (Game.rightDoorOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["135.png"])
+        } else {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["134.png"])
+        }
+    }
     static __right_light() {
         if (!Game.rightLightOn) {
             Game.powerUsage+=1;
@@ -137,6 +170,23 @@ export default class OfficeButtons {
             Game.powerUsage-=1;
             Game.leftLightOn = false;
             Game.SOUNDS.lightsHum.stop();
+        }
+    }
+
+    static __left_door() {
+        if (Doors.leftDoorOpenAnim.playing || Doors.leftDoorCloseAnim.playing) return;
+        if (!Game.leftDoorOn) {
+            Game.powerUsage += 1;
+            Game.leftDoorOn = true;
+            Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorCloseAnim);
+            Doors.leftDoorCloseAnim.gotoAndPlay(0);
+            Game.SOUNDS.doorShut.play();
+        } else {
+            Game.powerUsage -= 1;
+            Game.leftDoorOn = false
+            Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorOpenAnim);
+            Doors.leftDoorOpenAnim.gotoAndPlay(0);
+            Game.SOUNDS.doorShut.play();
         }
     }
 }

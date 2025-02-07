@@ -1,6 +1,3 @@
- - Working on lights
- - new font
- - GOKU CAN SHOW UP (10%)
- - other programming jargin that most dont care about
-
- - fixed camflipping
+- lights toggle now
+but dont update if a animatronic is at door when lights are stil on (im working on it)
+- left door works (sprite work is tedious)
