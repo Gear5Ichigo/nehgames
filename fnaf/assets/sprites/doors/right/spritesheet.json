@@ -279,6 +279,26 @@
 				"w": 248,
 				"h": 720
 			}
+		},
+		"121.png": {
+			"frame": {
+				"x": 1,
+				"y": 1445,
+				"w": 248,
+				"h": 720
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 248,
+				"h": 720
+			},
+			"sourceSize": {
+				"w": 248,
+				"h": 720
+			}
 		}
 	},
 	"meta": {
@@ -288,8 +308,12 @@
 		"format": "RGBA8888",
 		"size": {
 			"w": 1750,
-			"h": 1444
+			"h": 2166
 		},
 		"scale": "1"
+	},
+	"animations": {
+		"close": ["104.png", "121.png", "106.png", "107.png", "108.png", "109.png", "110.png", "111.png", "112.png", "113.png", "114.png", "115.png", "116.png", "117.png", "118.png"],
+		"open": ["118.png", "117.png", "116.png", "115.png", "114.png", "113.png", "112.png", "111.png", "110.png", "109.png", "108.png", "107.png", "106.png", "121.png", "104.png"]
 	}
 }

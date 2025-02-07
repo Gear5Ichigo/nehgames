@@ -79,7 +79,7 @@ export default class OfficeButtons {
         .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0.0;
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
-
+            this.__right_door();
             this.__updateRightButtons();
         }
 
@@ -191,6 +191,23 @@ export default class OfficeButtons {
             Game.leftDoorOn = false
             Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorOpenAnim);
             Doors.leftDoorOpenAnim.gotoAndPlay(0);
+            Game.SOUNDS.doorShut.play();
+        }
+    }
+
+    static __right_door() {
+        if (Doors.rightDoorCloseAnim.playing || Doors.rightDoorOpenAnim.playing) return;
+        if (!Game.rightDoorOn) {
+            Game.powerUsage += 1;
+            Game.rightDoorOn = true;
+            Game.changeSprite(Doors.rightDoorContainer, Doors.rightDoorCloseAnim);
+            Doors.rightDoorCloseAnim.gotoAndPlay(0);
+            Game.SOUNDS.doorShut.play();
+        } else {
+            Game.powerUsage -= 1;
+            Game.rightDoorOn = false
+            Game.changeSprite(Doors.rightDoorContainer, Doors.rightDoorOpenAnim);
+            Doors.rightDoorOpenAnim.gotoAndPlay(0);
             Game.SOUNDS.doorShut.play();
         }
     }

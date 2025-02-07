@@ -151,7 +151,7 @@ export default class Game {
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
         this._buttonsContainer.addChild(OfficeButtons._leftButtonClick, OfficeButtons._rightButtonClick);
-        this._doorContainer.addChild(Doors.leftDoorContainer,);
+        this._doorContainer.addChild(Doors.leftDoorContainer, Doors.rightDoorContainer);
         this.officeContainer.addChild(this.officeSpritesContainer, this._doorContainer, this._buttonsContainer);
 
         this.officeRender.addChild(
