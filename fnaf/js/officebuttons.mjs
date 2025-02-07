@@ -38,7 +38,7 @@ export default class OfficeButtons {
         l_doorClick.eventMode = 'static';
         l_doorClick.onpointerdown = () => {
             this.__left_door();
-            this.__updateLeftButtons();
+            this.__updateOfficeButtons();
         }
 
         const l_lightClick = new Graphics()
@@ -47,7 +47,7 @@ export default class OfficeButtons {
         l_lightClick.onpointerdown = () => {
             this.__left_light();
             this.__updateOffice();
-            this.__updateLeftButtons();
+            this.__updateOfficeButtons();
         };
         
         this._lbSpriteConainer.addChild(this._leftButtonCurrentSprite);
@@ -80,7 +80,7 @@ export default class OfficeButtons {
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
             this.__right_door();
-            this.__updateRightButtons();
+            this.__updateOfficeButtons();
         }
 
         const r_lightClick = new Graphics()
@@ -89,7 +89,7 @@ export default class OfficeButtons {
         r_lightClick.onpointerdown = (event) => {
             this.__right_light();
             this.__updateOffice();
-            this.__updateRightButtons();
+            this.__updateOfficeButtons();
         }
 
         this._rbSpriteContainer.addChild(this._rightButtonCurrentSprite);
@@ -114,7 +114,7 @@ export default class OfficeButtons {
                 const random = Math.random()*100;
                 if (random <= 10) {
                     Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58goku.png"]);
-                    Game.SOUNDS.gokuscare.play({volume: 2});
+                    Game.SOUNDS.gokuscare.play({volume: 1});
                     return;
                 }
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
@@ -123,7 +123,7 @@ export default class OfficeButtons {
         } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
     }
 
-    static __updateLeftButtons() {
+    static __updateOfficeButtons() {
         if (Game.leftLightOn && Game.leftDoorOn) {
             Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["130.png"])
         } else if (Game.leftLightOn) {
@@ -133,9 +133,7 @@ export default class OfficeButtons {
         } else {
             Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["122.png"])
         }
-    }
-
-    static __updateRightButtons() {
+        //
         if (Game.rightLightOn && Game.rightDoorOn) {
             Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["47.png"])
         } else if (Game.rightLightOn) {
@@ -146,6 +144,7 @@ export default class OfficeButtons {
             Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["134.png"])
         }
     }
+
     static __right_light() {
         if (!Game.rightLightOn) {
             Game.powerUsage+=1;

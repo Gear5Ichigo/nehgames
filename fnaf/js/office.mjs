@@ -1,4 +1,5 @@
-import {Assets, Container, Sprite, Spritesheet, Graphics, Filter, GlProgram} from '../../pixi.mjs';
+import {Assets, Container, Sprite, Spritesheet, Graphics, Filter, GlProgram, AnimatedSprite} from '../../pixi.mjs';
+import Game from './game.mjs';
 
 export default class Office {
     static async init() {
@@ -22,6 +23,19 @@ export default class Office {
         this._sprites["127power.png"].position.set(innerWidth/2, innerHeight/2);
 
         this._currentSprite = this._sprites["39.png"];
+
+        //
+
+        const fanjson = await Assets.load('./assets/sprites/fan/spritesheet.json');
+        const fansheet = new Spritesheet(await Assets.load('./assets/sprites/fan/spritesheet.png'), fanjson.data);
+        await fansheet.parse();
+        this.fanAnim = new AnimatedSprite(fansheet.animations.loop);
+        this.fanAnim.scale.set(Game.scale.x*1.5, Game.scale.y);
+        this.fanAnim.anchor = 0.5;
+        this.fanAnim.position.set(innerWidth/2+(73*Game.scale.x), innerHeight/2+(41*Game.scale.y));
+        this.fanAnim.play();
+
+        //
 
         this._movementContainer = new Container();
         const leftBox = new Graphics()

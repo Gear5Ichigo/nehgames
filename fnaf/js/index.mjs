@@ -145,7 +145,6 @@ import Game from './game.mjs';
 
     app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
-        if (actionLog.length > 6) actionLog.pop()
         const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
         if (Game.render.visible) {

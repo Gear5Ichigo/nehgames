@@ -1,3 +1,7 @@
+import Cams from "./cams.mjs";
+import Game from "./game.mjs";
+import Office from "./office.mjs";
+
 class Animatronic {
 
     constructor(aiLevel, movementInterval) {
@@ -5,6 +9,7 @@ class Animatronic {
         this.timeElapsed = 0;
         this.movementInterval = movementInterval;
         this.currentState = null;
+        this.previousState = null;
     }
 
     movement(ticker, callBack) {
@@ -34,21 +39,74 @@ class Bonnie extends Animatronic {
     }
 
     constructor(aiLevel) {
-        super(aiLevel, 4.98);
+        super(aiLevel, 4.97);
         
         this.currentState = "CAM1A"
+        this.previousState = null;
     }
 
     movement(delta) {
         super.movement(delta, () => {
             const currentCam = this.#possibleLocations[this.currentState]
             const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-            console.log(moveTo)
+            
+            this.previousState = this.currentState;
+
             if (moveTo && moveTo!='')
                 this.currentState = moveTo;
             if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
                 this.#footsteps.play();
+
+            this.#__updateSprites();
         })
+    }
+
+    #__updateSprites() {
+
+        //
+
+        if (Game.currentCam === "CAM1B" && this.previousState === "CAM1B") {
+            if (Game.animatronics.chica.currentState === "CAM1B") {
+                Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
+            } else {
+                Game.changeSprite(Game._cameraShow, Cams.diningSprites["48.png"]);
+            }
+        }
+
+        //
+
+        if (Game.currentCam === "CAM1B" && this.currentState === "CAM1B") {
+            Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
+        }
+
+        if (Game.currentCam === "CAM2A" && this.currentState === "CAM2A") {
+            Game.changeSprite(Game._cameraShow, Cams.leftHallSprites["206.png"]);
+        } else if (Game.currentCam === "CAM2A" && this.previousState === "CAM2A") {
+            Game.changeSprite(Game._cameraShow, Cams.leftHallSprites["44.png"]);
+        }
+
+        if (Game.currentCam === "CAM2B" && this.currentState === "CAM2B") {
+            Game.changeSprite(Game._cameraShow, Cams.leftCornerSprites['188.png']);
+        } else if (Game.currentCam === "CAM2B" && this.previousState === "CAM2B") {
+            Game.changeSprite(Game._cameraShow, Cams.leftCornerSprites['0.png']);
+        }
+
+        //
+
+        if (Game.leftLightOn && this.currentState==="ATDOOR") {
+            const random = Math.random()*100;
+            if (random <= 10) {
+                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58goku.png"]);
+                Game.SOUNDS.gokuscare.play({volume: 2});
+                return;
+            }
+            Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
+            Game.SOUNDS.windowscare.play({});
+        } else if (this.previousState === "ATDOOR") {
+            if (Game.rightLightOn) {
+                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
+            }
+        }
     }
 }
 
@@ -65,19 +123,57 @@ class Chica extends Animatronic {
     }
 
     constructor(aiLevel) {
-        super(aiLevel, 4.97)
+        super(aiLevel, 4.98)
 
         this.currentState = "CAM1A"
+        this.previousState = null;
     }
 
     movement(delta) {
         super.movement(delta, () => {
-            const currentCam = this.#possibleLocations[this.currentState]
-            const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-            console.log(moveTo)
+            const currentCam = this.#possibleLocations[this.currentState];
+            const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)];
+
+            this.previousState = this.currentState;
+            
             if (moveTo && moveTo!='')
                 this.currentState = moveTo;
+
+            this.#__updateSprites();
         })
+    }
+
+    #__updateSprites() {
+
+        //
+
+        if (Game.currentCam === "CAM1B" && this.previousState === "CAM1B") {
+            if (Game.animatronics.bonnie.currentState === "CAM1B") {
+                Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
+            } else {
+                Game.changeSprite(Game._cameraShow, Cams.diningSprites["48.png"]);
+            }
+        }
+
+        if (Game.currentCam === "CAM1B" && this.currentState === "CAM1B") {
+            Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
+        }
+
+        //
+
+        if (Game.rightLightOn && this.currentState==="ATDOOR") {
+            const random = Math.random()*100;
+            if (random <= 6) {
+                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225power.png"]);
+                return;
+            }
+            Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
+            Game.SOUNDS.windowscare.play({});
+        } else if (this.previousState === "ATDOOR") {
+            if (Game.rightLightOn) {
+                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
+            }
+        }
     }
 }
 

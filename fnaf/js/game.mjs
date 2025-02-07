@@ -5,24 +5,27 @@ import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
 import Doors from "./doors.mjs";
+import Cams from "./cams.mjs";
 
 export default class Game {
     static async init(gameContainer) {
         this.SOUNDS = {
-            officeNoise: Sound.from({
-                url: './assets/sounds/Buzz_Fan_Florescent2.wav'
-            }),
+            officeNoise: Sound.from({ url: './assets/sounds/Buzz_Fan_Florescent2.wav' }),
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
             gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3'}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav'}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
+            winSound: Sound.from({url: './assets/sounds/chimes 2.wav'}),
+            camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
         }
 
         this.clock = 12;
         this.movePercent = innerWidth*0.0044;
         this.camUp = false;
+        this.currentCam = "CAM1A";
         this.camSwitch = false;
+        this.camMoveReverse = false;
 
         this.leftDoorOn = false;
         this.rightDoorOn = false;
@@ -53,6 +56,7 @@ export default class Game {
         await Office.init();
         await OfficeButtons.init();
         await Doors.init();
+        await Cams.init();
 
         this.officeSpritesContainer.addChild(Office._currentSprite);
         
@@ -72,7 +76,7 @@ export default class Game {
 
         const bear5texture = await Assets.load('./assets/sprites/484bear5.png');
         this._bear5 = new Sprite(bear5texture);
-        this._bear5.filters = [
+        this._cameraShow.filters = [
             new NoiseFilter({
                 seed: Math.random(),
                 noise: 0.5,
@@ -86,11 +90,7 @@ export default class Game {
 
         CameraTablet._flipUp.onComplete = () => {
             this.cameraRender.visible = true
-            this._cameraShow.children.forEach(sprite => {
-                if (sprite.visible) {
-                    sprite.x = -innerWidth*0.2;
-                }
-            })
+            this._cameraShow.x = -innerWidth*0.2;
         };
 
         CameraTablet._flipDown.onComplete = () => CameraTablet._flipDown.visible = false;
@@ -146,13 +146,13 @@ export default class Game {
         this.displayHUDContainer.addChild(this._clockText, this.usageDisplay, this.powerLevelDisplay, CameraTablet._camFlipButton);
 
         this._cameraShow.addChild(this._bear5);
-        this._cameraGUI.addChild(mapSprite);
+        this._cameraGUI.addChild(Cams.camsMapContainer, Cams.mapButtons);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
         this._buttonsContainer.addChild(OfficeButtons._leftButtonClick, OfficeButtons._rightButtonClick);
         this._doorContainer.addChild(Doors.leftDoorContainer, Doors.rightDoorContainer);
-        this.officeContainer.addChild(this.officeSpritesContainer, this._doorContainer, this._buttonsContainer);
+        this.officeContainer.addChild(this.officeSpritesContainer, Office.fanAnim, this._doorContainer, this._buttonsContainer);
 
         this.officeRender.addChild(
             Office._movementContainer,
@@ -205,6 +205,9 @@ export default class Game {
             }
             this._clockText.text = `${this.clock} AM`;
         }
+        if (this.clock == 6) {
+            this.SOUNDS.winSound.play();
+        }
     }
 
     static _updatePower(ticker) {
@@ -236,14 +239,14 @@ export default class Game {
             this._updatePower(ticker);
             this._officemove();
 
-            this._bear5.filters[0].seed = Math.random();
+            this._cameraShow.filters[0].seed = Math.random();
 
             if (this.cameraRender.visible) {
-                this._cameraShow.children.forEach(sprite => {
-                    if (sprite.visible) {
-                        if (sprite.x < 0) {sprite.x += innerWidth*0.001;}
-                    }
-                });
+                if (this._cameraShow.x < 0) {
+                    this._cameraShow.x += innerWidth*0.001;
+                    if (this._cameraShow >= 0 && !this.camMoveReverse)
+                        this.camMoveReverse = true;
+                }
             }
 
             for (const [key, animatronic] of Object.entries(this.animatronics)) {
