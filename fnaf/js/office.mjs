@@ -16,6 +16,11 @@ export default class Office {
             entry.position.set(innerWidth/2, innerHeight/2);
         };
 
+        this._sprites["127power.png"] = new Sprite(await Assets.load('./assets/sprites/office/127power.png'));
+        this._sprites["127power.png"].setSize(innerWidth*1.5, innerHeight);
+        this._sprites["127power.png"].anchor = 0.5;
+        this._sprites["127power.png"].position.set(innerWidth/2, innerHeight/2);
+
         this._currentSprite = this._sprites["39.png"];
 
         this._movementContainer = new Container();

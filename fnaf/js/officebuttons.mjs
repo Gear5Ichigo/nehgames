@@ -102,6 +102,11 @@ export default class OfficeButtons {
         if (Game.rightLightOn) {
             if (Game.animatronics.chica.currentState === "ATDOOR") {
                 Game.SOUNDS.windowscare.play();
+                const random = Math.random()*100;
+                if (random <= 6) {
+                    Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127power.png"]);
+                    return
+                }
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["227.png"]);
             } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127.png"]);
         } else if (Game.leftLightOn) {
