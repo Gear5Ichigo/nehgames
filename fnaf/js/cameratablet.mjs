@@ -1,4 +1,6 @@
 import { AnimatedSprite, Assets, Sprite, Spritesheet } from "../../pixi.mjs";
+import Cams from "./cams.mjs";
+import Game from "./game.mjs";
 
 export default class CameraTablet {
     static async init() {
@@ -6,7 +8,8 @@ export default class CameraTablet {
 
         this._camFlipButton = new Sprite(await Assets.load('./assets/sprites/420.png'));
         this._camFlipButton.anchor = 0.5; this._camFlipButton.alpha = 0.5;
-        this._camFlipButton.position.set(innerWidth/2, innerHeight-this._camFlipButton.height+20);
+        this._camFlipButton.scale.set(Game.scale.x, Game.scale.y);
+        this._camFlipButton.position.set(innerWidth/2-(75*Game.scale.x), Cams.cameraBorder.height-this._camFlipButton.height+(40*Game.scale.y));
         this._camFlipButton.eventMode = 'static';
 
         const camflipjson = await Assets.load('./assets/sprites/camflip/camflip.json');

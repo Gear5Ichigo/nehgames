@@ -1,3 +1,1 @@
-- lights toggle now
-but dont update if a animatronic is at door when lights are stil on (im working on it)
-- left door works (sprite work is tedious)
+- cams almost done

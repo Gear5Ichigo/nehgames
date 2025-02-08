@@ -79,6 +79,12 @@ class Bonnie extends Animatronic {
             Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
         }
 
+        if (Game.currentCam === "CAM3" && this.currentState === "CAM3") {
+            Game.changeSprite(Game._cameraShow, Cams.supplyClosetSprites['190.png']);
+        } else if (Game.currentCam === "CAM3" && this.previousState === "CAM3") {
+            Game.changeSprite(Game._cameraShow, Cams.supplyClosetSprites['62.png']);
+        }
+
         if (Game.currentCam === "CAM2A" && this.currentState === "CAM2A") {
             Game.changeSprite(Game._cameraShow, Cams.leftHallSprites["206.png"]);
         } else if (Game.currentCam === "CAM2A" && this.previousState === "CAM2A") {
@@ -103,9 +109,9 @@ class Bonnie extends Animatronic {
             Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
             Game.SOUNDS.windowscare.play({});
         } else if (this.previousState === "ATDOOR") {
-            if (Game.rightLightOn) {
+            if (Game.leftLightOn) {
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
-            }
+            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
         }
     }
 }
@@ -159,6 +165,18 @@ class Chica extends Animatronic {
             Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
         }
 
+        if (this.currentState === "CAM4B" && Game.currentCam === this.currentState) {
+            Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['220.png']);
+        } else if (this.previousState === "CAM4B" && Game.currentCam === this.previousState) {
+            Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['49.png']);
+        }
+
+        if (this.currentState === "CAM4A" && Game.currentCam === this.currentState) {
+            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['221.png']);
+        } else if (this.previousState === "CAM4A" && Game.currentCam === this.previousState) {
+            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['67.png']);
+        }
+
         //
 
         if (Game.rightLightOn && this.currentState==="ATDOOR") {
@@ -171,8 +189,8 @@ class Chica extends Animatronic {
             Game.SOUNDS.windowscare.play({});
         } else if (this.previousState === "ATDOOR") {
             if (Game.rightLightOn) {
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
-            }
+                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127.png"]);
+            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
         }
     }
 }

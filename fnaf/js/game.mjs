@@ -18,10 +18,11 @@ export default class Game {
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav'}),
             camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
+            cams: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav', loop: true}),
         }
 
         this.clock = 12;
-        this.movePercent = innerWidth*0.0044;
+        this.movePercent = innerWidth*0.005;
         this.camUp = false;
         this.currentCam = "CAM1A";
         this.camSwitch = false;
@@ -52,27 +53,13 @@ export default class Game {
         this._cameraGUI = new Container();
         this.cameraRender.visible = false;
 
-        await CameraTablet.init();
         await Office.init();
         await OfficeButtons.init();
         await Doors.init();
         await Cams.init();
+        await CameraTablet.init();
 
         this.officeSpritesContainer.addChild(Office._currentSprite);
-        
-        this._clockText = new Text({
-            text: `${this.clock} AM`,
-            style: {
-                fill: 0xffffff,
-                fontFamily: 'Volter',
-                align: 'center',
-            }
-        });
-        this._clockText.position.set(50, 120);
-
-        const mapSprite = new Sprite(await Assets.load('./assets/sprites/cams/MAp.png'));
-        mapSprite.scale.set(Game.scale.x, Game.scale.y);
-        mapSprite.position.set(innerWidth-mapSprite.width, innerHeight-mapSprite.height)
 
         const bear5texture = await Assets.load('./assets/sprites/484bear5.png');
         this._bear5 = new Sprite(bear5texture);
@@ -89,8 +76,10 @@ export default class Game {
          */
 
         CameraTablet._flipUp.onComplete = () => {
+            this.officeRender.visible = false
             this.cameraRender.visible = true
-            this._cameraShow.x = -innerWidth*0.2;
+            if (this.currentCam !== 'CAM6') this._cameraShow.x = -innerWidth*0.2;
+            this.SOUNDS.cams.play();
         };
 
         CameraTablet._flipDown.onComplete = () => CameraTablet._flipDown.visible = false;
@@ -107,9 +96,11 @@ export default class Game {
             } else {
                 this.powerUsage-=1;
                 this.camSwitch = false;
+                this.officeRender.visible = true;
                 CameraTablet._flipUp.visible = false;
                 CameraTablet._flipDown.visible = true;
                 CameraTablet._flipDown.gotoAndPlay(0);
+                this.SOUNDS.cams.stop();
 
                 this.cameraRender.visible = false;
             }
@@ -125,16 +116,33 @@ export default class Game {
          * TEXT
          */
 
+        this._clockText = new Text({
+            text: `${this.clock}  AM`,
+            style: {
+                fill: 0xffffff,
+                fontFamily: 'FNAF',
+                align: 'center',
+                fontSize: 60 * Game.scale.x,
+            }
+        }); this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, 15*Game.scale.y);
+        this.currentNightText = new Text({text: `Night`,
+            style: {
+                fill: 0xffffff,
+                align: 'center',
+                fontFamily: 'FNAF',
+                fontSize: 30*Game.scale.x
+            }
+        }); this.currentNightText.position.set(this._clockText.position.x, this._clockText.position.y+(50*Game.scale.y));
         this.powerLevelDisplay = new Text({
             text: `Power Level: 100%`,
             style: {
                 fontFamily: 'FNAF',
                 fill: 0xffffff,
-                fontSize: 60,
+                fontSize: 60*Game.scale.x,
             }
-        }); this.powerLevelDisplay.position.set(10, innerHeight-120);
-        this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 32}});
-        this.usageDisplay.position.set(this.powerLevelDisplay.position.x, this.powerLevelDisplay.position.y-32)
+        }); this.powerLevelDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
+        this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 32*Game.scale.x}});
+        this.usageDisplay.position.set(this.powerLevelDisplay.position.x, this.powerLevelDisplay.position.y-32);
 
         //
         //
@@ -143,10 +151,10 @@ export default class Game {
          * Container layering
          */
 
-        this.displayHUDContainer.addChild(this._clockText, this.usageDisplay, this.powerLevelDisplay, CameraTablet._camFlipButton);
+        this.displayHUDContainer.addChild(this._clockText, this.currentNightText, this.usageDisplay, this.powerLevelDisplay, CameraTablet._camFlipButton);
 
         this._cameraShow.addChild(this._bear5);
-        this._cameraGUI.addChild(Cams.camsMapContainer, Cams.mapButtons);
+        this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMapContainer, Cams.areaName, Cams.mapButtons);
         this.cameraRender.addChild(this._cameraShow, this._cameraGUI);
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
@@ -168,6 +176,9 @@ export default class Game {
 
     static start(options) {
         this._gameActive = true;
+
+        this.night = options.night || 1;
+        this.currentNightText.text = `Night ${this.night}`;
 
         this.timeElapsed = 0;
         this._ONE_HOUR = 69;
@@ -203,9 +214,9 @@ export default class Game {
             if (this.clock>=13) {
                 this.clock = 1;
             }
-            this._clockText.text = `${this.clock} AM`;
+            this._clockText.text = `${this.clock}  AM`;
         }
-        if (this.clock == 6) {
+        if (this.clock == 6 && !this.SOUNDS.winSound.isPlaying) {
             this.SOUNDS.winSound.play();
         }
     }
@@ -241,7 +252,7 @@ export default class Game {
 
             this._cameraShow.filters[0].seed = Math.random();
 
-            if (this.cameraRender.visible) {
+            if (this.cameraRender.visible && this.currentCam!=='CAM6') {
                 if (this._cameraShow.x < 0) {
                     this._cameraShow.x += innerWidth*0.001;
                     if (this._cameraShow >= 0 && !this.camMoveReverse)

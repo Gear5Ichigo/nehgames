@@ -93,8 +93,9 @@ import Game from './game.mjs';
         b.pivot.set(40, b.height/2);
         b.onpointerdown = (event) => {
             Game.start({
+                night: night+1,
                 bonnieLevel: 20,
-                chicaLevel: 20
+                chicaLevel: 20,
             });
             bgMusic.pause();
             setRenderState(app.stage, Game.render);
@@ -134,7 +135,7 @@ import Game from './game.mjs';
 
     //
 
-    Game.displayHUDContainer.addChild(t, t2)
+    Game.displayHUDContainer.addChild( t2)
 
     //
 
