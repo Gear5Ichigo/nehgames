@@ -50,8 +50,8 @@ class Bonnie extends Animatronic {
             CAM1B : ["CAM2A", "CAM5"],
             CAM5 : ["CAM2A", "CAM1B"],
             CAM2A : ["CAM3", "CAM2B"],
-            CAM3 : ["CAM2B"],
-            CAM2B : ["ATDOOR"],
+            CAM3 : ["CAM2B", "CAM2A", "ATDOOR"],
+            CAM2B : ["ATDOOR", "CAM3"],
             ATDOOR : ["CAM1B"]
         };
     }
@@ -137,11 +137,11 @@ class Chica extends Animatronic {
         this._possibleStates = {
             CAM1A : ["CAM1B"],
             CAM1B : ["CAM7", "CAM6", "CAM4A"],
-            CAM6 : ["CAM4A"],
-            CAM7 : ["CAM1B", "CAM6"],
-            CAM4A : ["CAM4B"],
+            CAM6 : ["CAM4A", "CAM7"],
+            CAM7 : ["CAM1B", "CAM6", "CAM4A"],
+            CAM4A : ["CAM4B", "CAM1B"],
             CAM4B : ["ATDOOR"],
-            ATDOOR : ["CAM1B"]
+            ATDOOR : ["CAM1B", "CAM4A"]
         }
     }
 
