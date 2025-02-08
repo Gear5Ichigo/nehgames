@@ -96,6 +96,7 @@ import Game from './game.mjs';
                 night: night+1,
                 bonnieLevel: 20,
                 chicaLevel: 20,
+                freddylevel: 20,
             });
             bgMusic.pause();
             setRenderState(app.stage, Game.render);

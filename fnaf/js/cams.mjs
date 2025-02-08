@@ -140,8 +140,19 @@ export default class Cams {
         this.mapButtons = new Container();
 
         this.__makeCamButton('1A', -100, -200, () => {
+            const fr = Game.animatronics.freddy, bo = Game.animatronics.bonnie, ch = Game.animatronics.chica;
             this.areaName.text = 'Stage';
-            Game.changeSprite(Game._cameraShow, this.stageSprites['19.png']);
+            if (fr.currentState==='CAM1A' && bo.currentState==='CAM1A' && ch.currentState==='CAM1A') { // the gangs here!
+                Game.changeSprite(Game._cameraShow, this.stageSprites['19.png']);
+            } else if (fr.currentState==='CAM1A' && bo.currentState==='CAM1A' && ch.currentState!=='CAM1A') { // no chica
+                Game.changeSprite(Game._cameraShow, this.stageSprites['223.png']);
+            } else if (fr.currentState==='CAM1A' && bo.currentState!=='CAM1A' && ch.currentState==='CAM1A') { // no bonnie
+                Game.changeSprite(Game._cameraShow, this.stageSprites['68.png']);
+            } else if (fr.currentState==='CAM1A' && bo.currentState!=='CAM1A' && ch.currentState!=='CAM1A') { // no bonnie and chica
+                Game.changeSprite(Game._cameraShow, this.stageSprites['224.png']);
+            } else { // everyones gone rip
+                Game.changeSprite(Game._cameraShow, this.stageSprites['484.png']);
+            }
         });
         this.__makeCamButton('1B', -117, -132, () => {
             this.areaName.text = 'Dining Room';

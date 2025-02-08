@@ -1,6 +1,6 @@
 import { AnimatedSprite, Assets, Container, Graphics, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
 import { Sound } from "../../pixi-sound.mjs";
-import { Bonnie, Chica } from "./animatronics.mjs";
+import { Bonnie, Chica, Freddy } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
@@ -193,6 +193,7 @@ export default class Game {
 
         this.animatronics.bonnie = new Bonnie(options.bonnieLevel || 0);
         this.animatronics.chica = new Chica(options.chicaLevel || 0);
+        this.animatronics.freddy = new Freddy(options.freddylevel || 0);
 
         this.SOUNDS.officeNoise.play({
             volume: 0.25,
