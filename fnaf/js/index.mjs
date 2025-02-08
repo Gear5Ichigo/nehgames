@@ -94,9 +94,9 @@ import Game from './game.mjs';
         b.onpointerdown = (event) => {
             Game.start({
                 night: night+1,
-                bonnieLevel: 10,
-                chicaLevel: 10,
-                freddylevel: 10,
+                bonnieLevel: 20,
+                chicaLevel: 20,
+                freddylevel: 20,
             });
             bgMusic.pause();
             setRenderState(app.stage, Game.render);

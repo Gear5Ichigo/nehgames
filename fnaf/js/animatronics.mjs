@@ -25,7 +25,6 @@ class Animatronic {
             if (chance >= 1 && chance <= this.aiLevel) {
                 const currentCam = this._possibleStates[this.currentState];
                 const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
-                console.log(currentCam, moveTo);
                 this.previousState = this.currentState;
                 if (moveTo && moveTo!='')
                     this.currentState = moveTo;
@@ -196,7 +195,7 @@ class Chica extends Animatronic {
 
         if (this.currentState === "CAM7" && Game.currentCam === this.currentState) {
             Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['219.png']);
-        } else if (this.previousState === "CAM4A" && Game.currentCam === this.previousState) {
+        } else if (this.previousState === "CAM7" && Game.currentCam === this.previousState) {
             if (Game.animatronics.freddy.currentState === Game.currentCam) {
                 Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['494.png']);
             } else Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['41.png']);
