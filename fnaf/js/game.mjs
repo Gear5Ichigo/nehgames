@@ -19,6 +19,9 @@ export default class Game {
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav'}),
             camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
             cams: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav', loop: true}),
+            doorBaning: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav'}),
+
+            phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav'}),
         }
 
         this.clock = 12;
@@ -86,16 +89,15 @@ export default class Game {
 
         CameraTablet._camFlipButton.onpointerenter = (event) => {
             if (CameraTablet._flipUp.playing || CameraTablet._flipDown.playing) return;
-            this.camUp = true;
             this.SOUNDS.camFlip.play({});
-            if (!this.camSwitch) {
-                this.camSwitch = true;
+            if (!this.camUp) {
+                this.camUp = true;
                 this.powerUsage+=1;
                 CameraTablet._flipUp.visible = true;
                 CameraTablet._flipUp.gotoAndPlay(0);
             } else {
                 this.powerUsage-=1;
-                this.camSwitch = false;
+                this.camUp = false;
                 this.officeRender.visible = true;
                 CameraTablet._flipUp.visible = false;
                 CameraTablet._flipDown.visible = true;
@@ -106,7 +108,7 @@ export default class Game {
             }
         };
         CameraTablet._camFlipButton.onpointerleave = (event) => {
-            this.camUp = false;
+            
         };
 
         //================================================
@@ -199,6 +201,7 @@ export default class Game {
             volume: 0.25,
             loop: true,
         })
+        this.SOUNDS.phoneguy1.play();
     }
 
     static changeSprite(spriteContainer, newSprite) {

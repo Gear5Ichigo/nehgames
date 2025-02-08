@@ -74,6 +74,16 @@ export default class Cams {
             entry.setSize(innerWidth*1.2, innerHeight);
         }
 
+        const pirateCoveJson = await Assets.load('./assets/sprites/cams/Pirate Cove/spritesheet.json');
+        const priateCoveSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Pirate Cove/spritesheet.png'), pirateCoveJson.data);
+        await priateCoveSheet.parse();
+        this.pirateCoveSprites = {};
+        for (const [key, value] of Object.entries(priateCoveSheet.textures)) {
+            this.pirateCoveSprites[key] = new Sprite(value);
+            const entry = this.pirateCoveSprites[key];
+            entry.setSize(innerWidth*1.2, innerHeight);
+        }
+
         const supplyClosetJson = await Assets.load('./assets/sprites/cams/Utility Closet/spritesheet.json');
         const supplyClosetSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Utility Closet/spritesheet.png'), supplyClosetJson.data);
         await supplyClosetSheet.parse();
@@ -101,6 +111,16 @@ export default class Cams {
         for (const [key, value] of Object.entries(leftCornerSheet.textures)) {
             this.leftCornerSprites[key] = new Sprite(value);
             const entry = this.leftCornerSprites[key];
+            entry.setSize(innerWidth*1.2, innerHeight);
+        }
+
+        const restRoomsJson = await Assets.load('./assets/sprites/cams/Toilets/spritesheet.json');
+        const restRoomsSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Toilets/spritesheet.png'), restRoomsJson.data);
+        await restRoomsSheet.parse();
+        this.restRoomsSprites = {};
+        for (const [key, value] of Object.entries(restRoomsSheet.textures)) {
+            this.restRoomsSprites[key] = new Sprite(value);
+            const entry = this.restRoomsSprites[key];
             entry.setSize(innerWidth*1.2, innerHeight);
         }
 
@@ -160,8 +180,8 @@ export default class Cams {
                 Game.changeSprite(Game._cameraShow, this.diningSprites['215.png']);
             } else if (Game.animatronics.bonnie.currentState === "CAM1B") {
                 Game.changeSprite(Game._cameraShow, this.diningSprites['90.png']);
-            } else if (false) {
-
+            } else if (Game.animatronics.freddy.currentState === "CAM1B") {
+                Game.changeSprite(Game._cameraShow, this.diningSprites['492.png']);
             } else {
                 Game.changeSprite(Game._cameraShow, this.diningSprites['48.png']);
             }
@@ -170,7 +190,8 @@ export default class Cams {
 
         });
         this.__makeCamButton('1C', -168, -45, () => {
-
+            this.areaName.text = 'Pirate Cove';
+            Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['66.png']);
         });
         this.__makeCamButton('3', -187, 57, () => {
             this.areaName.text = 'Supply Closet';
@@ -197,7 +218,14 @@ export default class Cams {
             }
         });
         this.__makeCamButton('7', 134, -114, () => {
-
+            this.areaName.text = 'Restrooms';
+            if (Game.animatronics.chica.currentState === "CAM7") {
+                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['219.png']);
+            } else if (Game.animatronics.freddy.currentState === "CAM7") {
+                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['494.png']);
+            } else {
+                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['41.png']);
+            }
         });
         this.__makeCamButton('6', 136, 39, () => {
             this.areaName.text = 'Kitchen';
@@ -208,6 +236,8 @@ export default class Cams {
             this.areaName.text = 'East Hall';
             if (Game.animatronics.chica.currentState === "CAM4A") {
                 Game.changeSprite(Game._cameraShow, this.rightHallSprites['221.png']);
+            } else if (Game.animatronics.freddy.currentState === "CAM4A") {
+                Game.changeSprite(Game._cameraShow, this.rightHallSprites['487.png']);
             } else {
                 Game.changeSprite(Game._cameraShow, this.rightHallSprites['67.png']);
             }
@@ -216,6 +246,8 @@ export default class Cams {
             this.areaName.text = 'E. Hall Corner';
             if (Game.animatronics.chica.currentState === "CAM4B") {
                 Game.changeSprite(Game._cameraShow, this.rightCornerSprites['220.png']);
+            } else if (Game.animatronics.freddy.currentState === "CAM4B") {
+                Game.changeSprite(Game._cameraShow, this.rightCornerSprites['486.png']);
             } else {
                 Game.changeSprite(Game._cameraShow, this.rightCornerSprites['49.png']);
             }
