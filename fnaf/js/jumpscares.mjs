@@ -29,5 +29,19 @@ export default class Jumpscares {
         this.chicaScare.visible = false;
 
         Game.jumpScares.addChild(this.chicaScare);
+
+        const freddyJson = await Assets.load('./assets/sprites/jumpscares/freddy/spritesheet.json');
+        this._freddySheet = new Spritesheet(await Assets.load('./assets/sprites/jumpscares/freddy/spritesheet.png'), freddyJson.data);
+        await this._freddySheet.parse();
+
+        this.freddyScare = new AnimatedSprite(this._freddySheet.animations.main);
+        this.freddyScare.anchor.set(0.5, 0);
+        this.freddyScare.setSize(innerWidth*1.5, innerHeight);
+        this.freddyScare.position.set(innerWidth/2, 0);
+        this.freddyScare.animationSpeed = 0.55;
+        this.freddyScare.visible = true;
+        this.freddyScare.play();
+
+        Game.jumpScares.addChild(this.freddyScare);
     }
 }

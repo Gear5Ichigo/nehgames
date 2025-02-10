@@ -132,14 +132,15 @@ export default class Game {
         CameraTablet._flipUp.onComplete = () => {
             if (this.animatronics.bonnie.currentState==="OFFICE" || this.animatronics.chica.currentState==="OFFICE" || this.animatronics.freddy.currentState==="OFFICE") {
                 this.die = true;
-                if (this.animatronics.bonnie.currentState==="OFFICE") {
+                if (this.animatronics.freddy.currentState==="OFFICE") {
+                    Jumpscares.freddyScare.visible = true;
+                    Jumpscares.freddyScare.gotoAndPlay(0);
+                } else if (this.animatronics.bonnie.currentState==="OFFICE") {
                     Jumpscares.bonnieScare.visible = true;
                     Jumpscares.bonnieScare.gotoAndPlay(0);
                 } else if (this.animatronics.chica.currentState==="OFFICE") {
                     Jumpscares.chicaScare.visible = true;
                     Jumpscares.chicaScare.gotoAndPlay(0);
-                } else {
-                    this.changeSprite(this.officeSpritesContainer, this._bear5);
                 }
                 this.SOUNDS.jumpscare.play();
                 setTimeout(() => {
@@ -301,6 +302,8 @@ export default class Game {
         this.animatronics.freddy = new Freddy(options.freddylevel || 0);
         this.animatronics.foxy = new Foxy(options.foxyLevel) || 0;
 
+        Jumpscares.freddyScare.gotoAndStop(0);
+        Jumpscares.freddyScare.visible = false;
         Jumpscares.bonnieScare.gotoAndStop(0);
         Jumpscares.bonnieScare.visible = false;
         Jumpscares.chicaScare.gotoAndStop(0);

@@ -327,6 +327,14 @@ class Freddy extends Animatronic {
                 Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['219.png']);
             } else Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['41.png']);
         }
+
+        if (this.currentState === "OFFICE" && this.previousState === "CAM4B") {
+            if (Game.rightLightOn) Game.powerUsage -= 1;
+            if (Game.leftLightOn) Game.powerUsage -= 1;
+            Game.rightLightOn = false; Game.leftLightOn = false;
+            OfficeButtons.__updateLeftSideButtons(); OfficeButtons.__updateRightSideButtons();
+            OfficeButtons.__updateLeftSideOffice(); OfficeButtons.__updateRightSideOffice();
+        }
     }
 }
 

@@ -15,6 +15,7 @@
     - can be cam stalled
 - bug fixes
 - removed bear5
+-alt + f4 for insta win
 
 NOTES:
 - Power drains every 0.95s, usage/8.5
