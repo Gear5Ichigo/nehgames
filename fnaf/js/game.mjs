@@ -14,7 +14,7 @@ export default class Game {
             officeNoise: Sound.from({ url: './assets/sounds/Buzz_Fan_Florescent2.wav' }),
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
-            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.45}),
+            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.75}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
@@ -23,7 +23,7 @@ export default class Game {
             doorBaning: Sound.from({url: './assets/sounds/knock2.wav', volume: 1.5}),
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.5}),
-            jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.2}),
+            jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
 
             camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
