@@ -20,7 +20,7 @@ class Animatronic {
         const dt = ticker.deltaTime/ticker.FPS;
         this.timeElapsed+=dt;
         if (this.timeElapsed >= this.movementInterval) {
-            if (this.currentState==="OFFICE" || Game.win || Game.die) return;
+            if (this.currentState==="OFFICE" || Game.win || Game.die || Game.powerDown) return;
             this.timeElapsed = 0;
             const chance = (Math.random()*20)+1
             if (chance >= 1 && chance <= this.aiLevel) {
