@@ -144,7 +144,7 @@ export default class Game {
                 }
                 this.SOUNDS.jumpscare.play();
                 setTimeout(() => {
-                    Jumpscares.bonnieScare.stop(); this.forceGameOver()
+                    this.forceGameOver()
                 }, 660);
             }
             this.officeRender.visible = false

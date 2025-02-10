@@ -37,8 +37,10 @@ export default class OfficeButtons {
         .rect(leftX, bY, btnSize[0], btnSize[1]).fill(0xff00ff); l_doorClick.alpha = 0.0;
         l_doorClick.eventMode = 'static';
         l_doorClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
+            if (
+                Game.die || Game.powerDown ||
+                Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE"
+            ) {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -50,8 +52,8 @@ export default class OfficeButtons {
         .rect(leftX, bY2, btnSize[0], btnSize[1]).fill(0xff00ff); l_lightClick.alpha = 0.0;
         l_lightClick.eventMode = 'static';
         l_lightClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
+            if (Game.die || Game.powerDown ||
+                Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -89,8 +91,8 @@ export default class OfficeButtons {
         .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0.0;
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
+            if (Game.die || Game.powerDown ||
+                Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -102,8 +104,8 @@ export default class OfficeButtons {
         .rect(rightX, bY2, btnSize[0], btnSize[1]).fill(0x00ff00); r_lightClick.alpha = 0.0;
         r_lightClick.eventMode = 'static';
         r_lightClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
+            if (Game.die || Game.powerDown ||
+                Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };

@@ -39,8 +39,7 @@ export default class Jumpscares {
         this.freddyScare.setSize(innerWidth*1.5, innerHeight);
         this.freddyScare.position.set(innerWidth/2, 0);
         this.freddyScare.animationSpeed = 0.55;
-        this.freddyScare.visible = true;
-        this.freddyScare.play();
+        this.freddyScare.visible = false;
 
         Game.jumpScares.addChild(this.freddyScare);
     }
