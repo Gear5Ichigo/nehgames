@@ -95,25 +95,25 @@ import Game from './game.mjs';
         b.onpointerdown = () => {
             if (night == 0) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 0, chicaLevel: 0, freddylevel: 0, });
+                    bonnieLevel: 0, chicaLevel: 0, freddylevel: 0, foxyLevel: 0});
             } else if (night == 1) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 3, chicaLevel: 1, freddylevel: 0, });
+                    bonnieLevel: 3, chicaLevel: 1, freddylevel: 0, foxyLevel: 1});
             } else if (night == 2) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 0, chicaLevel: 5, freddylevel: 1, });
+                    bonnieLevel: 0, chicaLevel: 5, freddylevel: 1, foxyLevel: 2});
             } else if (night == 3) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 2, chicaLevel: 4, freddylevel: 3, });
+                    bonnieLevel: 2, chicaLevel: 4, freddylevel: 3, foxyLevel: 6});
             } else if (night == 4) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 5, chicaLevel: 7, freddylevel: 3, });
+                    bonnieLevel: 5, chicaLevel: 7, freddylevel: 3, foxyLevel: 5});
             } else if (night == 5) {
                 Game.start({ night: night+1,
-                    bonnieLevel: 10, chicaLevel: 12, freddylevel: 4, });
+                    bonnieLevel: 10, chicaLevel: 12, freddylevel: 4, foxyLevel: 16});
             } else {
                 Game.start({ night: night+1,
-                    bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, });
+                    bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, foxyLevel: 20});
             }
             bgMusic.pause();
             setRenderState(app.stage, Game.render);

@@ -329,10 +329,82 @@ class Freddy extends Animatronic {
     }
 }
 
+class Foxy extends Animatronic {
+
+    SOUNDS = {run: Sound.from('./assets/sounds/run.wav')}
+
+    constructor(aiLevel) {
+        super(aiLevel, 5.02)
+
+        this._possibleStates = {
+            "1": ["2"],
+            "2": ["3"],
+            "3": ["4"],
+            "4": ["1"],
+        };
+
+        this._leaveStates = ["1"];
+
+        this.currentState = "1";
+        this.movementFailed = false;
+        this.sucessfulHits = 0;
+    }
+
+    movement(ticker) {
+        if (Game.camUp && this.currentState!=="4") {
+            this.movementFailed = true;
+        }
+        super.movement(ticker, 'left', () => {
+            if (this.movementFailed) this.currentState = this.previousState || "1";
+            this.movementFailed = false;
+        }) 
+    }
+
+    __updateSprites() {
+        if (Game.currentCam === "CAM1C") {
+            if (this.currentState==="1") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['66.png']);
+            } else if (this.currentState==="2") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['211.png']);
+            } else if (this.currentState==="3") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['338.png']);
+            } else if (this.currentState==="4") {
+                setTimeout(() => {
+                    if (!Game.win || !Game.powerDown || !Game.die) {
+                        if (Game.leftDoorOn) {
+                            const predictedpower = Game.powerLevel-(1+(this.sucessfulHits*5));
+                            this.sucessfulHits+=1; if (this.sucessfulHits>=2) this.sucessfulHits = 2;
+                            if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;
+                            Game.SOUNDS.doorBaning.play();
+                        } else {
+                            Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 300);
+                        }
+                    }
+                }, 2000);
+                this.SOUNDS.run.play();
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['240.png']);
+            }
+        }
+    }
+}
+
 class Goku extends Animatronic {
     constructor(aiLevel) {
         super(aiLevel, 5.02);
     }
 }
 
-export {Animatronic, Bonnie, Chica, Freddy, Goku}
+class PolishFreddy extends Animatronic {
+    constructor(aiLevel) {
+        super(aiLevel, 5.00);
+    }
+}
+
+class Bear5 extends Animatronic {
+    constructor(aiLevel) {
+        super(aiLevel, 5.00);
+    }
+}
+
+
+export {Animatronic, Bonnie, Chica, Freddy, Foxy, Goku, PolishFreddy, Bear5}

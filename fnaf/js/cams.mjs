@@ -211,7 +211,15 @@ export default class Cams {
         });
         this.__makeCamButton('1C', -168, -45, () => {
             this.areaName.text = 'Pirate Cove';
-            Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['66.png']);
+            if (Game.animatronics.foxy.currentState==="1") {
+                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['66.png']);
+            } else if (Game.animatronics.foxy.currentState==="2") {
+                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['211.png']);
+            } else if (Game.animatronics.foxy.currentState==="3") {
+                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['338.png']);
+            } else if (Game.animatronics.foxy.currentState==="4") {
+                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['240.png']);
+            }
         });
         this.__makeCamButton('3', -187, 57, () => {
             this.areaName.text = 'Supply Closet';

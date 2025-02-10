@@ -1,6 +1,6 @@
 import { AnimatedSprite, Assets, Container, Graphics, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
 import { Sound } from "../../pixi-sound.mjs";
-import { Bonnie, Chica, Freddy } from "./animatronics.mjs";
+import { Bonnie, Chica, Foxy, Freddy } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
@@ -20,7 +20,7 @@ export default class Game {
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
             camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
             cams: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav', loop: true}),
-            doorBaning: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav'}),
+            doorBaning: Sound.from({url: './assets/sounds/knock2.wav', volume: 1.5}),
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.5}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.2}),
@@ -272,6 +272,7 @@ export default class Game {
         this.clock = 12;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
+        this.lostPowerGamble = false;
 
         this._MAX_POWER_LEVEL = 100;
         this.powerLevel = this._MAX_POWER_LEVEL;
@@ -287,6 +288,7 @@ export default class Game {
         this._clockText.text = `${this.clock} AM`;
 
         this.currentCam = "CAM1A";
+        CameraTablet._camFlipButton.visible = true;
         this.changeSprite(this._cameraShow, Cams.stageSprites['19.png']);
         Game.changeSprite(Cams.camsMapContainer, Cams.camsMapSprites[`1A.png`]);
 
@@ -295,6 +297,7 @@ export default class Game {
         this.animatronics.bonnie = new Bonnie(options.bonnieLevel || 0);
         this.animatronics.chica = new Chica(options.chicaLevel || 0);
         this.animatronics.freddy = new Freddy(options.freddylevel || 0);
+        this.animatronics.foxy = new Foxy(options.foxyLevel) || 0;
 
         Jumpscares.bonnieScare.gotoAndStop(0);
         Jumpscares.bonnieScare.visible = false;
@@ -346,10 +349,12 @@ export default class Game {
             if (this.clock == 3) {
                 this.animatronics.bonnie.aiLevel += 1;
                 this.animatronics.chica.aiLevel += 1;
+                this.animatronics.foxy.aiLevel += 1;
             }
             if (this.clock == 4) {
                 this.animatronics.bonnie.aiLevel += 1;
                 this.animatronics.chica.aiLevel += 1;
+                this.animatronics.foxy.aiLevel += 1;
             }
 
             this._clockText.text = `${this.clock}  AM`;
@@ -369,21 +374,26 @@ export default class Game {
     static _updatePower(ticker) {
         const dt = ticker.deltaTime/ticker.FPS;
         this._powerTimer += dt;
-        if (this._powerTimer >= 0.98 && this.powerLevel > 0) {
+        if (this._powerTimer >= 0.95 && this.powerLevel > 0) {
             this._powerTimer = 0;
-            this.powerLevel -= this.powerUsage/8.7;
+            this.powerLevel -= this.powerUsage/8.5;
             this.usageDisplay.text = `Usage: ${Math.ceil(this.powerUsage)}`;
         }
         if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
         if (this.powerDown && !this.win) {
             this.powerDownElapsed+=dt;
-            if (this.powerDownElapsed>=10) {
-                if (this.powerDownElapsed>=20) this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop();}, 300);
+            if (this.powerDownElapsed>=10 && !this.lostPowerGamble) {
+                if (this.powerDownElapsed>=20) {
+                    this.lostPowerGamble = true;
+                    this.SOUNDS.jumpscare.play();
+                    setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 300);
+                }
                 if (this.powerDownSecond >= 1) {
                     this.powerDownSecond = 0;
                     const chance = Math.floor(Math.random()*4);
                     if (chance != 0) {
-                        this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop();}, 300);
+                        this.lostPowerGamble = true;
+                        this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 300);
                     }
                 }
             }
@@ -394,6 +404,7 @@ export default class Game {
                 this.SOUNDS.powerdown.play();
                 this.SOUNDS.doorShut.play();
                 this.SOUNDS.officeNoise.stop(); this.SOUNDS.lightsHum.stop();
+                this.SOUNDS.cams.stop();
 
                 this.rightLightOn = false; this.leftLightOn = false;
 
@@ -406,6 +417,7 @@ export default class Game {
 
                 this.changeSprite(this.officeSpritesContainer, Office._sprites['304.png'])
                 Office.fanAnim.visible = false;
+                CameraTablet._camFlipButton.visible = false;
 
                 if (this.leftDoorOn) {
                     this.leftDoorOn = false;

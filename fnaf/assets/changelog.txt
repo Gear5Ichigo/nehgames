@@ -9,9 +9,14 @@
     - not accurate to the og yet
     - flip cams again to refresh
 - chica's jumpscare isnt finished yet
+- foxy in the works
+    - he can kill you
+    - all sound cues rn (no sprites)
+    - 2 second chance to close door after he leaves pirate cove,
+    - can be cam stalled
 - bug fixes
 - removed bear5
 
 NOTES:
-- Power drains every 0.98s, usage/8.7
+- Power drains every 0.95s, usage/8.5
 - each hour lasts 69 seconds
