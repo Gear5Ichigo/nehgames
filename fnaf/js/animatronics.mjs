@@ -331,7 +331,7 @@ class Freddy extends Animatronic {
 
 class Foxy extends Animatronic {
 
-    SOUNDS = {run: Sound.from('./assets/sounds/run.wav')}
+    SOUNDS = {run: Sound.from({url: './assets/sounds/run.wav', volume: 1.25})}
 
     constructor(aiLevel) {
         super(aiLevel, 5.02)
