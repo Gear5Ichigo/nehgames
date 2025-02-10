@@ -14,21 +14,21 @@ export default class Game {
             officeNoise: Sound.from({ url: './assets/sounds/Buzz_Fan_Florescent2.wav' }),
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
-            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.55}),
+            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.45}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
-            winSound: Sound.from({url: './assets/sounds/chimes 2.wav'}),
+            winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
             camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
             cams: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav', loop: true}),
             doorBaning: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav'}),
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
-            winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav'}),
+            winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.5}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.2}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
 
             camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
             
-            phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.75}),
+            phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.7}),
         }
 
         this.clock = 12;
@@ -101,7 +101,7 @@ export default class Game {
                 fontFamily: 'FNAF',
                 fontSize: 100,
             },
-            x: innerWidth/2, y: innerHeight/2
+            x: innerWidth/2-(49*this.scale.x), y: innerHeight/2-(20*Game.scale.y)
         });
         timeChangeContainer.addChild(am, _5, _6); timeChangeContainer.setSize(100, 100);
         this.winScreen.addChild(winScreenBg, _6am); this.winScreen.alpha = 0;
@@ -262,7 +262,7 @@ export default class Game {
         this._gameActive = true;
         this.win = false;
         this.die = false;
-        this.powerDown = false; this.powerDownSound = false;
+        this.powerDown = false; this.powerDownMoment = false;
 
         this.night = options.night || 1;
         this.currentNightText.text = `Night ${this.night}`;
@@ -271,6 +271,7 @@ export default class Game {
         this._ONE_HOUR = 69;
         this.clock = 12;
         this.powerDownElapsed = 0;
+        this.powerDownSecond = 0;
 
         this._MAX_POWER_LEVEL = 100;
         this.powerLevel = this._MAX_POWER_LEVEL;
@@ -356,8 +357,11 @@ export default class Game {
             for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
             this.SOUNDS.winSound.play();
         }
-        if (this.win && this.winScreen.alpha < 1) this.winScreen.alpha += 0.125*dt;
-        if (this.winScreen.alpha>=1  && !this.SOUNDS.winCheer.isPlaying) this.forceGameOver();
+        if (this.win && this.winScreen.alpha < 1) this.winScreen.alpha += 0.1125*dt;
+        if (this.winScreen.alpha>=1  && !this.SOUNDS.winCheer.isPlaying) {
+            this.SOUNDS.winCheer.play();
+            setTimeout(() => {this.forceGameOver();}, 2500);
+        }
     }
 
     static _updatePower(ticker) {
@@ -368,15 +372,21 @@ export default class Game {
             this.powerLevel -= this.powerUsage/8.7;
             this.usageDisplay.text = `Usage: ${Math.ceil(this.powerUsage)}`;
         }
-        if (this.powerLevel <= 0) this.powerDown = true;
-        if (this.powerDown) {
+        if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
+        if (this.powerDown && !this.win) {
             this.powerDownElapsed+=dt;
             if (this.powerDownElapsed>=10) {
-                this.forceGameOver();
-                this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop();}, 220);
+                if (this.powerDownElapsed>=20) this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop();}, 300);
+                if (this.powerDownSecond >= 1) {
+                    this.powerDownSecond = 0;
+                    const chance = Math.floor(Math.random()*4);
+                    if (chance != 0) {
+                        this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop();}, 300);
+                    }
+                }
             }
-            if (!this.powerDownSound) {
-                this.powerDownSound = true;
+            if (!this.powerDownMoment) {
+                this.powerDownMoment = true;
                 this.powerUsage = 0;
 
                 this.SOUNDS.powerdown.play();
@@ -384,6 +394,13 @@ export default class Game {
                 this.SOUNDS.officeNoise.stop(); this.SOUNDS.lightsHum.stop();
 
                 this.rightLightOn = false; this.leftLightOn = false;
+
+                if (this.camUp) {
+                    this.camUp = false;
+                    this.cameraRender.visible = false; this.officeRender.visible = true;
+                    CameraTablet._flipDown.gotoAndPlay(0); CameraTablet._flipDown.visible = true;
+                    CameraTablet._flipUp.visible = false;
+                }
 
                 this.changeSprite(this.officeSpritesContainer, Office._sprites['304.png'])
                 Office.fanAnim.visible = false;
@@ -439,6 +456,6 @@ export default class Game {
         }
     }
 
-    static forceGameOver() {this._gameActive = false; for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();}
+    static forceGameOver() {this._gameActive = false; for (const sound of Object.entries(this.SOUNDS)) sound[1].stop(); return;}
 
 }
