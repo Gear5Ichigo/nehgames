@@ -28,7 +28,7 @@ export default class Doors {
         this.leftDoorCloseAnim.animationSpeed = 0.55;
         this.leftDoorCloseAnim.loop = false;
         this.leftDoorCloseAnim.onComplete = () => {
-            Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["102.png"]);   
+            // Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["102.png"]);   
         }
 
         this.leftDoorOpenAnim = new AnimatedSprite(leftdoorsheet.animations.open);
@@ -37,7 +37,7 @@ export default class Doors {
         this.leftDoorOpenAnim.animationSpeed = 0.55;
         this.leftDoorOpenAnim.loop = false;
         this.leftDoorOpenAnim.onComplete = () => {
-            Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["88.png"]);   
+            // Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["88.png"]);   
         }
 
         this.leftDoorContainer.addChild(this.leftDoorCloseAnim);

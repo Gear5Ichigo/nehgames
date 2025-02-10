@@ -2,6 +2,7 @@ import { Sound } from "../../pixi-sound.mjs";
 import Cams from "./cams.mjs";
 import Game from "./game.mjs";
 import Office from "./office.mjs";
+import OfficeButtons from "./officebuttons.mjs";
 
 class Animatronic {
 
@@ -10,29 +11,50 @@ class Animatronic {
         this.timeElapsed = 0;
         this.movementInterval = movementInterval;
         this._possibleStates = {};
+        this._leaveStates = {};
         this.currentState = null;
         this.previousState = null;
-    }
+    };
 
-    __updateSprites() {};
-
-    movement(ticker, callBack) {
+    movement(ticker, door, callBack) {
         const dt = ticker.deltaTime/ticker.FPS;
         this.timeElapsed+=dt;
         if (this.timeElapsed >= this.movementInterval) {
+            if (this.currentState==="OFFICE" || Game.win || Game.die) return;
             this.timeElapsed = 0;
             const chance = (Math.random()*20)+1
             if (chance >= 1 && chance <= this.aiLevel) {
                 const currentCam = this._possibleStates[this.currentState];
                 const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
                 this.previousState = this.currentState;
-                if (moveTo && moveTo!='')
-                    this.currentState = moveTo;
-                callBack();
-                this.__updateSprites();
+                if (moveTo && moveTo!='') {
+                    if (moveTo==="OFFICE" && Game[door.toLowerCase()+'DoorOn']) {
+                        const leaveTo = this._leaveStates[Math.floor(Math.random()*this._leaveStates.length)];
+                        this.currentState = leaveTo;
+                        if (Game[door.toLowerCase()+'LightOn']) {
+                            Game[door.toLowerCase()+'LightOn'] = false;
+                            Game.powerUsage-=1;
+                        }
+                    } else if (moveTo==="OFFICE" && !Game[door.toLowerCase()+'DoorOn']) {
+                        this.currentState = moveTo;
+                        if (Game[door.toLowerCase()+'LightOn']) {
+                            Game[door.toLowerCase()+'LightOn'] = false;
+                            Game.powerUsage-=1;
+                        }
+                    } else this.currentState = moveTo;
+                    callBack();
+                    this.__updateSprites();
+                }
             }
         }
-    }
+    };
+
+    __updateSprites() {
+        if ((Game.currentCam === this.previousState || Game.currentCam === this.currentState) && Cams.blackBox.visible == false && Game.camUp) {
+            Cams.blackBox.visible = true;
+            Game.SOUNDS.camError1.play();
+        }
+    };
 }
 
 class Bonnie extends Animatronic {
@@ -52,18 +74,22 @@ class Bonnie extends Animatronic {
             CAM2A : ["CAM3", "CAM2B"],
             CAM3 : ["CAM2B", "CAM2A", "ATDOOR"],
             CAM2B : ["ATDOOR", "CAM3"],
-            ATDOOR : ["CAM1B"]
+            ATDOOR : ["OFFICE"]
         };
+
+        this._leaveStates = ["CAM1B"];
     }
 
     movement(delta) {
-        super.movement(delta, () => {
+        super.movement(delta, 'left', () => {
             if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
                 this.#footsteps.play();
         })
     }
 
     __updateSprites() {
+
+        super.__updateSprites();
 
         if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
             if (Game.animatronics.chica.currentState === this.previousState) {
@@ -89,6 +115,12 @@ class Bonnie extends Animatronic {
             Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
         }
 
+        if (Game.currentCam === "CAM5" && this.currentState === "CAM5") {
+            Game.changeSprite(Game._cameraShow, Cams.backStageSprites["205.png"]);
+        } else if (Game.currentCam === "CAM5" && this.previousState === "CAM5") {
+            Game.changeSprite(Game._cameraShow, Cams.backStageSprites['83.png']);
+        }
+
         if (Game.currentCam === "CAM3" && this.currentState === "CAM3") {
             Game.changeSprite(Game._cameraShow, Cams.supplyClosetSprites['190.png']);
         } else if (Game.currentCam === "CAM3" && this.previousState === "CAM3") {
@@ -109,19 +141,9 @@ class Bonnie extends Animatronic {
 
         //
 
-        if (Game.leftLightOn && this.currentState==="ATDOOR") {
-            const random = Math.random()*100;
-            if (random <= 10) {
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58goku.png"]);
-                Game.SOUNDS.gokuscare.play({volume: 2});
-                return;
-            }
-            Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
-            Game.SOUNDS.windowscare.play({});
-        } else if (this.previousState === "ATDOOR") {
-            if (Game.leftLightOn) {
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
-            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
+        if (this.currentState === "ATDOOR" || this.previousState === "ATDOOR") {
+            OfficeButtons.__updateLeftSideButtons();
+            OfficeButtons.__updateLeftSideOffice();
         }
     }
 }
@@ -141,17 +163,21 @@ class Chica extends Animatronic {
             CAM7 : ["CAM1B", "CAM6", "CAM4A"],
             CAM4A : ["CAM4B", "CAM1B"],
             CAM4B : ["ATDOOR"],
-            ATDOOR : ["CAM1B", "CAM4A"]
+            ATDOOR : ["OFFICE"]
         }
+
+        this._leaveStates = ["CAM1B", "CAM4A"];
     }
 
     movement(delta) {
-        super.movement(delta, () => {
+        super.movement(delta, 'right', () => {
 
         })
     }
 
     __updateSprites() {
+
+        super.__updateSprites();
 
         if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
             if (Game.animatronics.bonnie.currentState === this.previousState) {
@@ -203,18 +229,9 @@ class Chica extends Animatronic {
 
         //
 
-        if (Game.rightLightOn && this.currentState==="ATDOOR") {
-            const random = Math.random()*100;
-            if (random <= 6) {
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225power.png"]);
-                return;
-            }
-            Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
-            Game.SOUNDS.windowscare.play({});
-        } else if (this.previousState === "ATDOOR") {
-            if (Game.rightLightOn) {
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127.png"]);
-            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
+        if (this.currentState === "ATDOOR" || this.previousState === "ATDOOR") {
+            OfficeButtons.__updateRightSideButtons();
+            OfficeButtons.__updateRightSideOffice();
         }
     }
 }
@@ -242,22 +259,33 @@ class Freddy extends Animatronic {
             CAM4B: ["ATDOOR"],
             ATDOOR: ["CAM1B"],
         }
+
+        this._leaveStates = ["CAM1B"];
     }
 
     movement(ticker) {
-        if (Game.camUp && Game.currentCam === this.currentState) return;
-        super.movement(ticker, () => {
+        if (Game.camUp && Game.currentCam === this.currentState) {
+            const stall = 100/60
+            if (this.timeElapsed>=stall) this.timeElapsed = stall;
+            return;
+        }
+        super.movement(ticker, 'right', () => {
             if (Game.animatronics.bonnie.currentState === 'CAM1A' || Game.animatronics.chica.currentState === 'CAM1A') {
                 this.currentState = 'CAM1A'; return;
             }
 
             const rand = Math.floor(Math.random()*3+1);
             const randomLaugh = this.#SOUNDS[`laugh${rand}`];
+            for (const item of Object.entries(this.#SOUNDS)) {
+                item[1].stop();
+            };
             randomLaugh.play();
         }) 
     }
 
     __updateSprites() {
+
+        super.__updateSprites();
 
         if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
             Game.changeSprite(Game._cameraShow, Cams.stageSprites['484.png']);
@@ -284,10 +312,10 @@ class Freddy extends Animatronic {
         }
 
         if (this.currentState === "CAM4A" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['221.png']);
+            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['487.png']);
         } else if (this.previousState === "CAM4A" && Game.currentCam === this.previousState) {
             if (Game.animatronics.chica.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['487.png']);
+                Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['221.png']);
             } else Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['67.png']);
         }
 

@@ -1,4 +1,17 @@
-- cams almost done
+- cams are done ig
+- nights 1 - 7 have different ai levels, 1 being the easiest
+- you can lose and win now
+- bonnie and chica are the only ones that can kill
+- freddy moves fine but doesnt kill YET
+- animatronics will jam the door (but freddy)
+- power and light adjustments
+- cams now cut to black when an animatronic moves when viewed
+    - not accurate to the og yet
+    - flip cams again to refresh
+- chica's jumpscare isnt finished yet
+- bug fixes
+- removed bear5
 
-- added Freddy fazbear har har
-- all animatronics are at 20 btw
+NOTES:
+- Power drains every 0.98s, usage/8.7
+- each hour lasts 69 seconds

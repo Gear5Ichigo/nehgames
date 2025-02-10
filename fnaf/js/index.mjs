@@ -72,32 +72,49 @@ import Game from './game.mjs';
         });
     }
 
-    const StartGameButton = new Button(innerWidth/2, innerHeight/2, 250, 80, "Start", MainMenu);
+    const StartGameButton = new Button(innerWidth/2, innerHeight/2, 250*Game.scale.x, 80*Game.scale.y, "Start", MainMenu);
     StartGameButton.pivot.set(250/2, 80/2);
     StartGameButton.onpointerdown = (event) => {
        setRenderState(MenuRender, NightsMenu);
     }
-    const SettingsButton = new Button(innerWidth/2, innerHeight/2+100, 250, 80, "Settings", MainMenu);
+    const SettingsButton = new Button(innerWidth/2, innerHeight/2+(100*Game.scale.y), 250*Game.scale.x, 80*Game.scale.y, "Settings", MainMenu);
     SettingsButton.pivot.set(250/2, 80/2);
     SettingsButton.onpointerdown = (event) => {
         setRenderState(MenuRender, SettingsMenu)
     }
-    const NightsBackButton = new Button(innerWidth/2-333, innerHeight/2-220, 140, 40, "Back", NightsMenu);
+    const NightsBackButton = new Button(innerWidth/2-(333*Game.scale.x), innerHeight/2-220, 140, 40, "Back", NightsMenu);
     NightsBackButton.onpointerdown = (event) => {
         setRenderState(MenuRender, MainMenu)
     }
 
     let NightsSelection = [];
-    for (let night = 0; night < 5; night++) {
-        const b = new Button(innerWidth/2-100, innerHeight/2+(100*night)-200, 250, 80, `Night ${night+1}`, NightsMenu);
+    for (let night = 0; night < 7; night++) {
+        const b = new Button(innerWidth/2-(100*Game.scale.x), innerHeight/2+(55*night*Game.scale.y)-200, 200*Game.scale.x, 50*Game.scale.y, `Night ${night+1}`, NightsMenu);
+        if (night==6) b.text.text = "MAX - 3/20";
         b.pivot.set(40, b.height/2);
-        b.onpointerdown = (event) => {
-            Game.start({
-                night: night+1,
-                bonnieLevel: 20,
-                chicaLevel: 20,
-                freddylevel: 20,
-            });
+        b.onpointerdown = () => {
+            if (night == 0) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 0, chicaLevel: 0, freddylevel: 0, });
+            } else if (night == 1) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 3, chicaLevel: 1, freddylevel: 0, });
+            } else if (night == 2) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 0, chicaLevel: 5, freddylevel: 1, });
+            } else if (night == 3) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 2, chicaLevel: 4, freddylevel: 3, });
+            } else if (night == 4) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 5, chicaLevel: 7, freddylevel: 3, });
+            } else if (night == 5) {
+                Game.start({ night: night+1,
+                    bonnieLevel: 10, chicaLevel: 12, freddylevel: 4, });
+            } else {
+                Game.start({ night: night+1,
+                    bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, });
+            }
             bgMusic.pause();
             setRenderState(app.stage, Game.render);
         }
@@ -105,38 +122,15 @@ import Game from './game.mjs';
     }
 
     let totalDelta = 0;
-    const actionLog = [];
-    const t = new Text({
-        text: `har har`,
-        style: {
-            fill: 0xffffff,
-            align: 'center',
-            fontFamily: 'FNAF',
-            fontSize: 60,
-        }
-    });
-    t.x = 1, t.y = 1;
-    const t2 = new Text({
-        text: `har har`,
-        style: {
-            fill: 0xffe135,
-            align: 'center',
-            fontFamily: 'Volter'
-        }
-    });
-    t2.x = 1, t2.y = 51;
+
     const changelog = new Text({
         text: `${await fetch('./assets/changelog.txt').then(res => {return res.text()})}`,
-        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.02 }
+        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.015 }
     });
     changelog.position.set(10, 10); MainMenu.addChild(changelog)
 
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
-
-    //
-
-    Game.displayHUDContainer.addChild( t2)
 
     //
 
@@ -147,12 +141,14 @@ import Game from './game.mjs';
 
     app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
-        const dt = ticker.deltaTime;
         totalDelta+=ticker.deltaTime;
         if (Game.render.visible) {
             Game.updateLoop(ticker);
-            t.text = `Bonnie is now at : ${Game.animatronics.bonnie.currentState}`;
-            t2.text = `Chica is now at : ${Game.animatronics.chica.currentState}`;
+            if (!Game._gameActive) {
+                bgMusic.play();
+                setRenderState(app.stage, MenuRender);
+                setRenderState(MenuRender, MainMenu);
+            }
         }
     });
 })();

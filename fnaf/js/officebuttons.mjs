@@ -37,17 +37,27 @@ export default class OfficeButtons {
         .rect(leftX, bY, btnSize[0], btnSize[1]).fill(0xff00ff); l_doorClick.alpha = 0.0;
         l_doorClick.eventMode = 'static';
         l_doorClick.onpointerdown = () => {
+            if (Game.die || Game.powerDown) return;
+            if (Game.animatronics.bonnie.currentState==="OFFICE") {
+                Game.SOUNDS.doorError.play();
+                return;
+            };
             this.__left_door();
-            this.__updateOfficeButtons();
+            this.__updateLeftSideButtons(); this.__updateRightSideButtons();
         }
 
         const l_lightClick = new Graphics()
         .rect(leftX, bY2, btnSize[0], btnSize[1]).fill(0xff00ff); l_lightClick.alpha = 0.0;
         l_lightClick.eventMode = 'static';
         l_lightClick.onpointerdown = () => {
+            if (Game.die || Game.powerDown) return;
+            if (Game.animatronics.bonnie.currentState==="OFFICE") {
+                Game.SOUNDS.doorError.play();
+                return;
+            };
             this.__left_light();
-            this.__updateOffice();
-            this.__updateOfficeButtons();
+            this.__updateLeftSideButtons(); this.__updateRightSideButtons();
+            this.__updateLeftSideOffice();
         };
         
         this._lbSpriteConainer.addChild(this._leftButtonCurrentSprite);
@@ -79,17 +89,27 @@ export default class OfficeButtons {
         .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0.0;
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
+            if (Game.die || Game.powerDown) return;
+            if (Game.animatronics.chica.currentState==="OFFICE") {
+                Game.SOUNDS.doorError.play();
+                return;
+            };
             this.__right_door();
-            this.__updateOfficeButtons();
+            this.__updateRightSideButtons(); this.__updateLeftSideButtons();
         }
 
         const r_lightClick = new Graphics()
         .rect(rightX, bY2, btnSize[0], btnSize[1]).fill(0x00ff00); r_lightClick.alpha = 0.0;
         r_lightClick.eventMode = 'static';
-        r_lightClick.onpointerdown = (event) => {
+        r_lightClick.onpointerdown = () => {
+            if (Game.die || Game.powerDown) return;
+            if (Game.animatronics.chica.currentState==="OFFICE") {
+                Game.SOUNDS.doorError.play();
+                return;
+            };
             this.__right_light();
-            this.__updateOffice();
-            this.__updateOfficeButtons();
+            this.__updateRightSideButtons(); this.__updateLeftSideButtons();
+            this.__updateRightSideOffice();
         }
 
         this._rbSpriteContainer.addChild(this._rightButtonCurrentSprite);
@@ -98,7 +118,19 @@ export default class OfficeButtons {
         this.container = new Container();
     }
 
-    static __updateOffice() {
+    static __updateRightSideButtons() {
+        if (Game.rightLightOn && Game.rightDoorOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["47.png"])
+        } else if (Game.rightLightOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["131.png"])
+        } else if (Game.rightDoorOn) {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["135.png"])
+        } else {
+            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["134.png"])
+        }
+    }
+
+    static __updateRightSideOffice() {
         if (Game.rightLightOn) {
             if (Game.animatronics.chica.currentState === "ATDOOR") {
                 Game.SOUNDS.windowscare.play();
@@ -109,7 +141,24 @@ export default class OfficeButtons {
                 }
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["227.png"]);
             } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127.png"]);
+        } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
+    }
+
+    static __updateLeftSideButtons() {
+
+        if (Game.leftLightOn && Game.leftDoorOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["130.png"])
         } else if (Game.leftLightOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["125.png"])
+        } else if (Game.leftDoorOn) {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["124.png"])
+        } else {
+            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["122.png"])
+        }
+    }
+
+    static __updateLeftSideOffice() {
+        if (Game.leftLightOn) {
             if (Game.animatronics.bonnie.currentState === "ATDOOR") {
                 const random = Math.random()*100;
                 if (random <= 10) {
@@ -123,27 +172,6 @@ export default class OfficeButtons {
         } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
     }
 
-    static __updateOfficeButtons() {
-        if (Game.leftLightOn && Game.leftDoorOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["130.png"])
-        } else if (Game.leftLightOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["125.png"])
-        } else if (Game.leftDoorOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["124.png"])
-        } else {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["122.png"])
-        }
-        //
-        if (Game.rightLightOn && Game.rightDoorOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["47.png"])
-        } else if (Game.rightLightOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["131.png"])
-        } else if (Game.rightDoorOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["135.png"])
-        } else {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["134.png"])
-        }
-    }
 
     static __right_light() {
         if (!Game.rightLightOn) {

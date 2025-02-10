@@ -64,6 +64,16 @@ export default class Cams {
             entry.setSize(innerWidth*1.2, innerHeight);
         }
 
+        const backStageJson = await Assets.load('./assets/sprites/cams/Backstage/spritesheet.json');
+        const backStageSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Backstage/spritesheet.png'), backStageJson.data);
+        await backStageSheet.parse();
+        this.backStageSprites = {};
+        for (const [key, value] of Object.entries(backStageSheet.textures)) {
+            this.backStageSprites[key] = new Sprite(value);
+            const entry = this.backStageSprites[key];
+            entry.setSize(innerWidth*1.2, innerHeight);
+        }
+
         const diningJson = await Assets.load('./assets/sprites/cams/Dining Room/spritesheet.json');
         const diningSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Dining Room/spritesheet.png'), diningJson.data);
         await diningSheet.parse();
@@ -149,11 +159,16 @@ export default class Cams {
         .fill(0x000000);
         kitchen.addChild(new Text({text: '-CAMERA DISABLED-\nAUDIO ONLY',
             style: {
-                fontFamily: 'FNAF', fontSize: 88,
+                fontFamily: 'FNAF', fontSize: 144*(Game.scale.x/2),
                 align: 'center', fill: 0xffffff,
             },
-            x: innerWidth/2-(144*Game.scale.x), y: innerHeight/2-(33*Game.scale.y)
+            x: innerWidth/2-(166*Game.scale.x), y: innerHeight/2-(144*Game.scale.y)
         }));
+
+        this.blackBox = new Graphics()
+        .rect(0, 0, innerWidth*1.2, innerHeight)
+        .fill(0x000000);
+        this.blackBox.visible = false;
 
         //
 
@@ -187,7 +202,12 @@ export default class Cams {
             }
         });
         this.__makeCamButton('5', -224, -101, () => {
-
+            this.areaName.text = 'Backstage';
+            if (Game.animatronics.bonnie.currentState === "CAM5") {
+                Game.changeSprite(Game._cameraShow, this.backStageSprites['205.png']);
+            } else {
+                Game.changeSprite(Game._cameraShow, this.backStageSprites['83.png']);
+            }
         });
         this.__makeCamButton('1C', -168, -45, () => {
             this.areaName.text = 'Pirate Cove';
