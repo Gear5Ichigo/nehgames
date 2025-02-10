@@ -284,6 +284,8 @@ export default class Game {
         this.leftLightOn = false;
         this.rightLightOn = false;
 
+        this._clockText.text = `${this.clock} AM`;
+
         this.currentCam = "CAM1A";
         this.changeSprite(this._cameraShow, Cams.stageSprites['19.png']);
         Game.changeSprite(Cams.camsMapContainer, Cams.camsMapSprites[`1A.png`]);
