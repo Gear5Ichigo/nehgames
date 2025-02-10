@@ -1,8 +1,7 @@
 - cams are done ig
 - nights 1 - 7 have different ai levels, 1 being the easiest
 - you can lose and win now
-- bonnie and chica are the only ones that can kill
-- freddy moves fine but doesnt kill YET
+-freddy can kill
 - animatronics will jam the door (but freddy)
 - power and light adjustments
 - cams now cut to black when an animatronic moves when viewed

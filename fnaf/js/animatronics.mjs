@@ -59,7 +59,7 @@ class Animatronic {
 
 class Bonnie extends Animatronic {
 
-    #footsteps = new Audio('./assets/sounds/deep_steps.wav');
+    footsteps = new Audio('./assets/sounds/deep_steps.wav');
 
     constructor(aiLevel) {
         super(aiLevel, 4.97);
@@ -83,7 +83,7 @@ class Bonnie extends Animatronic {
     movement(delta) {
         super.movement(delta, 'left', () => {
             if (this.currentState === "CAM2A" || this.currentState === "CAM2B" || this.currentState === "CAM3" || this.currentState === "ATDOOR")
-                this.#footsteps.play();
+                this.footsteps.play();
         })
     }
 
@@ -238,7 +238,7 @@ class Chica extends Animatronic {
 
 class Freddy extends Animatronic {
 
-    #SOUNDS = {
+    SOUNDS = {
         laugh1: Sound.from({url: './assets/sounds/Laugh_Giggle_Girl_1.wav'}),
         laugh2: Sound.from({url: './assets/sounds/Laugh_Giggle_Girl_1d.wav'}),
         laugh3: Sound.from({url: './assets/sounds/Laugh_Giggle_Girl_2d.wav'}),
@@ -256,17 +256,18 @@ class Freddy extends Animatronic {
             CAM1B: ["CAM7"],
             CAM7: ["CAM4A"],
             CAM4A: ["CAM4B"],
-            CAM4B: ["ATDOOR"],
+            CAM4B: ["OFFICE"],
             ATDOOR: ["CAM1B"],
         }
 
-        this._leaveStates = ["CAM1B"];
+        this._leaveStates = ["CAM4B"];
     }
 
     movement(ticker) {
         if (Game.camUp && Game.currentCam === this.currentState) {
             const stall = 100/60
-            if (this.timeElapsed>=stall) this.timeElapsed = stall;
+            this.timeElapsed-=stall;
+            if (this.timeElapsed<0) this.timeElapsed = 0;
             return;
         }
         super.movement(ticker, 'right', () => {
@@ -275,11 +276,11 @@ class Freddy extends Animatronic {
             }
 
             const rand = Math.floor(Math.random()*3+1);
-            const randomLaugh = this.#SOUNDS[`laugh${rand}`];
-            for (const item of Object.entries(this.#SOUNDS)) {
+            const randomLaugh = this.SOUNDS[`laugh${rand}`];
+            for (const item of Object.entries(this.SOUNDS)) {
                 item[1].stop();
             };
-            randomLaugh.play();
+            if (this.previousState !== "CAM4B") randomLaugh.play();
         }) 
     }
 

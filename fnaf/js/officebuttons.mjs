@@ -38,7 +38,7 @@ export default class OfficeButtons {
         l_doorClick.eventMode = 'static';
         l_doorClick.onpointerdown = () => {
             if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.bonnie.currentState==="OFFICE") {
+            if (Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -51,7 +51,7 @@ export default class OfficeButtons {
         l_lightClick.eventMode = 'static';
         l_lightClick.onpointerdown = () => {
             if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.bonnie.currentState==="OFFICE") {
+            if (Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -90,7 +90,7 @@ export default class OfficeButtons {
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
             if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.chica.currentState==="OFFICE") {
+            if (Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };
@@ -103,7 +103,7 @@ export default class OfficeButtons {
         r_lightClick.eventMode = 'static';
         r_lightClick.onpointerdown = () => {
             if (Game.die || Game.powerDown) return;
-            if (Game.animatronics.chica.currentState==="OFFICE") {
+            if (Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
                 Game.SOUNDS.doorError.play();
                 return;
             };

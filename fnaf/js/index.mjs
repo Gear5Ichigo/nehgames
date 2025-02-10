@@ -129,6 +129,14 @@ import Game from './game.mjs';
     });
     changelog.position.set(10, 10); MainMenu.addChild(changelog)
 
+    const freddles = new Text({
+        text: 'JOE',
+        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.015 },
+        x: 10*Game.scale.x, y: 10 *Game.scale.y
+    }); freddles.position.set(10, 10);
+
+    // Game.displayHUDContainer.addChild(freddles);
+
     MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
     setRenderState(MenuRender, MainMenu);
 
@@ -144,6 +152,7 @@ import Game from './game.mjs';
         totalDelta+=ticker.deltaTime;
         if (Game.render.visible) {
             Game.updateLoop(ticker);
+            freddles.text = `FREDDY: ${Game.animatronics.freddy.currentState}`;
             if (!Game._gameActive) {
                 bgMusic.play();
                 setRenderState(app.stage, MenuRender);
