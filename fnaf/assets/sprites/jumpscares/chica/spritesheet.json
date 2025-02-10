@@ -273,6 +273,6 @@
 		"scale": "1"
 	},
 	"animations": {
-		"main": ["69.png"]
+		"main": ["69.png", "69.png", "231.png", "230.png", "229.png", "228.png", "232.png"]
 	}
 }
