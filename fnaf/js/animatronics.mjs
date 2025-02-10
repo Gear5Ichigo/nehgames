@@ -357,18 +357,7 @@ class Foxy extends Animatronic {
         super.movement(ticker, 'left', () => {
             if (this.movementFailed) this.currentState = this.previousState || "1";
             this.movementFailed = false;
-        }) 
-    }
-
-    __updateSprites() {
-        if (Game.currentCam === "CAM1C") {
-            if (this.currentState==="1") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['66.png']);
-            } else if (this.currentState==="2") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['211.png']);
-            } else if (this.currentState==="3") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['338.png']);
-            } else if (this.currentState==="4") {
+            if (this.currentState === "4") {
                 setTimeout(() => {
                     if (!Game.win || !Game.powerDown || !Game.die) {
                         if (Game.leftDoorOn) {
@@ -382,6 +371,19 @@ class Foxy extends Animatronic {
                     }
                 }, 2000);
                 this.SOUNDS.run.play();
+            }
+        }) 
+    }
+
+    __updateSprites() {
+        if (Game.currentCam === "CAM1C") {
+            if (this.currentState==="1") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['66.png']);
+            } else if (this.currentState==="2") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['211.png']);
+            } else if (this.currentState==="3") {
+                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['338.png']);
+            } else if (this.currentState==="4") {
                 Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['240.png']);
             }
         }
