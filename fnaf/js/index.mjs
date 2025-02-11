@@ -90,7 +90,7 @@ import Game from './game.mjs';
     let NightsSelection = [];
     for (let night = 0; night < 7; night++) {
         const b = new Button(innerWidth/2-(100*Game.scale.x), innerHeight/2+(55*night*Game.scale.y)-200, 200*Game.scale.x, 50*Game.scale.y, `Night ${night+1}`, NightsMenu);
-        if (night==6) b.text.text = "MAX - 3/20";
+        if (night==6) b.text.text = "MAX - 4/20";
         b.pivot.set(40, b.height/2);
         b.onpointerdown = () => {
             if (night == 0) {
