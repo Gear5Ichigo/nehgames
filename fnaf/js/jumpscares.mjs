@@ -1,5 +1,6 @@
 import { AnimatedSprite, Assets, Spritesheet } from "../../pixi.mjs";
 import Game from "./game.mjs";
+import Office from "./office.mjs";
 
 export default class Jumpscares {
     static async init() {
@@ -10,7 +11,7 @@ export default class Jumpscares {
 
         this.bonnieScare = new AnimatedSprite(this._bonnieSheet.animations.main);
         this.bonnieScare.anchor.set(0.5, 0);
-        this.bonnieScare.setSize(innerWidth*1.5, innerHeight);
+        this.bonnieScare.setSize(innerWidth*Office.scale, innerHeight);
         this.bonnieScare.position.set(innerWidth/2, 0);
         this.bonnieScare.animationSpeed = 0.55;
         this.bonnieScare.visible = false;
@@ -23,7 +24,7 @@ export default class Jumpscares {
 
         this.chicaScare = new AnimatedSprite(this._chicaSheet.animations.main);
         this.chicaScare.anchor.set(0.5, 0);
-        this.chicaScare.setSize(innerWidth*1.5, innerHeight);
+        this.chicaScare.setSize(innerWidth*Office.scale, innerHeight);
         this.chicaScare.position.set(innerWidth/2, 0);
         this.chicaScare.animationSpeed = 0.55;
         this.chicaScare.visible = false;
@@ -36,7 +37,7 @@ export default class Jumpscares {
 
         this.freddyScare = new AnimatedSprite(this._freddySheet.animations.main);
         this.freddyScare.anchor.set(0.5, 0);
-        this.freddyScare.setSize(innerWidth*1.5, innerHeight);
+        this.freddyScare.setSize(innerWidth*Office.scale, innerHeight);
         this.freddyScare.position.set(innerWidth/2, 0);
         this.freddyScare.animationSpeed = 0.55;
         this.freddyScare.visible = false;

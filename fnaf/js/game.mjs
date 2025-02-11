@@ -14,7 +14,8 @@ export default class Game {
             officeNoise: Sound.from({ url: './assets/sounds/Buzz_Fan_Florescent2.wav' }),
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
-            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.75}),
+            gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.9}),
+            gokuscare: Sound.from({url: './assets/sounds/powerscare.wav', volume: 1.5}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
@@ -442,14 +443,16 @@ export default class Game {
     }
 
     static _officemove() {
-        const margin = (Office._currentSprite.width-Office._currentSprite.width/1.5)/2;
-        if (this.officeContainer.x > -margin ) {
+        const margin = (Office._currentSprite.width-Office._currentSprite.width/Office.scale)/2;
+        if (this.officeContainer.x > -Office.margin ) {
             if (Office._moveRight) this.officeContainer.x-=this.movePercent;
             if (Office._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
+            if (this.officeContainer.x < -Office.margin) this.officeContainer.x = -Office.margin;
         }
-        if (this.officeContainer.x < margin ) {
+        if (this.officeContainer.x < Office.margin ) {
             if (Office._moveLeft) this.officeContainer.x+=this.movePercent;
             if (Office._innerMoveLeft) this.officeContainer.x+=this.movePercent*2;
+            if (this.officeContainer.x > Office.margin) this.officeContainer.x = Office.margin;
         }
     }
 

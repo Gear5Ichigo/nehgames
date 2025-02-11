@@ -1,21 +1,7 @@
-- cams are done ig
-- nights 1 - 7 have different ai levels, 1 being the easiest
-- you can lose and win now
--freddy can kill
-- animatronics will jam the door (but freddy)
-- power and light adjustments
-- cams now cut to black when an animatronic moves when viewed
-    - not accurate to the og yet
-    - flip cams again to refresh
-- chica's jumpscare isnt finished yet
-- foxy in the works
-    - he can kill you
-    - all sound cues rn (no sprites)
-    - 2 second chance to close door after he leaves pirate cove,
-    - can be cam stalled
-- bug fixes
-- removed bear5
--alt + f4 for insta win
+- office width is now 25% smaller
+- fixed office border issues
+
+- working on more things rn
 
 NOTES:
 - Power drains every 0.95s, usage/8.5

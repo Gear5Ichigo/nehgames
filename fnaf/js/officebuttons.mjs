@@ -20,7 +20,7 @@ export default class OfficeButtons {
             this._leftButtonSprites[key] = new Sprite(value);
             const entry = this._leftButtonSprites[key];
             entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(-Office._currentSprite.width*0.165, innerHeight*0.44);
+            entry.position.set(-Office.margin, innerHeight*0.44);
         };
         this._leftButtonCurrentSprite = this._leftButtonSprites["122.png"];
 
@@ -76,19 +76,19 @@ export default class OfficeButtons {
             this._rightButtonSprites[key] = new Sprite(value)
             const entry = this._rightButtonSprites[key];
             entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(Office._currentSprite.width/1.29, innerHeight*0.44);
+            entry.position.set(Office._currentSprite.width-Office.margin-entry.width, innerHeight*0.44);
         };
         this._rightButtonCurrentSprite = this._rightButtonSprites["134.png"];
 
         //
 
-        const rightX = Office._currentSprite.width/1.29+(21*Game.scale.x*bScale)
+        const rightX = this._rightButtonCurrentSprite.x+(22*Game.scale.x*bScale)
 
         this._rightButtonClick = new Container();
         this._rbSpriteContainer = new Container();
 
         const r_doorClick = new Graphics()
-        .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0.0;
+        .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0;
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
             if (Game.die || Game.powerDown ||
@@ -139,6 +139,7 @@ export default class OfficeButtons {
                 const random = Math.random()*100;
                 if (random <= 6) {
                     Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127power.png"]);
+                    Game.SOUNDS.powerscare.play();
                     return
                 }
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["227.png"]);
@@ -165,7 +166,7 @@ export default class OfficeButtons {
                 const random = Math.random()*100;
                 if (random <= 10) {
                     Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58goku.png"]);
-                    Game.SOUNDS.gokuscare.play({volume: 1});
+                    Game.SOUNDS.gokuscare.play();
                     return;
                 }
                 Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);

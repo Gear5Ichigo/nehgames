@@ -4,6 +4,8 @@ import Game from './game.mjs';
 export default class Office {
     static async init() {
 
+        this.scale = 1.25;
+
         const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
         this._spriteSheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet.png'), officejson.data);
         await this._spriteSheet.parse();
@@ -12,7 +14,7 @@ export default class Office {
         for (const [key, value] of Object.entries(this._spriteSheet.textures)) {
             this._sprites[key] = new Sprite(value);
             const entry = this._sprites[key];
-            entry.setSize(innerWidth*1.5, innerHeight);
+            entry.setSize(innerWidth*this.scale, innerHeight);
             entry.anchor = 0.5;
             entry.position.set(innerWidth/2, innerHeight/2);
         };
@@ -26,13 +28,17 @@ export default class Office {
 
         //
 
+        this.margin = (Office._currentSprite.width-Office._currentSprite.width/Office.scale)/2;
+
+        //
+
         const fanjson = await Assets.load('./assets/sprites/fan/spritesheet.json');
         const fansheet = new Spritesheet(await Assets.load('./assets/sprites/fan/spritesheet.png'), fanjson.data);
         await fansheet.parse();
         this.fanAnim = new AnimatedSprite(fansheet.animations.loop);
-        this.fanAnim.scale.set(Game.scale.x*1.5, Game.scale.y);
+        this.fanAnim.scale.set(Game.scale.x*this.scale, Game.scale.y);
         this.fanAnim.anchor = 0.5;
-        this.fanAnim.position.set(innerWidth/2+(73*Game.scale.x), innerHeight/2+(41*Game.scale.y));
+        this.fanAnim.position.set(innerWidth/2+(49*Game.scale.x*this.scale), innerHeight/2+(41*Game.scale.y));
         this.fanAnim.play();
 
         //

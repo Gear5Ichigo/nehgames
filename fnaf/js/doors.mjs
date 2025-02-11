@@ -24,7 +24,7 @@ export default class Doors {
 
         this.leftDoorCloseAnim = new AnimatedSprite(leftdoorsheet.animations.close);
         this.leftDoorCloseAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.leftDoorCloseAnim.position.set(-Office._currentSprite.width*0.107, 0*Game.scale.y);
+        this.leftDoorCloseAnim.position.set(-Office.margin+(75*Game.scale.x*Office.scale), 0*Game.scale.y);
         this.leftDoorCloseAnim.animationSpeed = 0.55;
         this.leftDoorCloseAnim.loop = false;
         this.leftDoorCloseAnim.onComplete = () => {
@@ -33,7 +33,7 @@ export default class Doors {
 
         this.leftDoorOpenAnim = new AnimatedSprite(leftdoorsheet.animations.open);
         this.leftDoorOpenAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.leftDoorOpenAnim.position.set(-Office._currentSprite.width*0.107, 0*Game.scale.y);
+        this.leftDoorOpenAnim.position.set(-Office.margin+(75*Game.scale.x*Office.scale), 0*Game.scale.y);
         this.leftDoorOpenAnim.animationSpeed = 0.55;
         this.leftDoorOpenAnim.loop = false;
         this.leftDoorOpenAnim.onComplete = () => {
@@ -59,9 +59,11 @@ export default class Doors {
 
         //
 
+        const rightX = Office._currentSprite.width-Office.margin-this.rightDoorSprites['104.png'].width-(80*Game.scale.x*Office.scale)
+
         this.rightDoorCloseAnim = new AnimatedSprite(rightdoorsheet.animations.close);
         this.rightDoorCloseAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.rightDoorCloseAnim.position.set(Office._currentSprite.width/1.55, 0*Game.scale.y);
+        this.rightDoorCloseAnim.position.set(rightX, 0*Game.scale.y);
         this.rightDoorCloseAnim.animationSpeed = 0.55;
         this.rightDoorCloseAnim.loop = false;
         this.rightDoorCloseAnim.onComplete = () => {
@@ -70,7 +72,7 @@ export default class Doors {
 
         this.rightDoorOpenAnim = new AnimatedSprite(rightdoorsheet.animations.open);
         this.rightDoorOpenAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.rightDoorOpenAnim.position.set(Office._currentSprite.width/1.55, 0*Game.scale.y);
+        this.rightDoorOpenAnim.position.set(rightX, 0*Game.scale.y);
         this.rightDoorOpenAnim.animationSpeed = 0.55;
         this.rightDoorOpenAnim.loop = false;
         this.rightDoorOpenAnim.onComplete = () => {
