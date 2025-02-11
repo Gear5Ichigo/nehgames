@@ -1,4 +1,4 @@
-import { Assets, Spritesheet, Sprite, Container, Graphics, Text } from '../../pixi.mjs';
+import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite } from '../../pixi.mjs';
 import Game from './game.mjs';
 
 export default class Cams {
@@ -11,7 +11,9 @@ export default class Cams {
         b.onpointerdown = () => {
             if (Game.currentCam === `CAM${cam}`) return;
             Game.currentCam = `CAM${cam}`;
-            Game._cameraShow.x = -innerWidth*0.2;
+
+            this.blipFlash1.gotoAndPlay(0); this.blipFlash1.visible = true;
+            
             Game.SOUNDS.camBlip.play({volume: 1.5})
             Game.changeSprite(this.camsMapContainer, this.camsMapSprites[`${cam}.png`]);
             callBack();
@@ -29,6 +31,15 @@ export default class Cams {
 
         this.cameraRecording = new Graphics()
         .circle(this.cameraBorder.x+(125*Game.scale.x), this.cameraBorder.y+(100*Game.scale.y), 25*Game.scale.x).fill(0xff0000);
+
+        const blipFlashJson = await Assets.load('./assets/sprites/blipFlashes/spritesheet.json');
+        const blipFlashSheet = new Spritesheet(await Assets.load('./assets/sprites/blipFlashes/spritesheet.png'), blipFlashJson.data);
+        await blipFlashSheet.parse();
+
+        this.blipFlash1 = new AnimatedSprite(blipFlashSheet.animations.first);
+        this.blipFlash1.setSize(innerWidth, innerHeight);
+        this.blipFlash1.loop = false;
+        this.blipFlash1.onComplete = () => this.blipFlash1.visible = false; //this.blipFlash1.animationSpeed = 0.05;
 
         const camsMapJson = await Assets.load('./assets/sprites/cams/Map/spritesheet.json');
         const camsMapSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Map/spritesheet.png'), camsMapJson.data);
@@ -186,7 +197,12 @@ export default class Cams {
             } else if (fr.currentState==='CAM1A' && bo.currentState!=='CAM1A' && ch.currentState!=='CAM1A') { // no bonnie and chica
                 Game.changeSprite(Game._cameraShow, this.stageSprites['224.png']);
             } else { // everyones gone rip
-                Game.changeSprite(Game._cameraShow, this.stageSprites['484.png']);
+                const chance = Math.floor(Math.random() * 4);
+                if (chance == 1) {
+                    Game.changeSprite(Game._cameraShow, Game._bear5);
+                } else {
+                    Game.changeSprite(Game._cameraShow, this.stageSprites['484.png']);
+                }
             }
         });
         this.__makeCamButton('1B', -117, -132, () => {

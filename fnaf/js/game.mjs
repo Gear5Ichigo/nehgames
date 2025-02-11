@@ -15,7 +15,7 @@ export default class Game {
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
             gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.9}),
-            gokuscare: Sound.from({url: './assets/sounds/powerscare.wav', volume: 1.5}),
+            powerscare: Sound.from({url: './assets/sounds/powerscare.wav', volume: 1.5}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
             winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
@@ -150,7 +150,9 @@ export default class Game {
             }
             this.officeRender.visible = false
             this.cameraRender.visible = true
-            if (this.currentCam !== 'CAM6') this._cameraShow.x = -innerWidth*0.2;
+
+            Cams.blipFlash1.gotoAndPlay(0); Cams.blipFlash1.visible = true;
+            
             this.SOUNDS.cams.play();
             if (this.leftLightOn || this.rightLightOn) {
                 this.rightLightOn = false;
@@ -238,12 +240,12 @@ export default class Game {
         this._cameraShow.addChild(Cams.stageSprites['19.png']);
         this._finalCameraShow.addChild(this._cameraShow, Cams.blackBox);
         this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMapContainer, Cams.areaName, Cams.mapButtons);
-        this.cameraRender.addChild(this._finalCameraShow, this._cameraGUI);
+        this.cameraRender.addChild(this._finalCameraShow, Cams.blipFlash1, this._cameraGUI);
 
         this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
         this._buttonsContainer.addChild(OfficeButtons._leftButtonClick, OfficeButtons._rightButtonClick);
         this._doorContainer.addChild(Doors.leftDoorContainer, Doors.rightDoorContainer);
-        this.officeContainer.addChild(this.officeSpritesContainer, Office.fanAnim, this._doorContainer, this._buttonsContainer);
+        this.officeContainer.addChild(this.officeSpritesContainer, Office.fanAnim, Office.plushiesContainer, this._doorContainer, this._buttonsContainer);
 
         this.officeRender.addChild(
             Office._movementContainer,
@@ -272,7 +274,7 @@ export default class Game {
         this.currentNightText.text = `Night ${this.night}`;
 
         this.timeElapsed = 0;
-        this._ONE_HOUR = 69;
+        this._ONE_HOUR = 70;
         this.clock = 12;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
@@ -327,6 +329,10 @@ export default class Game {
 
         Cams.blackBox.visible = false;
 
+        if (localStorage.getItem('Night_1_Finished')) Office.plushiesSprites['bonnie.png'].visible = true;
+        if (localStorage.getItem('Night_5_Finished')) Office.plushiesSprites['chica.png'].visible = true;
+        if (localStorage.getItem('Night_6_Finished')) Office.plushiesSprites['freddy.png'].visible = true;
+
         this.officeContainer.position.set(0, 0);
         this.officeRender.visible = true;
         Office.fanAnim.visible = true;
@@ -373,6 +379,7 @@ export default class Game {
         if (this.win && this.winScreen.alpha < 1) this.winScreen.alpha += 0.1125*dt;
         if (this.winScreen.alpha>=1  && !this.SOUNDS.winCheer.isPlaying) {
             this.SOUNDS.winCheer.play();
+            if (!localStorage.getItem(`Night_${this.night}_Finished`)) localStorage.setItem(`Night_${this.night}_Finished`, true);
             setTimeout(() => {this.forceGameOver();}, 2500);
         }
     }
@@ -443,7 +450,6 @@ export default class Game {
     }
 
     static _officemove() {
-        const margin = (Office._currentSprite.width-Office._currentSprite.width/Office.scale)/2;
         if (this.officeContainer.x > -Office.margin ) {
             if (Office._moveRight) this.officeContainer.x-=this.movePercent;
             if (Office._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
@@ -465,11 +471,14 @@ export default class Game {
             this._finalCameraShow.filters[0].seed = Math.random();
 
             if (this.cameraRender.visible && this.currentCam!=='CAM6') {
-                if (this._cameraShow.x < 0) {
-                    this._cameraShow.x += innerWidth*0.001;
-                    if (this._cameraShow >= 0 && !this.camMoveReverse)
-                        this.camMoveReverse = true;
+                if (this._cameraShow.x < 0 && !this.camMoveReverse) {
+                    this._cameraShow.x += innerWidth*0.0005;
                 }
+                if (this._cameraShow.x >= 0) this.camMoveReverse = true;
+                if (this._cameraShow.x > -this._cameraShow.width*0.15 && this.camMoveReverse) {
+                    this._cameraShow.x -= innerWidth*0.0005;
+                }
+                if (this._cameraShow.x <= -this._cameraShow.width*0.15) this.camMoveReverse = false;
             }
 
             for (const [key, animatronic] of Object.entries(this.animatronics)) {
