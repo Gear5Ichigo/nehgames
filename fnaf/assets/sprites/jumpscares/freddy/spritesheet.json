@@ -103,7 +103,7 @@
     "meta": {
         "app":"https://github.com/piskelapp/piskel/",
         "version":"1.0",
-        "image":"spritesheet.png",
+        "image":"spritesheet@0.5x.png",
         "format":"RGBA8888",
         "size":{"w":6400,"h":5054}
     },

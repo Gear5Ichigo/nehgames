@@ -32,7 +32,7 @@ export default class Jumpscares {
         Game.jumpScares.addChild(this.chicaScare);
 
         const freddyJson = await Assets.load('./assets/sprites/jumpscares/freddy/spritesheet.json');
-        this._freddySheet = new Spritesheet(await Assets.load('./assets/sprites/jumpscares/freddy/spritesheet.png'), freddyJson.data);
+        this._freddySheet = new Spritesheet(await Assets.load('./assets/sprites/jumpscares/freddy/spritesheet@0.5x.png'), freddyJson.data);
         await this._freddySheet.parse();
 
         this.freddyScare = new AnimatedSprite(this._freddySheet.animations.main);

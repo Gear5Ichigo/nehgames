@@ -76,7 +76,7 @@ export default class Cams {
         }
 
         const backStageJson = await Assets.load('./assets/sprites/cams/Backstage/spritesheet.json');
-        const backStageSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Backstage/spritesheet.png'), backStageJson.data);
+        const backStageSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Backstage/spritesheet@0.5x.png'), backStageJson.data);
         await backStageSheet.parse();
         this.backStageSprites = {};
         for (const [key, value] of Object.entries(backStageSheet.textures)) {
@@ -86,7 +86,7 @@ export default class Cams {
         }
 
         const diningJson = await Assets.load('./assets/sprites/cams/Dining Room/spritesheet.json');
-        const diningSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Dining Room/spritesheet.png'), diningJson.data);
+        const diningSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Dining Room/spritesheet@0.5x.png'), diningJson.data);
         await diningSheet.parse();
         this.diningSprites = {};
         for (const [key, value] of Object.entries(diningSheet.textures)) {

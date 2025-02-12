@@ -7,7 +7,7 @@ export default class Office {
         this.scale = 1.25;
 
         const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
-        this._spriteSheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet.png'), officejson.data);
+        this._spriteSheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet@0.5x.png'), officejson.data);
         await this._spriteSheet.parse();
 
         this._sprites = {};

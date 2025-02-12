@@ -208,7 +208,7 @@ export default class Game {
                 align: 'center',
                 fontSize: 60 * Game.scale.x,
             }
-        }); this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, 15*Game.scale.y);
+        }); this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, Cams.cameraBorder.y+15*Game.scale.y);
         this.currentNightText = new Text({text: `Night`,
             style: {
                 fill: 0xffffff,
@@ -222,7 +222,7 @@ export default class Game {
             style: {
                 fontFamily: 'FNAF',
                 fill: 0xffffff,
-                fontSize: 60*Game.scale.x,
+                fontSize: 64*Game.scale.x,
             }
         }); this.powerLevelDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
         this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 32*Game.scale.x}});
