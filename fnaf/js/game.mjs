@@ -27,6 +27,10 @@ export default class Game {
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
 
+            circus: Sound.from({url: './assets/sounds/circus.wav', volume: 0.2}),
+            pirate: Sound.from({url: './assets/sounds/pirate song2.wav', volume: 0.2}),
+            eerieAmbience: Sound.from({url: './assets/sounds/EerieAmbienceLargeSca_MV005.wav'}),
+
             camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
             
             phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.7}),
@@ -273,6 +277,7 @@ export default class Game {
         this.night = options.night || 1;
         this.currentNightText.text = `Night ${this.night}`;
 
+        this.randomSoundTimer = 0;
         this.timeElapsed = 0;
         this._ONE_HOUR = 70;
         this.clock = 12;
@@ -463,6 +468,17 @@ export default class Game {
     }
 
     static updateLoop(ticker) {
+        const dt = ticker.deltaTime/ticker.FPS;
+        this.randomSoundTimer+=dt;
+        
+        if (this.randomSoundTimer>=100/60) {
+            this.randomSoundTimer = 0;
+            const chance = Math.floor(Math.random()*100);
+            if (chance == 0 && !this.SOUNDS.eerieAmbience.isPlaying) this.SOUNDS.eerieAmbience.play();
+            if (chance == 1 && !this.SOUNDS.circus.isPlaying) this.SOUNDS.circus.play();
+            if (chance == 2 && !this.SOUNDS.pirate.isPlaying) this.SOUNDS.pirate.play();
+        }
+
         if (this._gameActive) {
             this.updateClock(ticker);
             this._updatePower(ticker);
