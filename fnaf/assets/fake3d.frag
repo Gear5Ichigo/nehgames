@@ -22,5 +22,5 @@ void main(void){
 
     coordinates = vec2(vTextureCoord.x, vTextureCoord.y + pixelDistanceX* (offset*7.0*dir));
 
-   gl_FragColor = texture2D(uTexture, coordinates);
+   gl_FragColor = texture2D(uTexture, vTextureCoord);
 }
