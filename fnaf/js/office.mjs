@@ -57,7 +57,7 @@ export default class Office {
 
         const powerbeanplushTex = await Assets.load('./assets/sprites/plushies/powerbean.png');
         const powerbeanplush = new Sprite(powerbeanplushTex);
-        powerbeanplush.scale.set(0.5, 0.5);
+        powerbeanplush.scale.set(0.5*Game.scale.x, 0.5*Game.scale.y);
         powerbeanplush.visible = false;
         powerbeanplush.position.set(this._currentSprite.width/2-(10*Game.scale.x*this.scale), this._currentSprite.height/2-(4*Game.scale.y));
         this.plushiesSprites['powerbean'] = powerbeanplush;
