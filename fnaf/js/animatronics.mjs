@@ -1,6 +1,7 @@
 import { Sound } from "../../pixi-sound.mjs";
 import Cams from "./cams.mjs";
 import Game from "./game.mjs";
+import Jumpscares from "./jumpscares.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
 
@@ -31,10 +32,6 @@ class Animatronic {
                     if (moveTo==="OFFICE" && Game[door.toLowerCase()+'DoorOn']) {
                         const leaveTo = this._leaveStates[Math.floor(Math.random()*this._leaveStates.length)];
                         this.currentState = leaveTo;
-                        if (Game[door.toLowerCase()+'LightOn']) {
-                            Game[door.toLowerCase()+'LightOn'] = false;
-                            Game.powerUsage-=1;
-                        }
                     } else if (moveTo==="OFFICE" && !Game[door.toLowerCase()+'DoorOn']) {
                         this.currentState = moveTo;
                         if (Game[door.toLowerCase()+'LightOn']) {
@@ -375,10 +372,11 @@ class Foxy extends Animatronic {
                             if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;
                             Game.SOUNDS.doorBaning.play();
                         } else {
-                            Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 300);
+                            Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.gotoAndPlay(0);
+                            Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 1000);
                         }
                     }
-                }, 2000);
+                }, 2100);
                 this.SOUNDS.run.play();
             }
         }) 

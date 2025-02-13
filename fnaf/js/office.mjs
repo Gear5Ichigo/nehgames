@@ -4,9 +4,12 @@ import Game from './game.mjs';
 export default class Office {
     static async init() {
 
-        this.scale = 1.25;
+        this.scale = 1.2;
 
-        const officejson = await Assets.load('./assets/sprites/office/spritesheet.json');
+        this._flickerTime = 0;
+        this._flickerWait = 0.2;
+
+        const officejson = await Assets.load('./assets/sprites/office/spritesheet@0.5x.png.json');
         this._spriteSheet = new Spritesheet(await Assets.load('./assets/sprites/office/spritesheet@0.5x.png'), officejson.data);
         await this._spriteSheet.parse();
 
@@ -51,12 +54,20 @@ export default class Office {
             entry.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
             entry.visible = false;
         };
+
+        const powerbeanplushTex = await Assets.load('./assets/sprites/plushies/powerbean.png');
+        const powerbeanplush = new Sprite(powerbeanplushTex);
+        powerbeanplush.scale.set(0.5, 0.5);
+        powerbeanplush.visible = false;
+        powerbeanplush.position.set(this._currentSprite.width/2-(10*Game.scale.x*this.scale), this._currentSprite.height/2-(4*Game.scale.y));
+        this.plushiesSprites['powerbean'] = powerbeanplush;
+
         this.plushiesSprites['freddy.png'].position.set(this._currentSprite.width/2-(360*Game.scale.x*this.scale), this._currentSprite.height/2-(140*Game.scale.y));
         this.plushiesSprites['bonnie.png'].position.set(this._currentSprite.width/2-(422*Game.scale.x*this.scale), this._currentSprite.height/2-(50*Game.scale.y));
-        this.plushiesSprites['chica.png'].position.set(this._currentSprite.width/2-(255*Game.scale.x*this.scale), this._currentSprite.height/2+(4*Game.scale.y))
+        this.plushiesSprites['chica.png'].position.set(this._currentSprite.width/2-(255*Game.scale.x*this.scale), this._currentSprite.height/2+(4*Game.scale.y));
 
         this.plushiesContainer = new Container();
-        this.plushiesContainer.addChild(this.plushiesSprites['freddy.png'], this.plushiesSprites['bonnie.png'], this.plushiesSprites['chica.png']);
+        this.plushiesContainer.addChild(this.plushiesSprites['freddy.png'], this.plushiesSprites['bonnie.png'], this.plushiesSprites['chica.png'], powerbeanplush);
 
         //
 
@@ -91,5 +102,41 @@ export default class Office {
 
         this._movementContainer.addChild(leftBox, innerLeftBox, rightBox, innerRightBox);
         this.container = new Container();
+    }
+
+    static __hallWayFlicker(ticker) {
+        const dt = ticker.deltaTime/ticker.FPS;
+        if (Game.leftLightOn) {
+            this._flickerTime+=dt;
+            if (this._flickerTime >= this._flickerWait) {
+                this._flickerTime=0;
+                if (Game.animatronics.bonnie.currentState === "ATDOOR") return;
+                if (Game.officeSpritesContainer.children[0] === this._sprites["58.png"]) {
+                    Game.SOUNDS.lightsHum.pause();
+                    Game.changeSprite(Game.officeSpritesContainer, this._sprites["39.png"]);
+                    this._flickerWait = (Math.ceil(Math.random()*5)+10)/1000;
+                } else if (Game.officeSpritesContainer.children[0] === this._sprites["39.png"]) {
+                    Game.SOUNDS.lightsHum.play();
+                    Game.changeSprite(Game.officeSpritesContainer, this._sprites["58.png"]);
+                    this._flickerWait = (Math.ceil(Math.random()*15)+50)/100;
+                }
+            }
+        }
+        if (Game.rightLightOn) {
+            this._flickerTime+=dt;
+            if (this._flickerTime >= this._flickerWait) {
+                this._flickerTime=0;
+                if (Game.animatronics.chica.currentState === "ATDOOR") return;
+                if (Game.officeSpritesContainer.children[0] === this._sprites["127.png"]) {
+                    Game.SOUNDS.lightsHum.pause();
+                    Game.changeSprite(Game.officeSpritesContainer, this._sprites["39.png"]);
+                    this._flickerWait = (Math.ceil(Math.random()*5)+10)/1000;
+                } else if (Game.officeSpritesContainer.children[0] === this._sprites["39.png"]) {
+                    Game.SOUNDS.lightsHum.play();
+                    Game.changeSprite(Game.officeSpritesContainer, this._sprites["127.png"]);
+                    this._flickerWait = (Math.ceil(Math.random()*15)+50)/100;
+                }
+            }
+        }
     }
 }

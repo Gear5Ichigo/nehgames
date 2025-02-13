@@ -55,6 +55,7 @@ import Game from './game.mjs';
     // */
 
     const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
+    bgMusic.volume = 0.75;
     bgMusic.loop = true;
     bgMusic.play();
 

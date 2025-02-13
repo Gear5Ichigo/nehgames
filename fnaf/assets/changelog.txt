@@ -1,17 +1,15 @@
 CHANGES:
-- office width is now 25% smaller
-- fixed office border issues
-- each night is now 6 seconds longer
-- added some more effects to camera
-- added bear5
-
-- working on more things rn
+- Office width is now 5% smaller
+- added fake 3d effect
+- hallway light flicker
 
 GAME:
-- Power drains every 0.95s, usage/8.5
+- Power drains every 0.99s, usage/8.5
 - each hour lasts 70 seconds
 
 PLUSHIES:
 - BONNIE : COMPLETE NIGHT 1
 - CHICA : COMPLETE NIGHT 5
 - FREDDY : COMPLETE NIGHT 6
+- ??? : 6% CHANCE 
+        RIGHT HALL FLASH AT CHICA

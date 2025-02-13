@@ -43,5 +43,16 @@ export default class Jumpscares {
         this.freddyScare.visible = false;
 
         Game.jumpScares.addChild(this.freddyScare);
+
+        const foxyJson = await Assets.load('./assets/sprites/jumpscares/foxy/spritesheet@0.5x.png.json');
+        this._foxySheet = new Spritesheet(await Assets.load('./assets/sprites/jumpscares/foxy/spritesheet@0.5x.png'), foxyJson.data);
+        await this._foxySheet.parse();
+
+        this.foxyScare = new AnimatedSprite(this._foxySheet.animations.main);
+        this.foxyScare.anchor.set(0.5, 0);
+        this.foxyScare.setSize(innerWidth*Office.scale, innerHeight);
+        this.foxyScare.position.set(innerWidth/2, 0);
+        this.foxyScare.animationSpeed = 0.33;
+        this.foxyScare.visible = false;
     }
 }

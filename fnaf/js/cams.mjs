@@ -16,6 +16,8 @@ export default class Cams {
             
             Game.SOUNDS.camBlip.play({volume: 1.5})
             Game.changeSprite(this.camsMapContainer, this.camsMapSprites[`${cam}.png`]);
+            this._swapTimer = 0;
+            this._prevCamButton = null;
             callBack();
         };
         this.mapButtons.addChild(b);
@@ -41,14 +43,14 @@ export default class Cams {
         this.blipFlash1.loop = false;
         this.blipFlash1.onComplete = () => this.blipFlash1.visible = false; //this.blipFlash1.animationSpeed = 0.05;
 
-        const camsMapJson = await Assets.load('./assets/sprites/cams/Map/spritesheet.json');
-        const camsMapSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Map/spritesheet.png'), camsMapJson.data);
+        const camsMapJson = await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png.json');
+        const camsMapSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png'), camsMapJson.data);
         await camsMapSheet.parse();
         this.camsMapSprites = {};
         for (const [key, value] of Object.entries(camsMapSheet.textures)) {
             this.camsMapSprites[key] = new Sprite(value);
             const entry =  this.camsMapSprites[key];
-            entry.scale.set(Game.scale.x*1.125, Game.scale.y*1.125);
+            entry.scale.set(Game.scale.x*1.15, Game.scale.y*1.125);
             entry.anchor = 0.5;
             entry.position.set(this.cameraBorder.width-entry.width/2, this.cameraBorder.height-entry.height/2+(30*Game.scale.y));
         }; const mapref = this.camsMapSprites['1A.png'];
@@ -184,6 +186,24 @@ export default class Cams {
         //
 
         this.mapButtons = new Container();
+
+        this._swapTimer = 0;
+        this._prevCamButton = null;
+        this.camMapPseudoAnim = (ticker) => {
+            const dt = ticker.deltaTime/ticker.FPS;
+            if (Game.cameraRender.visible) {
+                this._swapTimer += dt;
+                if (this._swapTimer >= 0.5) {
+                    this._swapTimer = 0;
+                    if (this.camsMapContainer.children[0] !== this.camsMapSprites['Complete_Map.png']) {
+                        this._prevCamButton = this.camsMapContainer.children[0];
+                        Game.changeSprite(this.camsMapContainer, this.camsMapSprites['Complete_Map.png']);
+                    } else {
+                        Game.changeSprite(this.camsMapContainer, this._prevCamButton);
+                    }
+                }
+            }
+        };
 
         this.__makeCamButton('1A', -100, -200, () => {
             const fr = Game.animatronics.freddy, bo = Game.animatronics.bonnie, ch = Game.animatronics.chica;

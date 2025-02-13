@@ -6,8 +6,8 @@ import Office from './office.mjs';
 export default class OfficeButtons {
     static async init() {
 
-        const bScale = 1.33;
-        const btnSize = [40*Game.scale.x*bScale, 55*Game.scale.y*bScale];
+        const bScale = 1.2;
+        const btnSize = [40*Game.scale.x*bScale, 72*Game.scale.y*bScale];
 
         //
 
@@ -20,7 +20,7 @@ export default class OfficeButtons {
             this._leftButtonSprites[key] = new Sprite(value);
             const entry = this._leftButtonSprites[key];
             entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(-Office.margin, innerHeight*0.44);
+            entry.position.set(-Office.margin, innerHeight*0.375);
         };
         this._leftButtonCurrentSprite = this._leftButtonSprites["122.png"];
 
@@ -31,7 +31,7 @@ export default class OfficeButtons {
 
         const leftX = this._leftButtonCurrentSprite.x+(30*Game.scale.x*bScale);
         const bY = this._leftButtonCurrentSprite.y+(52*Game.scale.y*bScale);
-        const bY2 = this._leftButtonCurrentSprite.y+(132*Game.scale.y*bScale);
+        const bY2 = this._leftButtonCurrentSprite.y+(155*Game.scale.y*bScale);
 
         const l_doorClick = new Graphics()
         .rect(leftX, bY, btnSize[0], btnSize[1]).fill(0xff00ff); l_doorClick.alpha = 0.0;
@@ -76,7 +76,7 @@ export default class OfficeButtons {
             this._rightButtonSprites[key] = new Sprite(value)
             const entry = this._rightButtonSprites[key];
             entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(Office._currentSprite.width-Office.margin-entry.width, innerHeight*0.44);
+            entry.position.set(Office._currentSprite.width-Office.margin-entry.width, innerHeight*0.375);
         };
         this._rightButtonCurrentSprite = this._rightButtonSprites["134.png"];
 
@@ -88,7 +88,7 @@ export default class OfficeButtons {
         this._rbSpriteContainer = new Container();
 
         const r_doorClick = new Graphics()
-        .rect(rightX, bY, btnSize[0], btnSize[1]).fill(0x00ff00); r_doorClick.alpha = 0;
+        .rect(rightX, bY, btnSize[0], btnSize[1]*0.95).fill(0x00ff00); r_doorClick.alpha = 0;
         r_doorClick.eventMode = 'static';
         r_doorClick.onpointerdown = () => {
             if (Game.die || Game.powerDown ||
@@ -101,7 +101,7 @@ export default class OfficeButtons {
         }
 
         const r_lightClick = new Graphics()
-        .rect(rightX, bY2, btnSize[0], btnSize[1]).fill(0x00ff00); r_lightClick.alpha = 0.0;
+        .rect(rightX, bY2*0.975, btnSize[0], btnSize[1]*0.95).fill(0x00ff00); r_lightClick.alpha = 0.0;
         r_lightClick.eventMode = 'static';
         r_lightClick.onpointerdown = () => {
             if (Game.die || Game.powerDown ||
@@ -138,6 +138,7 @@ export default class OfficeButtons {
                 Game.SOUNDS.windowscare.play();
                 const random = Math.random()*100;
                 if (random <= 6) {
+                    if (!localStorage.getItem("Power_Easter_Egg")) localStorage.setItem("Power_Easter_Egg", true);
                     Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127power.png"]);
                     Game.SOUNDS.powerscare.play();
                     return
