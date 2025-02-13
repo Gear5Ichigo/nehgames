@@ -37,6 +37,10 @@ export default class Game {
             camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
             
             phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.7}),
+            phoneguy2: Sound.from({url: './assets/sounds/voiceover2a.wav', volume: 0.7}),
+            phoneguy3: Sound.from({url: './assets/sounds/voiceover3.wav', volume: 0.7}),
+            phoneguy4: Sound.from({url: './assets/sounds/voiceover4.wav', volume: 0.7}),
+            phoneguy5: Sound.from({url: './assets/sounds/voiceover5.wav', volume: 0.7}),
         }
 
         this.clock = 12;
@@ -372,7 +376,8 @@ export default class Game {
             loop: true,
         });
         this.SOUNDS.ambience1.play();
-        this.SOUNDS.phoneguy1.play();
+        const phone = this.SOUNDS[`phoneguy${this.night}`];
+        if (phone) phone.play();
     }
 
     static changeSprite(spriteContainer, newSprite) {
