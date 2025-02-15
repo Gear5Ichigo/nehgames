@@ -2,6 +2,9 @@ varying vec2 vTextureCoord;
 
 uniform sampler2D uTexture;
 
+uniform float uScaleX;
+uniform float uScaleY;
+
 void main(void){
     vec2 coordinates;
     float pixelDistanceX;
@@ -9,10 +12,10 @@ void main(void){
     float offset;
     float dir;
 
-    pixelDistanceX = distance(vTextureCoord.x, 0.5);
-    pixelDistanceY = distance(vTextureCoord.y, 0.5);
+    pixelDistanceX = distance(vTextureCoord.x, 0.5) * uScaleX;
+    pixelDistanceY = distance(vTextureCoord.y, 0.5) * uScaleY;
 
-    offset = (pixelDistanceX*0.2) * pixelDistanceY;
+    offset = (pixelDistanceX*0.1) * pixelDistanceY;
 
     if (vTextureCoord.y <= 0.5) 
         dir = 1.0;
@@ -20,7 +23,7 @@ void main(void){
         dir = -1.0;
 
 
-    coordinates = vec2(vTextureCoord.x, vTextureCoord.y + pixelDistanceX* (offset*7.0*dir));
+    coordinates = vec2(vTextureCoord.x, vTextureCoord.y + pixelDistanceX* (offset*8.0*dir));
 
-   gl_FragColor = texture2D(uTexture, vTextureCoord);
+   gl_FragColor = texture2D(uTexture, coordinates);
 }

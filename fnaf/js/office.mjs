@@ -59,7 +59,7 @@ export default class Office {
         const powerbeanplush = new Sprite(powerbeanplushTex);
         powerbeanplush.scale.set(0.5*Game.scale.x, 0.5*Game.scale.y);
         powerbeanplush.visible = false;
-        powerbeanplush.position.set(this._currentSprite.width/2-(10*Game.scale.x*this.scale), this._currentSprite.height/2-(4*Game.scale.y));
+        powerbeanplush.position.set(this._currentSprite.width/2-(10*Game.scale.x*this.scale), this._currentSprite.height/2-(44*Game.scale.y));
         this.plushiesSprites['powerbean'] = powerbeanplush;
 
         this.plushiesSprites['freddy.png'].position.set(this._currentSprite.width/2-(360*Game.scale.x*this.scale), this._currentSprite.height/2-(140*Game.scale.y));

@@ -244,7 +244,17 @@ export default class Game {
         const frag = await fetch('./assets/fake3d.frag').then(res => {if (res.ok) return res.text()} );
         const vert = await fetch('./assets/fake3d.vert').then(res => {if (res.ok) return res.text()} );
 
-        const fake3D = new Filter({glProgram: new GlProgram({vertex: vert, fragment: frag})});
+        const fake3D = new Filter({
+            glProgram: new GlProgram({
+                vertex: vert, fragment: frag
+            }),
+            resources: {
+                timeUniforms: {
+                    uScaleX: {value: Game.scale.x, type: 'f32'},
+                    uScaleY: {value: Game.scale.y, type: 'f32'}
+                }
+            }
+        });
 
         this.officeContainer.filters = [fake3D];
         this._finalCameraShow.filters = [
