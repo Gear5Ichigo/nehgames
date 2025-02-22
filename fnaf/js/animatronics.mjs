@@ -1,8 +1,9 @@
-import { Sound } from "../../pixi-sound.mjs";
+import { Sound } from "../../public/pixi-sound.mjs";
+import CameraTablet from "./cameratablet.mjs";
 import Cams from "./cams.mjs";
+import Doors from "./doors.mjs";
 import Game from "./game.mjs";
 import Jumpscares from "./jumpscares.mjs";
-import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
 
 class Animatronic {
@@ -372,6 +373,9 @@ class Foxy extends Animatronic {
                             if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;
                             Game.SOUNDS.doorBaning.play();
                         } else {
+                            if (Game.camUp) CameraTablet.flip();
+                            Game.die == true;
+                            Doors.left.visible = false;
                             Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.gotoAndPlay(0);
                             Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 1000);
                         }

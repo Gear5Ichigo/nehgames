@@ -1,5 +1,5 @@
-import { AnimatedSprite, Assets, Container, Filter, FilterEffect, GlProgram, Graphics, NoiseFilter, Sprite, Spritesheet, Text } from "../../pixi.mjs";
-import { Sound } from "../../pixi-sound.mjs";
+import { Assets, Container, Filter, GlProgram, Graphics, NoiseFilter, Sprite, Text } from '../../public/pixi.min.mjs';
+import { Sound } from "../../public/pixi-sound.mjs";
 import { Bonnie, Chica, Foxy, Freddy } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
@@ -7,9 +7,11 @@ import OfficeButtons from "./officebuttons.mjs";
 import Doors from "./doors.mjs";
 import Cams from "./cams.mjs";
 import Jumpscares from "./jumpscares.mjs";
+import Menus from './menus.mjs';
 
 export default class Game {
     static async init(gameContainer) {
+        
         this.SOUNDS = {
             officeNoise: Sound.from({ url: './assets/sounds/Buzz_Fan_Florescent2.wav' }),
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
@@ -26,6 +28,7 @@ export default class Game {
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.5}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
+            boop: Sound.from({url: './assets/sounds/PartyFavorraspyPart_AC01__3.wav', volume: 0.125}),
 
             circus: Sound.from({url: './assets/sounds/circus.wav', volume: 0.15}),
             pirate: Sound.from({url: './assets/sounds/pirate song2.wav', volume: 0.15}),
@@ -36,15 +39,14 @@ export default class Game {
 
             camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
             
-            phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.7}),
-            phoneguy2: Sound.from({url: './assets/sounds/voiceover2a.wav', volume: 0.7}),
-            phoneguy3: Sound.from({url: './assets/sounds/voiceover3.wav', volume: 0.7}),
-            phoneguy4: Sound.from({url: './assets/sounds/voiceover4.wav', volume: 0.7}),
-            phoneguy5: Sound.from({url: './assets/sounds/voiceover5.wav', volume: 0.7}),
+            phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.66}),
+            phoneguy2: Sound.from({url: './assets/sounds/voiceover2a.wav', volume: 0.66}),
+            phoneguy3: Sound.from({url: './assets/sounds/voiceover3.wav', volume: 0.66}),
+            phoneguy4: Sound.from({url: './assets/sounds/voiceover4.wav', volume: 0.66}),
+            phoneguy5: Sound.from({url: './assets/sounds/voiceover5.wav', volume: 0.66}),
         }
 
         this.clock = 12;
-        this.movePercent = innerWidth*0.00525;
         this.camUp = false;
         this.currentCam = "CAM1A";
         this.camMoveReverse = false;
@@ -80,6 +82,10 @@ export default class Game {
         this.cameraRender.visible = false;
 
         this.jumpScares = new Container();
+
+        /**
+         * WIN SCREEN STUFF
+         */
 
         this.winScreen = new Container();
         const winScreenBg = new Graphics()
@@ -127,79 +133,9 @@ export default class Game {
         await CameraTablet.init();
         await Jumpscares.init();
 
-        this.officeSpritesContainer.addChild(Office._currentSprite);
-
         const bear5texture = await Assets.load('./assets/sprites/484bear5.png');
         this._bear5 = new Sprite(bear5texture);
         this._bear5.setSize(innerWidth*1.2, innerHeight);
-
-        /**
-         * Camera Tablet animations
-         */
-
-        CameraTablet._flipUp.onComplete = () => {
-            if (this.animatronics.bonnie.currentState==="OFFICE" || this.animatronics.chica.currentState==="OFFICE" || this.animatronics.freddy.currentState==="OFFICE") {
-                if (this.win) return;
-                this.die = true;
-                if (this.animatronics.freddy.currentState==="OFFICE") {
-                    Jumpscares.freddyScare.visible = true;
-                    Jumpscares.freddyScare.gotoAndPlay(0);
-                } else if (this.animatronics.bonnie.currentState==="OFFICE") {
-                    Jumpscares.bonnieScare.visible = true;
-                    Jumpscares.bonnieScare.gotoAndPlay(0);
-                } else if (this.animatronics.chica.currentState==="OFFICE") {
-                    Jumpscares.chicaScare.visible = true;
-                    Jumpscares.chicaScare.gotoAndPlay(0);
-                }
-                this.SOUNDS.jumpscare.play();
-                setTimeout(() => {
-                    this.forceGameOver()
-                }, 660);
-            }
-            this.officeRender.visible = false
-            this.cameraRender.visible = true
-
-            Cams.blipFlash1.gotoAndPlay(0); Cams.blipFlash1.visible = true;
-            
-            this.SOUNDS.cams.play();
-            if (this.leftLightOn || this.rightLightOn) {
-                this.rightLightOn = false;
-                this.leftLightOn = false;
-                this.powerUsage-=1;
-                OfficeButtons.__updateLeftSideOffice(); OfficeButtons.__updateRightSideOffice();
-                OfficeButtons.__updateLeftSideButtons(); OfficeButtons.__updateRightSideButtons();
-                this.SOUNDS.lightsHum.stop();
-            };
-        };
-
-        CameraTablet._flipDown.onComplete = () => CameraTablet._flipDown.visible = false;
-
-        CameraTablet._camFlipButton.onpointerenter = () => {
-            if (Game.die || Game.powerDown) return;
-            if (CameraTablet._flipUp.playing || CameraTablet._flipDown.playing) return;
-            this.SOUNDS.camFlip.play({});
-            if (!this.camUp) {
-                this.camUp = true;
-                this.powerUsage+=1;
-                CameraTablet._flipUp.visible = true;
-                CameraTablet._flipUp.gotoAndPlay(0);
-            } else {
-                this.powerUsage-=1;
-                this.camUp = false;
-                this.officeRender.visible = true;
-                CameraTablet._flipUp.visible = false;
-                CameraTablet._flipDown.visible = true;
-                CameraTablet._flipDown.gotoAndPlay(0);
-                this.SOUNDS.cams.stop();
-                Game.SOUNDS.camError1.stop();
-
-                Cams.blackBox.visible = false;
-                this.cameraRender.visible = false;
-            }
-        };
-        CameraTablet._camFlipButton.onpointerleave = (event) => {
-            
-        };
 
         //================================================
         //
@@ -214,7 +150,7 @@ export default class Game {
                 fill: 0xffffff,
                 fontFamily: 'FNAF',
                 align: 'center',
-                fontSize: 60 * Game.scale.x,
+                fontSize: 30 * (Game.scale.x*2),
             }
         }); this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, Cams.cameraBorder.y+15*Game.scale.y);
         this.currentNightText = new Text({text: `Night`,
@@ -230,23 +166,60 @@ export default class Game {
             style: {
                 fontFamily: 'FNAF',
                 fill: 0xffffff,
-                fontSize: 60*Game.scale.x,
+                fontSize: 30*(Game.scale.x*2),
             }
-        }); this.powerLevelDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
-        this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 32*Game.scale.x}});
-        this.usageDisplay.position.set(this.powerLevelDisplay.position.x, this.powerLevelDisplay.position.y-32);
+        });
+        this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 30*(Game.scale.x*2)}});
+        this.usageDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
+        
+
+        //===========================================
+        //
+
+
+        /**
+         * USAGE METER
+         */
+
+        this.usageBar = new Container();
+        for (let i = 1; i <= 5; i++) {
+            const g = new Graphics().rect(0, 0, 1, 1);
+            const darkerBar = new Graphics().rect(0, 0, 1, 1);
+            g.visible = false;
+            g.addChild(darkerBar);
+            switch(i) {
+                case 1: g.fill(0x00ff00); darkerBar.fill(0x00cc00); break;
+                case 2: g.fill(0x00ff00); darkerBar.fill(0x00cc00); break;
+                case 3: g.fill(0xffff00); darkerBar.fill(0xcccc00); break;
+                case 4: g.fill(0xff0000); darkerBar.fill(0xcc0000); break;
+                case 5: g.fill(0xff0000); darkerBar.fill(0xcc0000); break;
+            };
+            this.usageBar.addChild(g);
+        };
+        this.resizeUsageBars = () => {
+            let count = 0;
+            for (const rect of Object.values(this.usageBar.children)) {
+                rect.setSize(30*Game.scale.x, 45*Game.scale.y);
+                rect.position.set(this.usageDisplay.x+(this.usageDisplay.width*Game.scale.x)+((rect.width+5)*count)-(5*Game.scale.x), this.usageDisplay.y+(7.5*Game.scale.y));
+                rect.children[0].setSize(0.3, 1);
+                rect.children[0].position.set(1-0.3, 0);
+                count++;
+            };
+        }; this.resizeUsageBars();
+
+        this.powerLevelDisplay.position.set(this.usageDisplay.position.x, this.usageDisplay.y-this.usageBar.children[0].height-(5*Game.scale.y));
 
         //
         //
 
         //
 
-        const frag = await fetch('./assets/fake3d.frag').then(res => {if (res.ok) return res.text()} );
-        const vert = await fetch('./assets/fake3d.vert').then(res => {if (res.ok) return res.text()} );
+        this.frag = await fetch('./assets/fake3d.frag').then(res => {if (res.ok) return res.text()} );
+        this.vert = await fetch('./assets/fake3d.vert').then(res => {if (res.ok) return res.text()} );
 
         const fake3D = new Filter({
             glProgram: new GlProgram({
-                vertex: vert, fragment: frag
+                vertex: this.vert, fragment: this.frag
             }),
             resources: {
                 timeUniforms: {
@@ -256,13 +229,10 @@ export default class Game {
             }
         });
 
-        this.officeContainer.filters = [fake3D];
-        this._finalCameraShow.filters = [
+        this.__ofC = new Container();
+        this.__ofC.filters = [fake3D];
+        this._cameraShow.filters = [
             fake3D,
-            new NoiseFilter({
-                seed: Math.random(),
-                noise: 0.5,
-            }),
         ];
 
 
@@ -272,22 +242,20 @@ export default class Game {
          * Container layering
          */
 
-        this.displayHUDContainer.addChild(this._clockText, this.currentNightText, this.usageDisplay, this.powerLevelDisplay, CameraTablet._camFlipButton);
+        this.displayHUDContainer.addChild(this._clockText, this.currentNightText, this.usageDisplay, this.powerLevelDisplay, this.usageBar, CameraTablet.camFlipButton);
 
         this._cameraShow.addChild(Cams.stageSprites['19.png']);
-        this._finalCameraShow.addChild(this._cameraShow, Cams.blackBox);
+        this._finalCameraShow.addChild(this._cameraShow, Cams.blackBox, Cams.staticEffect);
         this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMapContainer, Cams.areaName, Cams.mapButtons);
         this.cameraRender.addChild(this._finalCameraShow, Cams.blipFlash1, this._cameraGUI);
-
-        this.camTabletContainer.addChild(CameraTablet._flipUp, CameraTablet._flipDown);
-        this._buttonsContainer.addChild(OfficeButtons._leftButtonClick, OfficeButtons._rightButtonClick);
-        this._doorContainer.addChild(Doors.leftDoorContainer, Doors.rightDoorContainer);
-        this.officeContainer.addChild(this.officeSpritesContainer, this._doorContainer, Jumpscares.foxyScare, Office.fanAnim, Office.plushiesContainer, this._buttonsContainer);
+        
+        this.__ofC.addChild(Office.sprite, Jumpscares.foxyScare, Doors.container, Office.fanAnim, Office.plushiesContainer, OfficeButtons.container);
+        this.officeContainer.addChild(this.__ofC, OfficeButtons.l_doorClick, OfficeButtons.l_lightClick, OfficeButtons.r_doorClick, OfficeButtons.r_lightClick, Office.freddyBoop);
 
         this.officeRender.addChild(
             Office._movementContainer,
             this.officeContainer,
-            this.camTabletContainer,
+            CameraTablet.tablet,
         );
 
         this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, this.winScreen);
@@ -299,6 +267,7 @@ export default class Game {
     static start(options) {
         this.devMode = options.dev || false;
 
+        Menus.bgMusic.stop();
         for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
         this.winScreen.alpha = 0;
 
@@ -335,7 +304,7 @@ export default class Game {
         this._clockText.text = `${this.clock} AM`;
 
         this.currentCam = "CAM1A";
-        CameraTablet._camFlipButton.visible = true;
+        CameraTablet.camFlipButton.visible = true;
         this.changeSprite(this._cameraShow, Cams.stageSprites['19.png']);
         Game.changeSprite(Cams.camsMapContainer, Cams.camsMapSprites[`1A.png`]);
 
@@ -360,22 +329,22 @@ export default class Game {
         OfficeButtons.__updateRightSideButtons();
         OfficeButtons.__updateRightSideOffice();
 
-        Doors.leftDoorCloseAnim.gotoAndStop(0);
-        Doors.rightDoorCloseAnim.gotoAndStop(0);
+        Doors.left.resetAnimations(); Doors.left.changeAnimation('close');
+        Doors.right.resetAnimations(); Doors.right.changeAnimation('close');
+
+        Doors.left.visible = true;
 
         this.camUp = false;
         this.cameraRender.visible = false;
-        CameraTablet._flipDown.visible = false;
-        CameraTablet._flipUp.visible = false;
-        CameraTablet._flipDown.gotoAndStop(0);
-        CameraTablet._flipUp.gotoAndStop(0);
+        CameraTablet.tablet.forEach(([key, animation]) => animation.visible = false);
+        CameraTablet.tablet.resetAnimations();
 
         Cams.blackBox.visible = false;
 
-        if (localStorage.getItem('Night_1_Finished')) Office.plushiesSprites['bonnie.png'].visible = true;
-        if (localStorage.getItem('Night_5_Finished')) Office.plushiesSprites['chica.png'].visible = true;
-        if (localStorage.getItem('Night_6_Finished')) Office.plushiesSprites['freddy.png'].visible = true;
-        if (localStorage.getItem('Power_Easter_Egg')) Office.plushiesSprites['powerbean'].visible = true;
+        if (localStorage.getItem('Night_1_Finished')) Office.plushies.sprites['bonnie.png'].visible = true;
+        if (localStorage.getItem('Night_5_Finished')) Office.plushies.sprites['chica.png'].visible = true;
+        if (localStorage.getItem('Night_6_Finished')) Office.plushies.sprites['freddy.png'].visible = true;
+        if (localStorage.getItem('Power_Easter_Egg')) Office.plushies.sprites['powerbean'].visible = true;
 
         this.officeContainer.position.set(0, 0);
         this.officeRender.visible = true;
@@ -436,7 +405,6 @@ export default class Game {
         if (this._powerTimer >= 0.99 && this.powerLevel > 0) {
             this._powerTimer = 0;
             this.powerLevel -= this.powerUsage/8.5;
-            this.usageDisplay.text = `Usage: ${Math.ceil(this.powerUsage)}`;
         }
         if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
         if (this.powerDown && !this.win) {
@@ -493,19 +461,23 @@ export default class Game {
         }
         if (this.powerUsage <= 0 && !this.powerDown) this.powerUsage = 1;
         this.powerLevelDisplay.text = `Power  left: ${Math.ceil(this.powerLevel)}%`;
+        let index = 0; for (const g of Object.values(this.usageBar.children)) { g.visible = this.powerUsage >= (index+1); index++ }
     }
 
     static _officemove() {
+        const movePercent = innerWidth*0.00525;
         if (this.officeContainer.x > -Office.margin ) {
-            if (Office._moveRight) this.officeContainer.x-=this.movePercent;
-            if (Office._innerMoveRight) this.officeContainer.x-=this.movePercent*2;
+            if (Office._moveRight) this.officeContainer.x-=movePercent;
+            if (Office._innerMoveRight) this.officeContainer.x-=movePercent;
             if (this.officeContainer.x < -Office.margin) this.officeContainer.x = -Office.margin;
         }
         if (this.officeContainer.x < Office.margin ) {
-            if (Office._moveLeft) this.officeContainer.x+=this.movePercent;
-            if (Office._innerMoveLeft) this.officeContainer.x+=this.movePercent*2;
+            if (Office._moveLeft) this.officeContainer.x+=movePercent;
+            if (Office._innerMoveLeft) this.officeContainer.x+=movePercent;
             if (this.officeContainer.x > Office.margin) this.officeContainer.x = Office.margin;
         }
+        const disX = (this.officeContainer.x/this.officeContainer.width) * Game.scale.x * -1;
+        Office.freddyBoop.y = Office.sprite.y-(355*Game.scale.y+(8*disX*Game.scale.y))
     }
 
     static updateLoop(ticker) {
@@ -530,8 +502,6 @@ export default class Game {
                 if (chance == 1 && !this.SOUNDS.circus.isPlaying) this.SOUNDS.circus.play();
                 if (chance == 2 && !this.SOUNDS.pirate.isPlaying) this.SOUNDS.pirate.play();
             }
-
-            this._finalCameraShow.filters[1].seed = Math.random();
 
             if (this.cameraRender.visible && this.currentCam!=='CAM6') {
                 if (this._cameraShow.x < 0 && !this.camMoveReverse && !this.camMovePause) {

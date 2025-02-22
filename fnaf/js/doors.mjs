@@ -1,87 +1,35 @@
-import { AnimatedSprite, Assets, Container, Sprite, Spritesheet } from "../../pixi.mjs";
+import SpriteLoader from "./spriteloader.mjs";
 import Game from "./game.mjs";
 import Office from "./office.mjs";
+import { Container } from "../../public/pixi.min.mjs";
 
 export default class Doors {
     static async init() {
 
         //
+        this.right = null; this.left = null;
 
-        const leftdoorjson = await Assets.load('./assets/sprites/doors/left/spritesheet.json');
-        const leftdoorsheet = new Spritesheet(await Assets.load('./assets/sprites/doors/left/spritesheet.png'), leftdoorjson.data);
-        await leftdoorsheet.parse();
-        this.leftDoorSprites = {}
-        for (const [key, value] of Object.entries(leftdoorsheet.textures)) {
-            this.leftDoorSprites[key] = new Sprite(value);
-            const entry = this.leftDoorSprites[key];
-            entry.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-            entry.position.set(-Office._currentSprite.width*0.107, 0*Game.scale.y);
+        const sides = ['left', 'right'];
+        
+        this.resize = (animSprite) => {
+            animSprite.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
+            animSprite.animationSpeed = 0.55;
+            animSprite.loop = false;
+        }
+        for (const side of sides) {
+            this[side] = await SpriteLoader.AnimatedSprite(`/doors/${side}/spritesheet`, this.resize);
         }
 
-        this.leftDoorContainer = new Container();
+        this.rightX = () => {return Office.sprite.width-Office.margin-this.right.width-(80*Game.scale.x*Office.scale);}
+        this.leftXOffset = 75;
+
+        this.left.position.set(-Office.margin+(this.leftXOffset*Game.scale.x*Office.scale), 0*Game.scale.y);
+        this.right.position.set(this.rightX(), 0*Game.scale.y);
+
+        this.container = new Container();
+        this.container.addChild(this.left, this.right);
 
         //
-
-        this.leftDoorCloseAnim = new AnimatedSprite(leftdoorsheet.animations.close);
-        this.leftDoorCloseAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.leftDoorCloseAnim.position.set(-Office.margin+(75*Game.scale.x*Office.scale), 0*Game.scale.y);
-        this.leftDoorCloseAnim.animationSpeed = 0.55;
-        this.leftDoorCloseAnim.loop = false;
-        this.leftDoorCloseAnim.onComplete = () => {
-            // Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["102.png"]);   
-        }
-
-        this.leftDoorOpenAnim = new AnimatedSprite(leftdoorsheet.animations.open);
-        this.leftDoorOpenAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.leftDoorOpenAnim.position.set(-Office.margin+(75*Game.scale.x*Office.scale), 0*Game.scale.y);
-        this.leftDoorOpenAnim.animationSpeed = 0.55;
-        this.leftDoorOpenAnim.loop = false;
-        this.leftDoorOpenAnim.onComplete = () => {
-            // Game.changeSprite(this.leftDoorContainer, this.leftDoorSprites["88.png"]);   
-        }
-
-        this.leftDoorContainer.addChild(this.leftDoorCloseAnim);
-
-        //
-
-        const rightdoorjson = await Assets.load('./assets/sprites/doors/right/spritesheet.json');
-        const rightdoorsheet = new Spritesheet(await Assets.load('./assets/sprites/doors/right/spritesheet.png'), rightdoorjson.data);
-        await rightdoorsheet.parse();
-        this.rightDoorSprites = {}
-        for (const [key, value] of Object.entries(rightdoorsheet.textures)) {
-            this.rightDoorSprites[key] = new Sprite(value);
-            const entry = this.rightDoorSprites[key];
-            entry.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-            entry.position.set(Office._currentSprite.width/1.55, 0*Game.scale.y);
-        }
-
-        this.rightDoorContainer = new Container();
-
-        //
-
-        const rightX = Office._currentSprite.width-Office.margin-this.rightDoorSprites['104.png'].width-(80*Game.scale.x*Office.scale)
-
-        this.rightDoorCloseAnim = new AnimatedSprite(rightdoorsheet.animations.close);
-        this.rightDoorCloseAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.rightDoorCloseAnim.position.set(rightX, 0*Game.scale.y);
-        this.rightDoorCloseAnim.animationSpeed = 0.55;
-        this.rightDoorCloseAnim.loop = false;
-        this.rightDoorCloseAnim.onComplete = () => {
-            // Game.changeSprite(this.leftDoorContainer, this.rightDoorSprites["102.png"]);   
-        }
-
-        this.rightDoorOpenAnim = new AnimatedSprite(rightdoorsheet.animations.open);
-        this.rightDoorOpenAnim.scale.set(Game.scale.x*1.2, Game.scale.y*1.2);
-        this.rightDoorOpenAnim.position.set(rightX, 0*Game.scale.y);
-        this.rightDoorOpenAnim.animationSpeed = 0.55;
-        this.rightDoorOpenAnim.loop = false;
-        this.rightDoorOpenAnim.onComplete = () => {
-            console.log(this.rightDoorSprites["118.png"])
-            // Game.changeSprite(this.rightDoorContainer, this.rightDoorSprites["118.png"]);   
-        }
-
-        this.rightDoorContainer.addChild(this.rightDoorCloseAnim);
-
-
+    
     }
 }

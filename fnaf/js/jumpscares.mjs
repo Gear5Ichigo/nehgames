@@ -1,4 +1,4 @@
-import { AnimatedSprite, Assets, Spritesheet } from "../../pixi.mjs";
+import { AnimatedSprite, Assets, Spritesheet } from "../../public/pixi.min.mjs";
 import Game from "./game.mjs";
 import Office from "./office.mjs";
 

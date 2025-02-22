@@ -1,5 +1,6 @@
-import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite } from '../../pixi.mjs';
+import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite } from '../../public/pixi.min.mjs';
 import Game from './game.mjs';
+import SpriteLoader from './spriteloader.mjs';
 
 export default class Cams {
 
@@ -42,6 +43,11 @@ export default class Cams {
         this.blipFlash1.setSize(innerWidth, innerHeight);
         this.blipFlash1.loop = false;
         this.blipFlash1.onComplete = () => this.blipFlash1.visible = false; //this.blipFlash1.animationSpeed = 0.05;
+
+        this.staticEffect = await SpriteLoader.AnimatedSprite('/static/spritesheet@0.5x', (animSprite) => {
+            animSprite.alpha = 0.33;
+            animSprite.setSize(innerWidth, innerHeight);
+        }); this.staticEffect.playAnimation();
 
         const camsMapJson = await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png.json');
         const camsMapSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png'), camsMapJson.data);

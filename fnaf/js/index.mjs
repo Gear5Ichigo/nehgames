@@ -1,6 +1,13 @@
-import { AnimatedSprite, Application, Assets, Container, Graphics, Sprite, Text } from '../../pixi.mjs';
+import { Sound } from '../../public/pixi-sound.mjs';
+import { Application, Assets, Container, Graphics, Text } from '../../public/pixi.min.mjs';
+import * as PIXI from '../../public/pixi.min.mjs';
+import CameraTablet from './cameratablet.mjs';
+import Doors from './doors.mjs';
 import './game.mjs';
 import Game from './game.mjs';
+import Menus from './menus.mjs';
+import Office from './office.mjs';
+import OfficeButtons from './officebuttons.mjs';
 
 (async () => {
 
@@ -42,30 +49,7 @@ import Game from './game.mjs';
         {alias: 'fnaf', src: './assets/fonts/five-nights-at-freddys.ttf', data: { family: "FNAF" }}
     ]); await Assets.loadBundle('fonts');
 
-    const GameRender = new Container();
-    GameRender.sortableChildren = true;
-    await Game.init(GameRender);
-
-    window.onresize = (event) => {
-        app.renderer.resize(window);
-    }
-
-    //**
-    // program here 
-    // */
-
-    const bgMusic = new Audio('./1-04. Thank You For Your Patience.mp3');
-    bgMusic.volume = 0.75;
-    bgMusic.loop = true;
-    bgMusic.play();
-
-    const MenuRender = new Container();
-
-    const SettingsMenu = new Container();
-    const NightsMenu = new Container();
-    const MainMenu = new Container();
-
-    function setRenderState(render, state) {
+    app.setRenderState = (render, state) => {
         render.children.forEach(element => {
             if (element !== state) {
                 element.visible = false;
@@ -73,92 +57,101 @@ import Game from './game.mjs';
         });
     }
 
-    const StartGameButton = new Button(innerWidth/2, innerHeight/2, 250*Game.scale.x, 80*Game.scale.y, "Start", MainMenu);
-    StartGameButton.pivot.set(250/2, 80/2);
-    StartGameButton.onpointerdown = (event) => {
-       setRenderState(MenuRender, NightsMenu);
-    }
-    const SettingsButton = new Button(innerWidth/2, innerHeight/2+(100*Game.scale.y), 250*Game.scale.x, 80*Game.scale.y, "Settings", MainMenu);
-    SettingsButton.pivot.set(250/2, 80/2);
-    SettingsButton.onpointerdown = (event) => {
-        setRenderState(MenuRender, SettingsMenu)
-    }
-    const NightsBackButton = new Button(innerWidth/2-(333*Game.scale.x), innerHeight/2-220, 140, 40, "Back", NightsMenu);
-    NightsBackButton.onpointerdown = (event) => {
-        setRenderState(MenuRender, MainMenu)
-    }
+    await Game.init(app);
+    await Menus.init(app);
 
-    let NightsSelection = [];
-    for (let night = 0; night < 7; night++) {
-        const b = new Button(innerWidth/2-(100*Game.scale.x), innerHeight/2+(55*night*Game.scale.y)-200, 200*Game.scale.x, 50*Game.scale.y, `Night ${night+1}`, NightsMenu);
-        if (night==6) b.text.text = "MAX - 4/20";
-        b.pivot.set(40, b.height/2);
-        b.onpointerdown = () => {
-            if (night == 0) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 0, chicaLevel: 0, freddylevel: 0, foxyLevel: 0});
-            } else if (night == 1) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 3, chicaLevel: 1, freddylevel: 0, foxyLevel: 1});
-            } else if (night == 2) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 0, chicaLevel: 5, freddylevel: 1, foxyLevel: 2});
-            } else if (night == 3) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 2, chicaLevel: 4, freddylevel: 3, foxyLevel: 6});
-            } else if (night == 4) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 5, chicaLevel: 7, freddylevel: 3, foxyLevel: 5});
-            } else if (night == 5) {
-                Game.start({ night: night+1,
-                    bonnieLevel: 10, chicaLevel: 12, freddylevel: 4, foxyLevel: 16});
-            } else {
-                Game.start({ night: night+1,
-                    bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, foxyLevel: 20});
-            }
-            bgMusic.pause();
-            setRenderState(app.stage, Game.render);
+    const saveme = Sound.from('./assets/sounds/snd_save.wav');
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key.toLowerCase() === "f" && Game._gameActive) {
+            Game.forceGameOver();
+            saveme.play();
         }
-        NightsSelection.push(b);
+    })
+
+    window.onresize = (event) => {
+        Game.scale = {x: innerWidth/1600, y: innerHeight/720};
+
+        app.canvas.width = innerWidth;
+        app.canvas.height = innerHeight;
+
+        Game.__ofC.filters = [new PIXI.Filter({
+            glProgram: new PIXI.GlProgram({
+                vertex: Game.vert, fragment: Game.frag
+            }),
+            resources: {
+                timeUniforms: {
+                    uScaleX: {value: Game.scale.x, type: 'f32'},
+                    uScaleY: {value: Game.scale.y, type: 'f32'}
+                }
+            }
+        })];
+
+        Office.sprite.width = innerWidth*Office.scale; Office.sprite.height = innerHeight;
+        Office.sprite.position.set(innerWidth/2, innerHeight/2);
+        Office.margin = (Office.sprite.width-Office.sprite.width/Office.scale)/2;
+
+        Game.officeContainer.x *= Game.scale.x;
+
+        Office.fanAnim.forEach(([key, anim]) => Office.fanResize(anim));
+        Office.freddyBoop.setSize(10*Game.scale.x, 10*Game.scale.y);
+        Office.freddyBoop.x *= Game.scale.x;
+        Office.plushiesResize();
+        Office.movementResize();
+
+        Doors.left.forEach(([key, anim]) => Doors.resize(anim));
+        Doors.right.forEach(([key, anim]) => Doors.resize(anim));
+        Doors.left.position.set(-Office.margin+(Doors.leftXOffset*Game.scale.x*Office.scale), 0*Game.scale.y);
+        Doors.right.position.set(Doors.rightX(), 0*Game.scale.y);
+
+        OfficeButtons.rightButton.resize();
+        OfficeButtons.leftButton.resize();
+
+        const btnSize = OfficeButtons.calcBtnSize();
+        
+        OfficeButtons.l_doorClick.setSize(btnSize[0], btnSize[1]);
+        OfficeButtons.l_lightClick.setSize(btnSize[0], btnSize[1]);
+        OfficeButtons.l_doorClick.position.set(OfficeButtons.leftX(), OfficeButtons.bY());
+        OfficeButtons.l_lightClick.position.set(OfficeButtons.leftX(), OfficeButtons.bY2());
+
+        OfficeButtons.r_doorClick.setSize(btnSize[0], btnSize[1]);
+        OfficeButtons.r_lightClick.setSize(btnSize[0], btnSize[1]);
+
+        CameraTablet.camFlipButton.resize();
+        CameraTablet.tablet.forEach(([key, anim]) => anim.setSize(innerWidth, innerHeight));
+
+        Game._clockText.style.fontSize = 30*(Game.scale.x*2);
+        Game.powerLevelDisplay.style.fontSize = 30*(Game.scale.x*2);
+        Game.usageDisplay.style.fontSize = 30*(Game.scale.x*2);
+        Game.resizeUsageBars()
+
+        //
+
+        Menus.resize();
+        
     }
+    
 
-    let totalDelta = 0;
+    //**
+    // program here 
+    // */
 
-    const changelog = new Text({
-        text: `${await fetch('./assets/changelog.txt').then(res => {return res.text()})}`,
-        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.015 }
-    });
-    changelog.position.set(10, 10); MainMenu.addChild(changelog)
+    app.stage.addChild(Game.render, Menus.week1);
+    app.setRenderState(app.stage, Menus.week1);
 
-    const freddles = new Text({
-        text: 'JOE',
-        style: { fill: 0xffffff, fontFamily: 'Volter', fontSize: innerWidth*0.015 },
-        x: 10*Game.scale.x, y: 10 *Game.scale.y
-    }); freddles.position.set(10, 10);
-
-    // Game.displayHUDContainer.addChild(freddles);
-
-    MenuRender.addChild(MainMenu, NightsMenu, SettingsMenu);
-    setRenderState(MenuRender, MainMenu);
-
-    //
-
-    app.stage.addChild(Game.render, MenuRender);
-    setRenderState(app.stage, MenuRender);
     app.canvas.style.display = "block";
     document.body.appendChild(app.canvas)
 
     app.ticker.maxFPS = 60;
     app.ticker.add((ticker) => {
-        totalDelta+=ticker.deltaTime;
         if (Game.render.visible) {
             Game.updateLoop(ticker);
-            freddles.text = `FREDDY: ${Game.animatronics.freddy.currentState}`;
             if (!Game._gameActive) {
-                bgMusic.play();
-                setRenderState(app.stage, MenuRender);
-                setRenderState(MenuRender, MainMenu);
+                app.setRenderState(app.stage, Menus.week1);
+                app.setRenderState(Menus.week1, Menus.titleScreen);
+                Menus.resetMenu(app);
             }
         }
+        Menus.updateLoop(ticker);
     });
 })();

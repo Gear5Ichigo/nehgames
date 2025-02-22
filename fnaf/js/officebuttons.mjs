@@ -1,134 +1,113 @@
-import { Assets, Spritesheet, Sprite, Container, Graphics } from '../../pixi.mjs';
+import { Assets, Spritesheet, Sprite, Container, Graphics } from '../../public/pixi.min.mjs';
 import Doors from './doors.mjs';
 import Game from './game.mjs'
 import Office from './office.mjs';
+import SpriteLoader from './spriteloader.mjs';
 
 export default class OfficeButtons {
     static async init() {
 
-        const bScale = 1.2;
-        const btnSize = [40*Game.scale.x*bScale, 72*Game.scale.y*bScale];
+        this.bScale = 1.2;
+        this.calcBtnSize = () => {return [40*Game.scale.x*this.bScale, 82*Game.scale.y*this.bScale]}
+        
+        const btnSize = this.calcBtnSize();
 
         //
 
-        const leftbuttonjson = await Assets.load('./assets/sprites/buttons/left/spritesheet.json');
-        const leftbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/left/spritesheet.png'), leftbuttonjson.data);
-        await leftbuttonsheet.parse();
-
-        this._leftButtonSprites = {};
-        for (const [key, value] of Object.entries(leftbuttonsheet.textures)) {
-            this._leftButtonSprites[key] = new Sprite(value);
-            const entry = this._leftButtonSprites[key];
-            entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(-Office.margin, innerHeight*0.375);
-        };
-        this._leftButtonCurrentSprite = this._leftButtonSprites["122.png"];
+        this.leftButton = await SpriteLoader.Sprite('/buttons/left/spritesheet');
+        this.leftButton.swapTexture('122.png');
+        this.leftButton.resize = () => {
+            this.leftButton.scale.set(Game.scale.x*this.bScale, Game.scale.y*this.bScale);
+            this.leftButton.position.set(-Office.margin, innerHeight*0.375);
+        }; this.leftButton.resize();
 
         //
 
         this._leftButtonClick = new Container();
         this._lbSpriteConainer = new Container();
 
-        const leftX = this._leftButtonCurrentSprite.x+(30*Game.scale.x*bScale);
-        const bY = this._leftButtonCurrentSprite.y+(52*Game.scale.y*bScale);
-        const bY2 = this._leftButtonCurrentSprite.y+(155*Game.scale.y*bScale);
+        this.leftX = () => {return this.leftButton.x+(30*Game.scale.x*this.bScale)}
+        this.bY = () => {return this.leftButton.y+(52*Game.scale.y*this.bScale)}
+        this.bY2 = () => {return this.leftButton.y+(131*Game.scale.y*this.bScale)}
 
-        const l_doorClick = new Graphics()
-        .rect(leftX, bY, btnSize[0], btnSize[1]).fill(0xff00ff); l_doorClick.alpha = 0.0;
-        l_doorClick.eventMode = 'static';
-        l_doorClick.onpointerdown = () => {
-            if (
-                Game.die || Game.powerDown ||
-                Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE"
-            ) {
-                Game.SOUNDS.doorError.play();
-                return;
-            };
+        function canClick() {return Game.die || Game.powerDown || Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE"}
+
+        this.l_doorClick = new Graphics()
+        .rect(0, 0, btnSize[0], btnSize[1]).fill(0xff00ff);
+        this.l_doorClick.position.set(this.leftX(), this.bY()-(27*Game.scale.y));
+        this.l_doorClick.alpha = 0.0;
+        this.l_doorClick.eventMode = 'dynamic';
+        this.l_doorClick.onpointerdown = () => {
+            if (canClick()) { Game.SOUNDS.doorError.play(); return; };
             this.__left_door();
             this.__updateLeftSideButtons(); this.__updateRightSideButtons();
         }
 
-        const l_lightClick = new Graphics()
-        .rect(leftX, bY2, btnSize[0], btnSize[1]).fill(0xff00ff); l_lightClick.alpha = 0.0;
-        l_lightClick.eventMode = 'static';
-        l_lightClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown ||
-                Game.animatronics.bonnie.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
-                Game.SOUNDS.doorError.play();
-                return;
-            };
+        this.l_lightClick = new Graphics()
+        .rect(0, 0, btnSize[0], btnSize[1]).fill(0xff00ff);
+        this.l_lightClick.position.set(this.leftX(), this.bY2()+(20*Game.scale.y))
+        this.l_lightClick.alpha = 0.0;
+        this.l_lightClick.eventMode = 'dynamic';
+        this.l_lightClick.onpointerdown = () => {
+            if (canClick()) { Game.SOUNDS.doorError.play(); return; };
             this.__left_light();
             this.__updateLeftSideButtons(); this.__updateRightSideButtons();
             this.__updateLeftSideOffice();
         };
         
-        this._lbSpriteConainer.addChild(this._leftButtonCurrentSprite);
-        this._leftButtonClick.addChild(this._lbSpriteConainer, l_doorClick, l_lightClick);
+        this._leftButtonClick.addChild(this.leftButton);
 
         //
 
-        const rightbuttonjson = await Assets.load('./assets/sprites/buttons/right/spritesheet.json');
-        const rightbuttonsheet = new Spritesheet(await Assets.load('./assets/sprites/buttons/right/spritesheet.png'), rightbuttonjson.data);
-        await rightbuttonsheet.parse();
-
-        this._rightButtonSprites = {}
-        for (const [key, value] of Object.entries(rightbuttonsheet.textures)) {
-            this._rightButtonSprites[key] = new Sprite(value)
-            const entry = this._rightButtonSprites[key];
-            entry.scale.set(Game.scale.x*bScale, Game.scale.y*bScale);
-            entry.position.set(Office._currentSprite.width-Office.margin-entry.width, innerHeight*0.375);
-        };
-        this._rightButtonCurrentSprite = this._rightButtonSprites["134.png"];
+        this.rightButton = await SpriteLoader.Sprite('/buttons/right/spritesheet');
+        this.rightButton.swapTexture('134.png');
+        this.rightButton.resize = () => {
+            this.rightButton.scale.set(Game.scale.x*(this.bScale+0.), Game.scale.y*(this.bScale+0.));
+            this.rightButton.position.set(Office.sprite.width-Office.margin-this.rightButton.width, innerHeight*0.375)
+        }; this.rightButton.resize();
 
         //
 
-        const rightX = this._rightButtonCurrentSprite.x+(22*Game.scale.x*bScale)
+        this.rightX = () => {return this.rightButton.x+(22*Game.scale.x*this.bScale)}
 
         this._rightButtonClick = new Container();
-        this._rbSpriteContainer = new Container();
 
-        const r_doorClick = new Graphics()
-        .rect(rightX, bY, btnSize[0], btnSize[1]*0.95).fill(0x00ff00); r_doorClick.alpha = 0;
-        r_doorClick.eventMode = 'static';
-        r_doorClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown ||
-                Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
-                Game.SOUNDS.doorError.play();
-                return;
-            };
+        this.r_doorClick = new Graphics()
+        .rect(this.rightX(), this.bY()-(20*Game.scale.y), btnSize[0], btnSize[1]*0.95).fill(0x00ff00);
+        this.r_doorClick.alpha = 0.0;
+        this.r_doorClick.eventMode = 'static';
+        this.r_doorClick.onpointerdown = () => {
+            if (canClick()) { Game.SOUNDS.doorError.play(); return; };
             this.__right_door();
             this.__updateRightSideButtons(); this.__updateLeftSideButtons();
         }
 
-        const r_lightClick = new Graphics()
-        .rect(rightX, bY2*0.975, btnSize[0], btnSize[1]*0.95).fill(0x00ff00); r_lightClick.alpha = 0.0;
-        r_lightClick.eventMode = 'static';
-        r_lightClick.onpointerdown = () => {
-            if (Game.die || Game.powerDown ||
-                Game.animatronics.chica.currentState==="OFFICE" || Game.animatronics.freddy.currentState==="OFFICE") {
-                Game.SOUNDS.doorError.play();
-                return;
-            };
+        this.r_lightClick = new Graphics()
+        .rect(this.rightX(), this.bY2()+(7*Game.scale.y), btnSize[0], btnSize[1]).fill(0x00ff00);
+        this.r_lightClick.alpha = 0.0;
+        this.r_lightClick.eventMode = 'static';
+        this. r_lightClick.onpointerdown = (event) => {
+            event.hitAll = true;
+            if (canClick()) { Game.SOUNDS.doorError.play(); return; };
             this.__right_light();
             this.__updateRightSideButtons(); this.__updateLeftSideButtons();
             this.__updateRightSideOffice();
         }
 
-        this._rbSpriteContainer.addChild(this._rightButtonCurrentSprite);
-        this._rightButtonClick.addChild(this._rbSpriteContainer, r_doorClick, r_lightClick)
+        this._rightButtonClick.addChild(this.rightButton)
 
-        this.container = new Container();
+        this.container = new Container(); this.container.addChild(this._leftButtonClick, this._rightButtonClick);
     }
 
     static __updateRightSideButtons() {
         if (Game.rightLightOn && Game.rightDoorOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["47.png"])
+            this.rightButton.swapTexture('47.png');
         } else if (Game.rightLightOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["131.png"])
+            this.rightButton.swapTexture('131.png');
         } else if (Game.rightDoorOn) {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["135.png"])
+            this.rightButton.swapTexture('135.png');
         } else {
-            Game.changeSprite(this._rbSpriteContainer, this._rightButtonSprites["134.png"])
+            this.rightButton.swapTexture('134.png');
         }
     }
 
@@ -139,25 +118,24 @@ export default class OfficeButtons {
                 const random = Math.random()*100;
                 if (random <= 6) {
                     if (!localStorage.getItem("Power_Easter_Egg")) localStorage.setItem("Power_Easter_Egg", true);
-                    Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127power.png"]);
+                    Office.sprite.swapTexture('127power.png');
                     Game.SOUNDS.powerscare.play();
                     return
                 }
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["227.png"]);
-            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["127.png"]);
-        } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
+                Office.sprite.swapTexture('227.png');
+            } else Office.sprite.swapTexture('127.png');
+        } else Office.sprite.swapTexture('39.png');
     }
 
     static __updateLeftSideButtons() {
-
         if (Game.leftLightOn && Game.leftDoorOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["130.png"])
+            this.leftButton.swapTexture('130.png');
         } else if (Game.leftLightOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["125.png"])
+            this.leftButton.swapTexture('125.png');
         } else if (Game.leftDoorOn) {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["124.png"])
+            this.leftButton.swapTexture('124.png');
         } else {
-            Game.changeSprite(this._lbSpriteConainer, this._leftButtonSprites["122.png"])
+            this.leftButton.swapTexture('122.png');
         }
     }
 
@@ -166,14 +144,14 @@ export default class OfficeButtons {
             if (Game.animatronics.bonnie.currentState === "ATDOOR") {
                 const random = Math.random()*100;
                 if (random <= 10) {
-                    Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58goku.png"]);
+                    Office.sprite.swapTexture('58goku.png');
                     Game.SOUNDS.gokuscare.play();
                     return;
                 }
-                Game.changeSprite(Game.officeSpritesContainer, Office._sprites["225.png"]);
+                Office.sprite.swapTexture('225.png'); // bonnie
                 Game.SOUNDS.windowscare.play({});
-            } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["58.png"]);
-        } else Game.changeSprite(Game.officeSpritesContainer, Office._sprites["39.png"]);
+            } else Office.sprite.swapTexture('58.png');
+        } else Office.sprite.swapTexture('39.png');
     }
 
 
@@ -210,35 +188,31 @@ export default class OfficeButtons {
     }
 
     static __left_door() {
-        if (Doors.leftDoorOpenAnim.playing || Doors.leftDoorCloseAnim.playing) return;
+        if (Doors.left.animations.open.playing || Doors.left.animations.close.playing) return;
         if (!Game.leftDoorOn) {
             Game.powerUsage += 1;
             Game.leftDoorOn = true;
-            Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorCloseAnim);
-            Doors.leftDoorCloseAnim.gotoAndPlay(0);
+            Doors.left.playAnimation('close');
             Game.SOUNDS.doorShut.play();
         } else {
             Game.powerUsage -= 1;
             Game.leftDoorOn = false
-            Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorOpenAnim);
-            Doors.leftDoorOpenAnim.gotoAndPlay(0);
+            Doors.left.playAnimation('open');
             Game.SOUNDS.doorShut.play();
         }
     }
 
     static __right_door() {
-        if (Doors.rightDoorCloseAnim.playing || Doors.rightDoorOpenAnim.playing) return;
+        if (Doors.right.animations.close.playing || Doors.right.animations.open.playing) return;
         if (!Game.rightDoorOn) {
             Game.powerUsage += 1;
             Game.rightDoorOn = true;
-            Game.changeSprite(Doors.rightDoorContainer, Doors.rightDoorCloseAnim);
-            Doors.rightDoorCloseAnim.gotoAndPlay(0);
+            Doors.right.playAnimation('close');
             Game.SOUNDS.doorShut.play();
         } else {
             Game.powerUsage -= 1;
             Game.rightDoorOn = false
-            Game.changeSprite(Doors.rightDoorContainer, Doors.rightDoorOpenAnim);
-            Doors.rightDoorOpenAnim.gotoAndPlay(0);
+            Doors.right.playAnimation('open');
             Game.SOUNDS.doorShut.play();
         }
     }
