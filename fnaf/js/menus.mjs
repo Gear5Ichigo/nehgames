@@ -9,15 +9,25 @@ export default class Menus {
         class Button extends Text {
             constructor(text, onpointerdown) {
                 super({text: text, style: {fontFamily: 'Consolas', fill: 0xffffff, fontSize: 50, align: 'left'}});
+                this.defaultText = text;
                 this.eventMode = 'static';
                 this.onpointerdown = onpointerdown;
                 this.anchor = 0.5;
-                this.onpointerenter = () => this.text = `>> ${text}`;
-                this.onpointerleave = () => this.text = text;
+                this.onpointerenter = () => this.text = `>> ${this.defaultText}`;
+                this.onpointerleave = () => this.text = this.defaultText;
+            }
+
+            updateDefaultText(text) {
+                this.text = text;
+                this.defaultText = text;
             }
         }
 
         this.openingTransition = false;
+        this.settings = {
+            disablePlushies: false,
+            devMode: false,
+        };
 
         this.bgMusic = Sound.from({ url: './assets/sounds/1-04. Thank You For Your Patience.wav', volume: 0.75, loop: true });
         this.staticSound = Sound.from({ url: './assets/sounds/static2.wav', volume: 0.33, loop: true });
@@ -63,21 +73,51 @@ export default class Menus {
         }); this.newGame.anchor = 0;
 
         this.continueGame = new Button('Continue', () => {
-
+            const currentNight = parseInt(localStorage.getItem('Current_Night'));
+            switch (currentNight) {
+                case 1: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                case 2: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 3, chicaLevel: 1, foxyLevel: 1, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                case 3: Game.start({night: currentNight, freddylevel: 1, bonnieLevel: 0, chicaLevel: 5, foxyLevel: 2, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                case 4: Game.start({night: currentNight, freddylevel: 2, bonnieLevel: 2, chicaLevel: 4, foxyLevel: 6, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                case 5: Game.start({night: currentNight, freddylevel: 3, bonnieLevel: 5, chicaLevel: 7, foxyLevel: 5, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                case 6: Game.start({night: currentNight, freddylevel: 4, bonnieLevel: 10, chicaLevel: 12, foxyLevel: 16, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                default: break;
+            }
         }); this.continueGame.anchor = 0;
 
         this._420 = new Button('Night 7', () => {
             Game.start({ night: 7,
-                bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, foxyLevel: 20});
+                bonnieLevel: 20, chicaLevel: 20, freddylevel: 20, foxyLevel: 20,
+            settings: this.settings});
             app.setRenderState(app.stage, Game.render);
             this.bgMusic.stop(); this.staticSound.stop();
         }); this._420.anchor = 0;
 
         //
 
-        this.settings = new Button('Settings', () => app.setRenderState(this.week1, this.settingsOptions)); this.settings.anchor = 0;
-        this.disablePlushies = new Button('Disable Plushies: OFF', () => {}); this.disablePlushies.anchor = 0;
-        this.devMode = new Button('Developer Mode: OFF', () => {}); this.devMode.anchor = 0;
+        this.gotosettings = new Button('Settings', () => app.setRenderState(this.week1, this.settingsOptions)); this.gotosettings.anchor = 0;
+        this.disablePlushies = new Button('Disable Plushies: OFF', () => {
+            if (!this.settings.disablePlushies) {
+                this.settings.disablePlushies = true;
+                this.disablePlushies.updateDefaultText('Disable Plushies: ON');
+                this.disablePlushies.text = '>> Disable Plushies: ON';
+            } else {
+                this.settings.disablePlushies = false;
+                this.disablePlushies.updateDefaultText('Disable Plushies: OFF');
+                this.disablePlushies.text = '>> Disable Plushies: OFF';
+            }
+        }); this.disablePlushies.anchor = 0;
+        this.devMode = new Button('Developer Mode: OFF', () => {
+            if (!this.settings.devMode) {
+                this.settings.devMode = true;
+                this.devMode.updateDefaultText('Developer Mode: ON');
+                this.devMode.text = '>> Developer Mode: ON';
+            } else {
+                this.settings.devMode = false;
+                this.devMode.updateDefaultText('Developer Mode: OFF');
+                this.devMode.text = '>> Developer Mode: OFF';
+            }
+        }); this.devMode.anchor = 0;
         this.cheats = new Button('Cheats', () => {}); this.cheats.anchor = 0;
         this.clearData = new Button('Clear Local Data', () => {}); this.clearData.anchor = 0;
 
@@ -102,7 +142,7 @@ export default class Menus {
             this.newGame.style.fontSize = 32*(innerWidth/innerHeight);
             this._420.style.fontSize = 32*(innerWidth/innerHeight);
             this.continueGame.style.fontSize = 32*(innerWidth/innerHeight);
-            this.settings.style.fontSize = 32*(innerWidth/innerHeight);
+            this.gotosettings.style.fontSize = 32*(innerWidth/innerHeight);
             this.achievments.style.fontSize = 32*(innerWidth/innerHeight);
 
             this.title.position.set(150*Game.scale.x, 15*Game.scale.y);
@@ -111,8 +151,8 @@ export default class Menus {
             this.newGame.position.set(this.title.x, this.title.height+this.newGame.height);
             this.continueGame.position.set(this.title.x, this.newGame.y+this._420.height);
             this._420.position.set(this.title.x, this.continueGame.y+this._420.height);
-            this.settings.position.set(this.title.x, this._420.y+this.settings.height*1.5);
-            this.achievments.position.set(this.settings.x+this.achievments.width, this.settings.y+this.settings.height);
+            this.gotosettings.position.set(this.title.x, this._420.y+this.gotosettings.height*1.5);
+            this.achievments.position.set(this.gotosettings.x+this.achievments.width, this.gotosettings.y+this.gotosettings.height);
 
             this.disablePlushies.position.set(this.backButton1.x, this.backButton1.y+this.disablePlushies.height*2);
             this.devMode.position.set(this.backButton1.x, this.disablePlushies.y+this.devMode.height);
@@ -123,7 +163,7 @@ export default class Menus {
 
         this.achievementsDisplay.addChild(this.backButton1, this.a1, this.a2, this.a3, this.a4);
         this.settingsOptions.addChild(this.backButton2, this.disablePlushies, this.devMode, this.cheats, this.clearData);
-        this.titleScreenButtons.addChild(this.newGame, this.continueGame, this._420, this.settings, this.achievments);
+        this.titleScreenButtons.addChild(this.newGame, this.continueGame, this._420, this.gotosettings, this.achievments);
         this.titleContent.addChild(this.freddyBackground, this.menuStatic, this.titleScreenButtons, this.title, this.changelog);
         this.titleScreen.addChild(this.openingPicture, this.blackBox, this.titleContent);
         this.week1.addChild(this.titleScreen, this.settingsOptions, this.achievementsDisplay);
@@ -141,6 +181,10 @@ export default class Menus {
     }
 
     static resetMenu(app) {
+        if (localStorage.getItem('Current_Night')) {
+            this.continueGame.visible = true;
+            this.continueGame.updateDefaultText(`Continue Night ${localStorage.getItem('Current_Night')}`);
+        } else this.continueGame.visible = false;
         this.blackBox.alpha = 0;
         this.titleContent.alpha = 1;
         this.openingTransition = false;
@@ -176,8 +220,8 @@ export default class Menus {
             if (countedTime>=maxWait) {
                 this.bgMusic.stop();
                 Game.start({night: 1,
-                    freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0
-                });
+                    freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0,
+                    settings: this.settings});
                 app.setRenderState(app.stage, Game.render);
                 contentWaitOut.destroy(); return;
             }

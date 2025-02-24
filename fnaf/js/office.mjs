@@ -42,7 +42,7 @@ export default class Office {
         });
 
         this.plushies.sprites['powerbean'] = new Sprite(await Assets.load('./assets/sprites/plushies/powerbean.png'));
-        this.plushies.sprites['powerbean'].visible = true;
+        this.plushies.sprites['powerbean'].visible = false;
 
         this.plushiesResize = () => {
             this.plushies.forEach(([key, sprite]) => sprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y));
@@ -82,7 +82,7 @@ export default class Office {
 
         this.innerLeftBox = new Graphics()
         .rect(0, 0, this.leftBox.width/2, innerHeight)
-        .fill(0x00ff00); this.innerLeftBox.alpha = 0;
+        .fill(0x00ff00); this.innerLeftBox.alpha = 0.2;
         this.innerLeftBox.eventMode = 'static';
         this.innerLeftBox.onpointerenter = (event) => {this._innerMoveLeft = true; this._moveLeft = true;}
         this.innerLeftBox.onpointerleave = (event) => {
@@ -105,7 +105,7 @@ export default class Office {
 
         this.innerRightBox = new Graphics()
         .rect(innerWidth-this.rightBox.width/2, 0, this.rightBox.width/2, innerHeight)
-        .fill(0x00ff00); this.innerRightBox.alpha = 0;
+        .fill(0x00ff00); this.innerRightBox.alpha = 0.2;
         this.innerRightBox.eventMode = 'static';
         this.innerRightBox.onpointerenter = (event) => {this._innerMoveRight = true; this._moveRight = true;}
         this.innerRightBox.onpointerleave = (event) => {

@@ -209,6 +209,10 @@ export default class Game {
 
         this.powerLevelDisplay.position.set(this.usageDisplay.position.x, this.usageDisplay.y-this.usageBar.children[0].height-(5*Game.scale.y));
 
+        this.officespritevisible = new Text({text: "SHOW OFFICE SPRITE", style: {fill: 0xffffff, fontFamily: 'FNAF', fontSize: 66*Game.scale.x}, x: innerWidth/2});
+        this.officespritevisible.eventMode = 'static';
+        this.officespritevisible.onpointerdown = () => {Office.sprite.visible = !(Office.sprite.visible == true)}
+
         //
         //
 
@@ -248,14 +252,14 @@ export default class Game {
         this._finalCameraShow.addChild(this._cameraShow, Cams.blackBox, Cams.staticEffect);
         this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMapContainer, Cams.areaName, Cams.mapButtons);
         this.cameraRender.addChild(this._finalCameraShow, Cams.blipFlash1, this._cameraGUI);
-        
         this.__ofC.addChild(Office.sprite, Jumpscares.foxyScare, Doors.container, Office.fanAnim, Office.plushiesContainer, OfficeButtons.container);
-        this.officeContainer.addChild(this.__ofC, OfficeButtons.l_doorClick, OfficeButtons.l_lightClick, OfficeButtons.r_doorClick, OfficeButtons.r_lightClick, Office.freddyBoop);
+        this.officeContainer.addChild( this.__ofC, OfficeButtons.l_doorClick, OfficeButtons.l_lightClick, OfficeButtons.r_doorClick, OfficeButtons.r_lightClick, Office.freddyBoop);
 
         this.officeRender.addChild(
             Office._movementContainer,
             this.officeContainer,
             CameraTablet.tablet,
+            this.officespritevisible
         );
 
         this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, this.winScreen);
@@ -265,9 +269,10 @@ export default class Game {
     }
 
     static start(options) {
-        this.devMode = options.dev || false;
+        console.log(options.settings);
+        this.settings = options.settings;
 
-        Menus.bgMusic.stop();
+        Menus.bgMusic.stop(); Menus.staticSound.stop();
         for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
         this.winScreen.alpha = 0;
 
@@ -278,6 +283,8 @@ export default class Game {
 
         this.night = options.night || 1;
         this.currentNightText.text = `Night ${this.night}`;
+
+        if (this.night != 7) localStorage.setItem(`Current_Night`, this.night);
 
         this.randomSoundTimer = 0;
         this.timeElapsed = 0;
@@ -341,10 +348,27 @@ export default class Game {
 
         Cams.blackBox.visible = false;
 
+        if (options.settings.devMode) {
+        }
+
         if (localStorage.getItem('Night_1_Finished')) Office.plushies.sprites['bonnie.png'].visible = true;
         if (localStorage.getItem('Night_5_Finished')) Office.plushies.sprites['chica.png'].visible = true;
         if (localStorage.getItem('Night_6_Finished')) Office.plushies.sprites['freddy.png'].visible = true;
         if (localStorage.getItem('Power_Easter_Egg')) Office.plushies.sprites['powerbean'].visible = true;
+
+        if (options.settings.disablePlushies) Office.plushies.forEach(([key, value]) => value.visible = false);
+
+        if (options.settings.devMode) {
+            Office.freddyBoop.alpha = 0.5;
+            OfficeButtons.l_lightClick.alpha = 0.5; OfficeButtons.r_lightClick.alpha = 0.5;
+            OfficeButtons.l_doorClick.alpha = 0.5; OfficeButtons.r_doorClick.alpha = 0.5;
+            this.officespritevisible.visible = true;
+        } else {
+            Office.freddyBoop.alpha = 0;
+            OfficeButtons.l_lightClick.alpha = 0; OfficeButtons.r_lightClick.alpha = 0;
+            OfficeButtons.l_doorClick.alpha = 0; OfficeButtons.r_doorClick.alpha = 0;
+            this.officespritevisible.visible = false;
+        }
 
         this.officeContainer.position.set(0, 0);
         this.officeRender.visible = true;
@@ -386,6 +410,9 @@ export default class Game {
 
             this._clockText.text = `${this.clock}  AM`;
         }
+        if (this.settings.devMode) {
+            this._clockText.text = `${this.clock},${this.timeElapsed}`;
+        }
         if (this.clock == 6 && !this.SOUNDS.winSound.isPlaying && !this.win) {
             this.win = true;
             for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
@@ -394,6 +421,7 @@ export default class Game {
         if (this.win && this.winScreen.alpha < 1) this.winScreen.alpha += 0.1125*dt;
         if (this.winScreen.alpha>=1  && !this.SOUNDS.winCheer.isPlaying) {
             this.SOUNDS.winCheer.play();
+            if (this.night > 6) localStorage.setItem(`Current_Night`, this.night+1);
             if (!localStorage.getItem(`Night_${this.night}_Finished`)) localStorage.setItem(`Night_${this.night}_Finished`, true);
             setTimeout(() => {this.forceGameOver();}, 2500);
         }
@@ -460,7 +488,9 @@ export default class Game {
             OfficeButtons.__updateLeftSideButtons(); OfficeButtons.__updateRightSideButtons();
         }
         if (this.powerUsage <= 0 && !this.powerDown) this.powerUsage = 1;
-        this.powerLevelDisplay.text = `Power  left: ${Math.ceil(this.powerLevel)}%`;
+        if (this.settings.devMode) {
+            this.powerLevelDisplay.text = `Power  left: ${(this.powerLevel)}%`;
+        } else this.powerLevelDisplay.text = `Power  left: ${Math.ceil(this.powerLevel)}%`;
         let index = 0; for (const g of Object.values(this.usageBar.children)) { g.visible = this.powerUsage >= (index+1); index++ }
     }
 
