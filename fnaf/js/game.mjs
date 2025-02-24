@@ -20,12 +20,12 @@ export default class Game {
             powerscare: Sound.from({url: './assets/sounds/powerscare.wav', volume: 1.5}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
-            winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.7}),
+            winSound: Sound.from({url: './assets/sounds/chimes 2.wav', volume: 0.5}),
             camBlip: Sound.from({url: './assets/sounds/blip3.wav'}),
             cams: Sound.from({url: './assets/sounds/MiniDV_Tape_Eject_1.wav', loop: true}),
             doorBaning: Sound.from({url: './assets/sounds/knock2.wav', volume: 1.5}),
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
-            winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.5}),
+            winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.33}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
             boop: Sound.from({url: './assets/sounds/PartyFavorraspyPart_AC01__3.wav', volume: 0.125}),
@@ -211,7 +211,11 @@ export default class Game {
 
         this.officespritevisible = new Text({text: "SHOW OFFICE SPRITE", style: {fill: 0xffffff, fontFamily: 'FNAF', fontSize: 66*Game.scale.x}, x: innerWidth/2});
         this.officespritevisible.eventMode = 'static';
-        this.officespritevisible.onpointerdown = () => {Office.sprite.visible = !(Office.sprite.visible == true)}
+        this.officespritevisible.onpointerdown = () => {Office.sprite.visible = !(Office.sprite.visible == true)};
+
+        this.sethour = new Text({text: "SET HOUR = 1 SECOND", style: {fill: 0xffffff, fontFamily: 'FNAF', fontSize: 66*Game.scale.x}, x: innerWidth/2, y: this.officespritevisible.y+66});
+        this.sethour.eventMode = 'static';
+        this.sethour.onpointerdown = () => {this._ONE_HOUR = 1};
 
         //
         //
@@ -259,7 +263,7 @@ export default class Game {
             Office._movementContainer,
             this.officeContainer,
             CameraTablet.tablet,
-            this.officespritevisible
+            this.officespritevisible, this.sethour
         );
 
         this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, this.winScreen);
@@ -288,7 +292,7 @@ export default class Game {
 
         this.randomSoundTimer = 0;
         this.timeElapsed = 0;
-        this._ONE_HOUR = 70;
+        this._ONE_HOUR = 66;
         this.clock = 12;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
@@ -348,9 +352,6 @@ export default class Game {
 
         Cams.blackBox.visible = false;
 
-        if (options.settings.devMode) {
-        }
-
         if (localStorage.getItem('Night_1_Finished')) Office.plushies.sprites['bonnie.png'].visible = true;
         if (localStorage.getItem('Night_5_Finished')) Office.plushies.sprites['chica.png'].visible = true;
         if (localStorage.getItem('Night_6_Finished')) Office.plushies.sprites['freddy.png'].visible = true;
@@ -362,12 +363,12 @@ export default class Game {
             Office.freddyBoop.alpha = 0.5;
             OfficeButtons.l_lightClick.alpha = 0.5; OfficeButtons.r_lightClick.alpha = 0.5;
             OfficeButtons.l_doorClick.alpha = 0.5; OfficeButtons.r_doorClick.alpha = 0.5;
-            this.officespritevisible.visible = true;
+            this.officespritevisible.visible = true; this.sethour.visible = true;
         } else {
             Office.freddyBoop.alpha = 0;
             OfficeButtons.l_lightClick.alpha = 0; OfficeButtons.r_lightClick.alpha = 0;
             OfficeButtons.l_doorClick.alpha = 0; OfficeButtons.r_doorClick.alpha = 0;
-            this.officespritevisible.visible = false;
+            this.officespritevisible.visible = false; this.sethour.visible = false;
         }
 
         this.officeContainer.position.set(0, 0);
@@ -415,13 +416,13 @@ export default class Game {
         }
         if (this.clock == 6 && !this.SOUNDS.winSound.isPlaying && !this.win) {
             this.win = true;
+            if (this.night < 6) localStorage.setItem('Current_Night', this.night+1);
             for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
             this.SOUNDS.winSound.play();
         }
         if (this.win && this.winScreen.alpha < 1) this.winScreen.alpha += 0.1125*dt;
         if (this.winScreen.alpha>=1  && !this.SOUNDS.winCheer.isPlaying) {
             this.SOUNDS.winCheer.play();
-            if (this.night > 6) localStorage.setItem(`Current_Night`, this.night+1);
             if (!localStorage.getItem(`Night_${this.night}_Finished`)) localStorage.setItem(`Night_${this.night}_Finished`, true);
             setTimeout(() => {this.forceGameOver();}, 2500);
         }

@@ -74,6 +74,7 @@ export default class Menus {
 
         this.continueGame = new Button('Continue', () => {
             const currentNight = parseInt(localStorage.getItem('Current_Night'));
+            console.log(currentNight);
             switch (currentNight) {
                 case 1: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
                 case 2: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 3, chicaLevel: 1, foxyLevel: 1, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
