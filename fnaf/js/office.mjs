@@ -89,7 +89,7 @@ export default class Office {
             if (event.global.x < 0) return;
             const detect = new Graphics().rect(0, 0, this.leftBox.width/2, innerHeight).fill(0x000000);
             if (detect.containsPoint(event.global)) return;
-            this._innerMoveLeft = false; this._moveLeft = false;
+            this._innerMoveLeft = false; this._moveLeft = true;
         };
 
         this.rightBox = new Graphics()

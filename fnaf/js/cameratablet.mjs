@@ -4,6 +4,7 @@ import Game from "./game.mjs";
 import OfficeButtons from "./officebuttons.mjs";
 import SpriteLoader from "./spriteloader.mjs";
 import Jumpscares from "./jumpscares.mjs";
+import Office from "./office.mjs";
 
 export default class CameraTablet {
     static async init() {
@@ -71,6 +72,8 @@ export default class CameraTablet {
         if (Game.die || Game.powerDown) return;
         if (this.tablet.animations.flip.playing || this.tablet.animations.reverseFlip.playing ) return;
         Game.SOUNDS.camFlip.play({});
+        Office._moveRight = false; Office._innerMoveRight = false;
+        Office._moveLeft = false; Office._innerMoveRight = false;
         if (!Game.camUp) {
             Game.camUp = true;
             Game.powerUsage+=1;

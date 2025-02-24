@@ -292,7 +292,7 @@ export default class Game {
 
         this.randomSoundTimer = 0;
         this.timeElapsed = 0;
-        this._ONE_HOUR = 66;
+        this._ONE_HOUR = options.hourLength || 65;
         this.clock = 12;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
