@@ -130,25 +130,26 @@ export default class Menus {
         //
 
         class NumberRange extends Container {
-            constructor(min, max, label) {
+            constructor(min, max, label, step) {
                 super();
+                const _step = step || 1;
                 this.value = 0; this.min = min; this.max = this.max;
 
                 const style = {fontFamily: 'Consolas', fill: 0xffffff}
 
                 this.addButton = new Text({text: '>', style: style});
                 this.addButton.eventMode = 'static';
-                this.addButton.onpointerdown = () => { if (this.value < max) this.value++; this.numberDisplay.text = this.value; }
+                this.addButton.onpointerdown = () => { if (this.value < max) this.value+=_step; this.numberDisplay.text = Math.floor(this.value*10)/10 ; }
                 this.addButton.position.set(50, 0);
 
                 this.subtractButton = new Text({text: '<', style: style});
                 this.subtractButton.eventMode = 'static';
-                this.subtractButton.onpointerdown = () => { if (this.value > min) this.value--; this.numberDisplay.text = this.value }
+                this.subtractButton.onpointerdown = () => { if (this.value > min) this.value-=_step; this.numberDisplay.text = Math.floor(this.value*10)/10 ; }
                 this.subtractButton.position.set(-50, 0);
 
                 this.numberDisplay = new Text({text: '0', style: style});
 
-                this.label = new Text({text: 'A.I. Level', style: style});
+                this.label = new Text({text: label, style: style});
                 this.label.position.set(this.subtractButton.x, -30*Game.scale.y);
                 this.label.anchor = 0;
 
@@ -157,16 +158,34 @@ export default class Menus {
         }
 
         this.customNightMenu = new Container();
-        this.freddyAi = new NumberRange(0, 20);
-        this.bonnieAi = new NumberRange(0, 20);
-        this.chicaAi = new NumberRange(0, 20);
-        this.foxyAi = new NumberRange(0, 20);
-        this.customHour = new NumberRange(1, 100000); this.customHour.value = 65; this.customHour.numberDisplay.text = 65; this.customHour.label.text = 'Hour Length (Seconds)';
+
+        this.freddyAi = new NumberRange(0, 20, 'A.I. Level');
+        this.bonnieAi = new NumberRange(0, 20, 'A.I. Level');
+        this.chicaAi = new NumberRange(0, 20, 'A.I. Level');
+        this.foxyAi = new NumberRange(0, 20, 'A.I. Level');
+
+        this.customHour = new NumberRange(1, 100000, 'Hour (Secs)');
+        this.customHour.value = 65;
+        this.customHour.numberDisplay.text = 65;
+
+        this.customUsage = new NumberRange(0.2, 5, 'Power Usage', 0.1);
+        this.customUsage.value = 1;
+        this.customUsage.numberDisplay.text = 1;
+
+        this.set20Ai = new Text({text: 'Set All A.I. 20', style: {fill:0xffffff, fontFamily: 'Consolas'}});
+        this.set20Ai.eventMode = 'static';
+        this.set20Ai.onpointerdown = () => {
+            const animtronics = ['freddy', 'bonnie', 'chica', 'foxy'];
+            for (const name of animtronics) {
+                this[`${name}Ai`].value = 20; this[`${name}Ai`].numberDisplay.text = 20;
+            }
+        }
+
         this.readyCustomNight = new Button('READY', () => {
             Game.start({
                 night: 7,
                 freddylevel: this.freddyAi.value, bonnieLevel: this.bonnieAi.value, chicaLevel: this.chicaAi.value, foxyLevel: this.foxyAi.value,
-                hourLength: this.customHour.value,
+                hourLength: this.customHour.value, usageMultiplier: this.customUsage.value,
                 settings: this.settings
             });
             app.setRenderState(app.stage, Game.render); this.bgMusic.stop(); this.staticSound.stop();
@@ -201,7 +220,9 @@ export default class Menus {
             this.bonnieAi.position.set(this.freddyAi.x+this.bonnieAi.width+50*Game.scale.x, this.freddyAi.y);
             this.chicaAi.position.set(this.bonnieAi.x+this.chicaAi.width+50*Game.scale.x, this.freddyAi.y);
             this.foxyAi.position.set(this.chicaAi.x+this.foxyAi.width+50*Game.scale.x, this.freddyAi.y);
-            this.customHour.position.set(this.freddyAi.x, this.freddyAi.y+this.customHour.height+10*Game.scale.y)
+            this.customHour.position.set(this.freddyAi.x, this.freddyAi.y+this.customHour.height+10*Game.scale.y);
+            this.customUsage.position.set(this.customHour.x+this.customUsage.width+55*Game.scale.x, this.customHour.y);
+            this.set20Ai.position.set(this.freddyAi.x-this.set20Ai.width*1.5, this.freddyAi.y);
 
             this.readyCustomNight.position.set(this.customHour.x+250*Game.scale.x, this.customHour.y+this.customHour.height+10*Game.scale.y);
 
@@ -212,7 +233,7 @@ export default class Menus {
 
         }; this.resize()
 
-        this.customNightMenu.addChild(this.backButton3, this.freddyAi, this.bonnieAi, this.chicaAi, this.foxyAi, this.readyCustomNight, this.customHour);
+        this.customNightMenu.addChild(this.backButton3, this.freddyAi, this.bonnieAi, this.chicaAi, this.foxyAi, this.readyCustomNight, this.customHour, this.customUsage, this.set20Ai);
         this.achievementsDisplay.addChild(this.backButton1, this.a1, this.a2, this.a3, this.a4);
         this.settingsOptions.addChild(this.backButton2, this.disablePlushies, this.devMode, this.cheats, this.clearData);
         this.titleScreenButtons.addChild(this.newGame, this.continueGame, this.customizeNight, this.gotosettings, this.achievments);

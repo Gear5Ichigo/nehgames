@@ -5,7 +5,7 @@ import SpriteLoader from './spriteloader.mjs';
 export default class Cams {
 
     static  __makeCamButton(cam, x, y, callBack) {
-        const mapref = this.camsMapSprites[`${cam}.png`];
+        const mapref = this.camsMap;
         const b = new Graphics()
         .rect(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y, 56*Game.scale.x, 37*Game.scale.y)
         .fill(0xff0000); b.alpha = 0; b.eventMode = 'static'
@@ -16,7 +16,7 @@ export default class Cams {
             this.blipFlash1.gotoAndPlay(0); this.blipFlash1.visible = true;
             
             Game.SOUNDS.camBlip.play({volume: 1.5})
-            Game.changeSprite(this.camsMapContainer, this.camsMapSprites[`${cam}.png`]);
+            this.camsMap.swapTexture(`${cam}.png`);
             this._swapTimer = 0;
             this._prevCamButton = null;
             callBack();
@@ -49,19 +49,13 @@ export default class Cams {
             animSprite.setSize(innerWidth, innerHeight);
         }); this.staticEffect.playAnimation();
 
-        const camsMapJson = await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png.json');
-        const camsMapSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Map/spritesheet@0.5x.png'), camsMapJson.data);
-        await camsMapSheet.parse();
-        this.camsMapSprites = {};
-        for (const [key, value] of Object.entries(camsMapSheet.textures)) {
-            this.camsMapSprites[key] = new Sprite(value);
-            const entry =  this.camsMapSprites[key];
-            entry.scale.set(Game.scale.x*1.15, Game.scale.y*1.125);
-            entry.anchor = 0.5;
-            entry.position.set(this.cameraBorder.width-entry.width/2, this.cameraBorder.height-entry.height/2+(30*Game.scale.y));
-        }; const mapref = this.camsMapSprites['1A.png'];
-        this.camsMapContainer = new Container();
-        this.camsMapContainer.addChild(this.camsMapSprites['1A.png']);
+        this.camsMap = await SpriteLoader.Sprite('/cams/Map/spritesheet@0.5x');
+        this.camsMap.swapTexture('1A.png')
+        this.camsMap.resize = () => {
+            this.camsMap.width *= Game.scale.x*1.15; this.camsMap.height*=Game.scale.y*1.125;
+            this.camsMap.anchor = 0.5;
+            this.camsMap.position.set(this.cameraBorder.width-this.camsMap.width/2, this.cameraBorder.height-this.camsMap.height/2+(30*Game.scale.y));
+        }; this.camsMap.resize();
 
         this.areaName = new Text({text: "Stage",
             style: {
@@ -69,109 +63,19 @@ export default class Cams {
                 fontFamily: 'FNAF',
                 fontSize: 120*(Game.scale.x/2)
             }
-        }); this.areaName.position.set(mapref.x-mapref.width/2, mapref.y-mapref.height/2-(35*Game.scale.y),)
+        }); this.areaName.position.set(this.camsMap.x-this.camsMap.width/2, this.camsMap.y-this.camsMap.height/2-(35*Game.scale.y),)
 
         //
 
-        const stageJson = await Assets.load('./assets/sprites/cams/Stage/spritesheet.json');
-        const stageSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Stage/spritesheet.png'), stageJson.data);
-        await stageSheet.parse();
-        this.stageSprites = {};
-        for (const [key, value] of Object.entries(stageSheet.textures)) {
-            this.stageSprites[key] = new Sprite(value);
-            const entry = this.stageSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const backStageJson = await Assets.load('./assets/sprites/cams/Backstage/spritesheet.json');
-        const backStageSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Backstage/spritesheet@0.5x.png'), backStageJson.data);
-        await backStageSheet.parse();
-        this.backStageSprites = {};
-        for (const [key, value] of Object.entries(backStageSheet.textures)) {
-            this.backStageSprites[key] = new Sprite(value);
-            const entry = this.backStageSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const diningJson = await Assets.load('./assets/sprites/cams/Dining Room/spritesheet.json');
-        const diningSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Dining Room/spritesheet@0.5x.png'), diningJson.data);
-        await diningSheet.parse();
-        this.diningSprites = {};
-        for (const [key, value] of Object.entries(diningSheet.textures)) {
-            this.diningSprites[key] = new Sprite(value);
-            const entry = this.diningSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const pirateCoveJson = await Assets.load('./assets/sprites/cams/Pirate Cove/spritesheet.json');
-        const priateCoveSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Pirate Cove/spritesheet.png'), pirateCoveJson.data);
-        await priateCoveSheet.parse();
-        this.pirateCoveSprites = {};
-        for (const [key, value] of Object.entries(priateCoveSheet.textures)) {
-            this.pirateCoveSprites[key] = new Sprite(value);
-            const entry = this.pirateCoveSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const supplyClosetJson = await Assets.load('./assets/sprites/cams/Utility Closet/spritesheet.json');
-        const supplyClosetSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Utility Closet/spritesheet.png'), supplyClosetJson.data);
-        await supplyClosetSheet.parse();
-        this.supplyClosetSprites = {};
-        for (const [key, value] of Object.entries(supplyClosetSheet.textures)) {
-            this.supplyClosetSprites[key] = new Sprite(value);
-            const entry = this.supplyClosetSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const leftHallJson = await Assets.load('./assets/sprites/cams/Left Hallway/spritesheet.json');
-        const leftHallSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Left Hallway/spritesheet.png'), leftHallJson.data);
-        await leftHallSheet.parse();
-        this.leftHallSprites = {};
-        for (const [key, value] of Object.entries(leftHallSheet.textures)) {
-            this.leftHallSprites[key] = new Sprite(value);
-            const entry = this.leftHallSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const leftCornerJson = await Assets.load('./assets/sprites/cams/Left Corner/spritesheet.json');
-        const leftCornerSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Left Corner/spritesheet.png'), leftCornerJson.data);
-        await leftCornerSheet.parse();
-        this.leftCornerSprites = {};
-        for (const [key, value] of Object.entries(leftCornerSheet.textures)) {
-            this.leftCornerSprites[key] = new Sprite(value);
-            const entry = this.leftCornerSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const restRoomsJson = await Assets.load('./assets/sprites/cams/Toilets/spritesheet.json');
-        const restRoomsSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Toilets/spritesheet.png'), restRoomsJson.data);
-        await restRoomsSheet.parse();
-        this.restRoomsSprites = {};
-        for (const [key, value] of Object.entries(restRoomsSheet.textures)) {
-            this.restRoomsSprites[key] = new Sprite(value);
-            const entry = this.restRoomsSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const rightHallJson = await Assets.load('./assets/sprites/cams/Right Hallway/spritesheet.json');
-        const rightHallSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Right Hallway/spritesheet.png'), rightHallJson.data);
-        await rightHallSheet.parse();
-        this.rightHallSprites = {};
-        for (const [key, value] of Object.entries(rightHallSheet.textures)) {
-            this.rightHallSprites[key] = new Sprite(value);
-            const entry = this.rightHallSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
-
-        const rightCornerJson = await Assets.load('./assets/sprites/cams/Right Corner/spritesheet.json');
-        const rightCornerSheet = new Spritesheet(await Assets.load('./assets/sprites/cams/Right Corner/spritesheet.png'), rightCornerJson.data);
-        await rightCornerSheet.parse();
-        this.rightCornerSprites = {};
-        for (const [key, value] of Object.entries(rightCornerSheet.textures)) {
-            this.rightCornerSprites[key] = new Sprite(value);
-            const entry = this.rightCornerSprites[key];
-            entry.setSize(innerWidth*1.2, innerHeight);
-        }
+        const areas = ['Stage', 'Backstage', 'Dining Room', 'Pirate Cove', 'Utility Closet', 'Left Hallway', 'Left Corner', 'Right Hallway', 'Right Corner', 'Restrooms'];
+        for (const area of areas) {
+            const json = await Assets.load(`./assets/sprites/cams/${area}/spritesheet@0.5x.json`);
+            const spritesheet = new Spritesheet(await Assets.load(`./assets/sprites/cams/${area}/spritesheet@0.5x.png`), json.data);
+            await spritesheet.parse();
+            this[area.replace(/ /g,'').toLowerCase()] = spritesheet.textures;
+        };
+        this.showArea = new Sprite(Object.values(this.stage)[0]);
+        this.showArea.setSize(innerWidth*1.2, innerHeight);
 
         const kitchen = new Graphics()
         .rect(0, 0, innerWidth, innerHeight)
@@ -201,11 +105,12 @@ export default class Cams {
                 this._swapTimer += dt;
                 if (this._swapTimer >= 0.5) {
                     this._swapTimer = 0;
-                    if (this.camsMapContainer.children[0] !== this.camsMapSprites['Complete_Map.png']) {
-                        this._prevCamButton = this.camsMapContainer.children[0];
-                        Game.changeSprite(this.camsMapContainer, this.camsMapSprites['Complete_Map.png']);
+                    if (this.camsMap.texture !== this.camsMap.spritesheet.textures['Complete_Map.png']) {
+                        this._prevCamButton = Game.currentCam.substring(3)+'.png';
+                        this.camsMap.swapTexture('Complete_Map.png');
                     } else {
-                        Game.changeSprite(this.camsMapContainer, this._prevCamButton);
+                        console.log(this._prevCamButton)
+                        this.camsMap.swapTexture(this._prevCamButton);
                     }
                 }
             }
@@ -302,24 +207,24 @@ export default class Cams {
             Game._cameraShow.x = 0;
             Game.changeSprite(Game._cameraShow, kitchen);
         });
-        this.__makeCamButton('4A', 0, 95, () => {
+        this.__makeCamButton('4A', 0, 95, () => { ///////////////////here
             this.areaName.text = 'East Hall';
             if (Game.animatronics.chica.currentState === "CAM4A") {
-                Game.changeSprite(Game._cameraShow, this.rightHallSprites['221.png']);
+                this.showArea.texture = this.righthallway['221.png'];
             } else if (Game.animatronics.freddy.currentState === "CAM4A") {
-                Game.changeSprite(Game._cameraShow, this.rightHallSprites['487.png']);
+                this.showArea.texture = this.righthallway['487.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.rightHallSprites['67.png']);
+                this.showArea.texture = this.righthallway['67.png'];
             }
         });
         this.__makeCamButton('4B', 0, 138, () => {
             this.areaName.text = 'E. Hall Corner';
             if (Game.animatronics.chica.currentState === "CAM4B") {
-                Game.changeSprite(Game._cameraShow, this.rightCornerSprites['220.png']);
+                this.showArea.texture = this.rightcorner['220.png'];
             } else if (Game.animatronics.freddy.currentState === "CAM4B") {
-                Game.changeSprite(Game._cameraShow, this.rightCornerSprites['486.png']);
+                this.showArea.texture = this.rightcorner['486.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.rightCornerSprites['49.png']);
+                this.showArea.texture = this.rightcorner['49.png'];
             }
         });
     }

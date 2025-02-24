@@ -252,9 +252,8 @@ export default class Game {
 
         this.displayHUDContainer.addChild(this._clockText, this.currentNightText, this.usageDisplay, this.powerLevelDisplay, this.usageBar, CameraTablet.camFlipButton);
 
-        this._cameraShow.addChild(Cams.stageSprites['19.png']);
-        this._finalCameraShow.addChild(this._cameraShow, Cams.blackBox, Cams.staticEffect);
-        this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMapContainer, Cams.areaName, Cams.mapButtons);
+        this._finalCameraShow.addChild(Cams.showArea, Cams.blackBox, Cams.staticEffect);
+        this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMap, Cams.areaName, Cams.mapButtons);
         this.cameraRender.addChild(this._finalCameraShow, Cams.blipFlash1, this._cameraGUI);
         this.__ofC.addChild(Office.sprite, Jumpscares.foxyScare, Doors.container, Office.fanAnim, Office.plushiesContainer, OfficeButtons.container);
         this.officeContainer.addChild( this.__ofC, OfficeButtons.l_doorClick, OfficeButtons.l_lightClick, OfficeButtons.r_doorClick, OfficeButtons.r_lightClick, Office.freddyBoop);
@@ -293,6 +292,7 @@ export default class Game {
         this.randomSoundTimer = 0;
         this.timeElapsed = 0;
         this._ONE_HOUR = options.hourLength || 65;
+        this.pUsageMultiplier = options.usageMultiplier || 1;
         this.clock = 12;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
@@ -316,8 +316,8 @@ export default class Game {
 
         this.currentCam = "CAM1A";
         CameraTablet.camFlipButton.visible = true;
-        this.changeSprite(this._cameraShow, Cams.stageSprites['19.png']);
-        Game.changeSprite(Cams.camsMapContainer, Cams.camsMapSprites[`1A.png`]);
+        Cams.showArea.texture = Cams.stage['19.png']
+        Cams.camsMap.swapTexture('1A.png');
 
         this.animatronics = {};
 
@@ -433,7 +433,8 @@ export default class Game {
         this._powerTimer += dt;
         if (this._powerTimer >= 0.99 && this.powerLevel > 0) {
             this._powerTimer = 0;
-            this.powerLevel -= this.powerUsage/8.5;
+            console.log((this.powerUsage/8.5)*this.pUsageMultiplier, this.pUsageMultiplier);
+            this.powerLevel -= (this.powerUsage/8.5)*this.pUsageMultiplier;
         }
         if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
         if (this.powerDown && !this.win) {
@@ -535,16 +536,16 @@ export default class Game {
             }
 
             if (this.cameraRender.visible && this.currentCam!=='CAM6') {
-                if (this._cameraShow.x < 0 && !this.camMoveReverse && !this.camMovePause) {
-                    this._cameraShow.x += innerWidth*0.0005;
+                if (Cams.showArea.x < 0 && !this.camMoveReverse && !this.camMovePause) {
+                    Cams.showArea.x += innerWidth*0.0005;
                 }
-                if (this._cameraShow.x >= 0) {
+                if (Cams.showArea.x >= 0) {
                     this.camMoveReverse = true;
                 }
-                if (this._cameraShow.x > -this._cameraShow.width*0.165 && this.camMoveReverse && !this.camMovePause) {
-                    this._cameraShow.x -= innerWidth*0.0005;
+                if (Cams.showArea.x > -Cams.showArea.width*0.165 && this.camMoveReverse && !this.camMovePause) {
+                    Cams.showArea.x -= innerWidth*0.0005;
                 }
-                if (this._cameraShow.x <= -this._cameraShow.width*0.165) {
+                if (Cams.showArea.x <= -Cams.showArea.width*0.165) {
                     this.camMoveReverse = false; this.camMovePause = true;
                 }
                 if (this.camMovePause) {
