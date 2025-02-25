@@ -92,6 +92,10 @@ export default class Cams {
             x: innerWidth/2-(166*Game.scale.x), y: innerHeight/2-(144*Game.scale.y)
         }));
 
+        this.foxyrun = await SpriteLoader.AnimatedSprite('/foxyrun/spritesheet@0.5x', (as) => {
+            
+        }); this.foxyrun.playAnimation('main');
+
         this.blackBox = new Graphics()
         .rect(0, 0, innerWidth*1.2, innerHeight)
         .fill(0x000000);

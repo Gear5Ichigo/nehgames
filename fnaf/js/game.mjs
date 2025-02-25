@@ -28,7 +28,7 @@ export default class Game {
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.33}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav', preload: true}),
-            musicbox: Sound.from({url: './assets/sounds/music box.wav', preload: true}),
+            musicbox: Sound.from({url: './assets/sounds/music box.wav', volume: 0.66, preload: true}),
             boop: Sound.from({url: './assets/sounds/PartyFavorraspyPart_AC01__3.wav', volume: 0.125}),
 
             circus: Sound.from({url: './assets/sounds/circus.wav', volume: 0.15}),
@@ -267,7 +267,7 @@ export default class Game {
             this.officespritevisible, this.sethour
         );
 
-        this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, this.winScreen);
+        this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, Cams.foxyrun, this.winScreen);
 
         //
 
@@ -323,6 +323,7 @@ export default class Game {
         CameraTablet.camFlipButton.visible = true;
         Cams.showArea.texture = Cams.stage['19.png']
         Cams.camsMap.swapTexture('1A.png');
+        this.displayHUDContainer.visible = true;
 
         this.animatronics = {};
 
@@ -438,6 +439,7 @@ export default class Game {
 
     static _powerDownSequence(deltaTime) {
         if (this.powerDown && !this.win) {
+            if (this.camUp) CameraTablet.flip();
             this.powerDownElapsed+=deltaTime;
             if (!this.initialPowerdown) {
                 this.initialPowerdown = true;
@@ -449,8 +451,7 @@ export default class Game {
                 this.SOUNDS.cams.stop();
 
                 this.rightLightOn = false; this.leftLightOn = false;
-
-                if (this.camUp) CameraTablet.flip();
+                this.displayHUDContainer.visible = false;
 
                 Office.sprite.swapTexture('304.png')
                 Office.fanAnim.visible = false;

@@ -10,7 +10,7 @@ export default class CameraTablet {
     static async init() {
 
         this.camFlipButton = new Sprite(await Assets.load('./assets/sprites/420.png'));
-        this.camFlipButton.anchor = 0.5; this.camFlipButton.alpha = 0.5;
+        this.camFlipButton.anchor = 0.5; this.camFlipButton.alpha = 0.33;
         this.camFlipButton.eventMode = 'static';
         this.camFlipButton.resize = () => {
             this.camFlipButton.scale.set(Game.scale.x, Game.scale.y);
