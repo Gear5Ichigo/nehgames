@@ -1,4 +1,4 @@
-import { Sound } from "../../public/pixi-sound.mjs";
+import { sound, Sound } from "../../public/pixi-sound.mjs";
 import { Assets, Container, Graphics, Sprite, Text, Ticker } from "../../public/pixi.min.mjs";
 import Game from "./game.mjs";
 import SpriteLoader from "./spriteloader.mjs";
@@ -29,8 +29,9 @@ export default class Menus {
             devMode: false,
         };
 
-        this.bgMusic = Sound.from({ url: './assets/sounds/1-04. Thank You For Your Patience.wav', volume: 0.75, loop: true });
-        this.staticSound = Sound.from({ url: './assets/sounds/static2.wav', volume: 0.33, loop: true });
+        sound.disableAutoPause = true;
+        this.bgMusic = Sound.from({ url: './assets/sounds/1-04. Thank You For Your Patience.wav', volume: 0.75, loop: true, singleInstance: true, preload: true});
+        this.staticSound = Sound.from({ url: './assets/sounds/static2.wav', volume: 0.33, loop: true, singleInstance: true, preload: true});
 
         this.titleScreen = new Container();
         this.titleScreenButtons = new Container();
