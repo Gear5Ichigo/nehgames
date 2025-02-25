@@ -159,6 +159,8 @@ export default class Menus {
 
         this.customNightMenu = new Container();
 
+        this.icons = await SpriteLoader.SpriteCollection('/customnight/spritesheet@0.5x', (s) => {s.anchor.set(0, 0)});
+
         this.freddyAi = new NumberRange(0, 20, 'A.I. Level');
         this.bonnieAi = new NumberRange(0, 20, 'A.I. Level');
         this.chicaAi = new NumberRange(0, 20, 'A.I. Level');
@@ -168,7 +170,7 @@ export default class Menus {
         this.customHour.value = 65;
         this.customHour.numberDisplay.text = 65;
 
-        this.customUsage = new NumberRange(0.2, 5, 'Power Usage', 0.1);
+        this.customUsage = new NumberRange(0.2, 10, 'Power Usage', 0.1);
         this.customUsage.value = 1;
         this.customUsage.numberDisplay.text = 1;
 
@@ -209,12 +211,15 @@ export default class Menus {
 
             this.title.position.set(150*Game.scale.x, 15*Game.scale.y);
             this.changelog.position.set(this.title.x+this.changelog.width, 10*Game.scale.y)
-            this.backButton1.position.set(this.title.position.x, this.title.position.y); this.backButton2.position.set(this.title.position.x, this.title.position.y); this.backButton3.position.set(this.title.position.x, this.title.position.y);
             this.newGame.position.set(this.title.x, this.title.height+this.newGame.height);
             this.continueGame.position.set(this.title.x, this.newGame.y+this.customizeNight.height);
             this.customizeNight.position.set(this.title.x, this.continueGame.y+this.customizeNight.height);
             this.gotosettings.position.set(this.title.x, this.customizeNight.y+this.gotosettings.height*1.5);
             this.achievments.position.set(this.gotosettings.x+this.achievments.width, this.gotosettings.y+this.gotosettings.height);
+
+            this.backButton1.position.set(this.title.position.x, this.title.position.y);
+            this.backButton2.position.set(this.title.position.x, this.title.position.y);
+            this.backButton3.position.set(this.title.position.x, this.title.position.y);
 
             this.freddyAi.position.set(innerWidth/2-250*Game.scale.x, innerHeight/2);
             this.bonnieAi.position.set(this.freddyAi.x+this.bonnieAi.width+50*Game.scale.x, this.freddyAi.y);
@@ -223,6 +228,12 @@ export default class Menus {
             this.customHour.position.set(this.freddyAi.x, this.freddyAi.y+this.customHour.height+10*Game.scale.y);
             this.customUsage.position.set(this.customHour.x+this.customUsage.width+55*Game.scale.x, this.customHour.y);
             this.set20Ai.position.set(this.freddyAi.x-this.set20Ai.width*1.5, this.freddyAi.y);
+
+            this.icons.forEach(([key, value]) => { value.scale.set(0.7*Game.scale.x, 0.7*Game.scale.y); });
+            this.icons.sprites['527.png'].position.set(this.freddyAi.x-this.freddyAi.width/2, this.freddyAi.y-this.icons.sprites['527.png'].height-this.freddyAi.height/2-10*(Game.scale.y));
+            this.icons.sprites['528.png'].position.set(this.bonnieAi.x-this.bonnieAi.width/2, this.bonnieAi.y-this.icons.sprites['528.png'].height-this.bonnieAi.height/2-10*(Game.scale.y));
+            this.icons.sprites['529.png'].position.set(this.chicaAi.x-this.chicaAi.width/2, this.chicaAi.y-this.icons.sprites['529.png'].height-this.chicaAi.height/2-10*(Game.scale.y));
+            this.icons.sprites['536.png'].position.set(this.foxyAi.x-this.foxyAi.width/2, this.foxyAi.y-this.icons.sprites['536.png'].height-this.foxyAi.height/2-10*(Game.scale.y));
 
             this.readyCustomNight.position.set(this.customHour.x+250*Game.scale.x, this.customHour.y+this.customHour.height+10*Game.scale.y);
 
@@ -233,7 +244,12 @@ export default class Menus {
 
         }; this.resize()
 
-        this.customNightMenu.addChild(this.backButton3, this.freddyAi, this.bonnieAi, this.chicaAi, this.foxyAi, this.readyCustomNight, this.customHour, this.customUsage, this.set20Ai);
+        this.customNightMenu.addChild(
+            this.backButton3, 
+            this.freddyAi, this.bonnieAi, this.chicaAi, this.foxyAi,
+            this.readyCustomNight, this.customHour, this.customUsage, this.set20Ai,
+            this.icons.sprites['527.png'], this.icons.sprites['528.png'], this.icons.sprites['529.png'], this.icons.sprites['536.png'], 
+        );
         this.achievementsDisplay.addChild(this.backButton1, this.a1, this.a2, this.a3, this.a4);
         this.settingsOptions.addChild(this.backButton2, this.disablePlushies, this.devMode, this.cheats, this.clearData);
         this.titleScreenButtons.addChild(this.newGame, this.continueGame, this.customizeNight, this.gotosettings, this.achievments);

@@ -63,13 +63,13 @@ export default class CameraTablet {
 
         //
 
-        this.camFlipButton.onpointerenter = () => this.flip();
+        this.camFlipButton.onpointerenter = () => {if (!Game.powerDown) this.flip()};
 
         this.camFlipButton.onpointerleave = () => {};
     }
 
     static flip() {
-        if (Game.die || Game.powerDown) return;
+        if (Game.die) return;
         if (this.tablet.animations.flip.playing || this.tablet.animations.reverseFlip.playing ) return;
         Game.SOUNDS.camFlip.play({});
         Office._moveRight = false; Office._innerMoveRight = false;
@@ -89,7 +89,6 @@ export default class CameraTablet {
             Game.SOUNDS.cams.stop();
             Game.SOUNDS.camError1.stop();
 
-            Cams.blackBox.visible = false;
             Game.cameraRender.visible = false;
         }
     }

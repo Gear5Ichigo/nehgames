@@ -24,7 +24,6 @@ export default class OfficeButtons {
         //
 
         this._leftButtonClick = new Container();
-        this._lbSpriteConainer = new Container();
 
         this.leftX = () => {return this.leftButton.x+(30*Game.scale.x*this.bScale)}
         this.bY = () => {return this.leftButton.y+(52*Game.scale.y*this.bScale)}

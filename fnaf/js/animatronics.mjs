@@ -48,10 +48,7 @@ class Animatronic {
     };
 
     __updateSprites() {
-        if ((Game.currentCam === this.previousState || Game.currentCam === this.currentState) && Cams.blackBox.visible == false && Game.camUp) {
-            Cams.blackBox.visible = true;
-            Game.SOUNDS.camError1.play();
-        }
+        if ((Game.currentCam === this.previousState || Game.currentCam === this.currentState) && Cams.blackBox.visible == false && Game.camUp) Cams.blackBox.start();
     };
 }
 
@@ -89,60 +86,20 @@ class Bonnie extends Animatronic {
 
         super.__updateSprites();
 
-        if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
-            if (Game.animatronics.chica.currentState === this.previousState) {
-                Game.changeSprite(Game._cameraShow, Cams.stageSprites['68.png']);
-            } else if (Game.animatronics.freddy.currentState === this.previousState) {
-                Game.changeSprite(Game._cameraShow, Cams.stageSprites['224.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.stageSprites['484.png']);
+        if (Game.currentCam === this.currentState || Game.currentCam === this.previousState) {
+            Cams._1A.callBack();
+            Cams._1B.callBack();
+            Cams._5.callBack();
+            Cams._2A.callBack();
+            Cams._2B.callBack();
+            Cams._3.callBack();
         }
-
-        //
-
-        if (Game.currentCam === "CAM1B" && this.previousState === "CAM1B") {
-            if (Game.animatronics.chica.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
-            } else {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["48.png"]);
-            }
-        }
-
-        //
-
-        if (Game.currentCam === "CAM1B" && this.currentState === "CAM1B") {
-            Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
-        }
-
-        if (Game.currentCam === "CAM5" && this.currentState === "CAM5") {
-            Game.changeSprite(Game._cameraShow, Cams.backStageSprites["205.png"]);
-        } else if (Game.currentCam === "CAM5" && this.previousState === "CAM5") {
-            Game.changeSprite(Game._cameraShow, Cams.backStageSprites['83.png']);
-        }
-
-        if (Game.currentCam === "CAM3" && this.currentState === "CAM3") {
-            Game.changeSprite(Game._cameraShow, Cams.supplyClosetSprites['190.png']);
-        } else if (Game.currentCam === "CAM3" && this.previousState === "CAM3") {
-            Game.changeSprite(Game._cameraShow, Cams.supplyClosetSprites['62.png']);
-        }
-
-        if (Game.currentCam === "CAM2A" && this.currentState === "CAM2A") {
-            Game.changeSprite(Game._cameraShow, Cams.leftHallSprites["206.png"]);
-        } else if (Game.currentCam === "CAM2A" && this.previousState === "CAM2A") {
-            Game.changeSprite(Game._cameraShow, Cams.leftHallSprites["44.png"]);
-        }
-
-        if (Game.currentCam === "CAM2B" && this.currentState === "CAM2B") {
-            Game.changeSprite(Game._cameraShow, Cams.leftCornerSprites['188.png']);
-        } else if (Game.currentCam === "CAM2B" && this.previousState === "CAM2B") {
-            Game.changeSprite(Game._cameraShow, Cams.leftCornerSprites['0.png']);
-        }
-
-        //
 
         if (this.currentState === "ATDOOR" || this.previousState === "ATDOOR") {
             OfficeButtons.__updateLeftSideButtons();
             OfficeButtons.__updateLeftSideOffice();
         }
+
     }
 }
 
@@ -177,60 +134,19 @@ class Chica extends Animatronic {
 
         super.__updateSprites();
 
-        if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
-            if (Game.animatronics.bonnie.currentState === this.previousState) {
-                Game.changeSprite(Game._cameraShow, Cams.stageSprites['223.png']);
-            } else if (Game.animatronics.freddy.currentState === this.previousState) {
-                Game.changeSprite(Game._cameraShow, Cams.stageSprites['224.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.stageSprites['484.png']);
+        if (Game.currentCam === this.currentState || Game.currentCam === this.previousState) {
+            Cams._1A.callBack();
+            Cams._1B.callBack();
+            Cams._7.callBack();
+            Cams._4A.callBack();
+            Cams._4B.callBack();
         }
-
-        //
-
-        if (Game.currentCam === "CAM1B" && this.previousState === "CAM1B") {
-            if (Game.animatronics.bonnie.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
-            } else if (Game.animatronics.freddy.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["492.png"]);
-            } else {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["48.png"]);
-            }
-        }
-
-        if (Game.currentCam === "CAM1B" && this.currentState === "CAM1B") {
-            Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
-        }
-
-        if (this.currentState === "CAM4B" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['220.png']);
-        } else if (this.previousState === "CAM4B" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.freddy.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['486.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['49.png']);
-        }
-
-        if (this.currentState === "CAM4A" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['221.png']);
-        } else if (this.previousState === "CAM4A" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.freddy.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['487.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['67.png']);
-        }
-
-        if (this.currentState === "CAM7" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['219.png']);
-        } else if (this.previousState === "CAM7" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.freddy.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['494.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['41.png']);
-        }
-
-        //
 
         if (this.currentState === "ATDOOR" || this.previousState === "ATDOOR") {
             OfficeButtons.__updateRightSideButtons();
             OfficeButtons.__updateRightSideOffice();
         }
+
     }
 }
 
@@ -286,44 +202,12 @@ class Freddy extends Animatronic {
 
         super.__updateSprites();
 
-        if (this.previousState === 'CAM1A' && this.previousState === Game.currentCam) {
-            Game.changeSprite(Game._cameraShow, Cams.stageSprites['484.png']);
-        }
-
-        if (Game.currentCam === "CAM1B" && this.currentState === Game.currentCam) {
-            Game.changeSprite(Game._cameraShow, Cams.diningSprites["492.png"]);
-        } else if (this.previousState === "CAM1B" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.chica.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["215.png"]);
-            } else if (Game.animatronics.bonnie.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["90.png"]);
-            } else {
-                Game.changeSprite(Game._cameraShow, Cams.diningSprites["48.png"]);
-            }
-        }
-
-        if (this.currentState === "CAM4B" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['486.png']);
-        } else if (this.previousState === "CAM4B" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.chica.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['220.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.rightCornerSprites['49.png']);
-        }
-
-        if (this.currentState === "CAM4A" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['487.png']);
-        } else if (this.previousState === "CAM4A" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.chica.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['221.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.rightHallSprites['67.png']);
-        }
-
-        if (this.currentState === "CAM7" && Game.currentCam === this.currentState) {
-            Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['494.png']);
-        } else if (this.previousState === "CAM7" && Game.currentCam === this.previousState) {
-            if (Game.animatronics.chica.currentState === Game.currentCam) {
-                Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['219.png']);
-            } else Game.changeSprite(Game._cameraShow, Cams.restRoomsSprites['41.png']);
+        if (Game.currentCam === this.currentState || Game.currentCam === this.previousState) {
+            Cams._1A.callBack();
+            Cams._1B.callBack();
+            Cams._7.callBack();
+            Cams._4A.callBack();
+            Cams._4B.callBack();
         }
 
         if (this.currentState === "OFFICE" && this.previousState === "CAM4B") {

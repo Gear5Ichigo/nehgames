@@ -27,7 +27,8 @@ export default class Game {
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.33}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
-            powerdown: Sound.from({url: './assets/sounds/powerdown.wav'}),
+            powerdown: Sound.from({url: './assets/sounds/powerdown.wav', preload: true}),
+            musicbox: Sound.from({url: './assets/sounds/music box.wav', preload: true}),
             boop: Sound.from({url: './assets/sounds/PartyFavorraspyPart_AC01__3.wav', volume: 0.125}),
 
             circus: Sound.from({url: './assets/sounds/circus.wav', volume: 0.15}),
@@ -37,7 +38,10 @@ export default class Game {
             ambience1: Sound.from({url: './assets/sounds/ambience2.wav', loop: true, volume: 0.9}),
             ambience2: Sound.from({url: './assets/sounds/ColdPresc B.wav', loop: true, volume: 0.015}),
 
-            camError1: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
+            camError4: Sound.from({url: './assets/sounds/COMPUTER_DIGITAL_L2076505.wav'}),
+            camError1: Sound.from({url: './assets/sounds/garble1.wav'}),
+            camError2: Sound.from({url: './assets/sounds/garble2.wav'}),
+            camError3: Sound.from({url: './assets/sounds/garble3.wav'}),
             
             phoneguy1: Sound.from({url: './assets/sounds/voiceover1c.wav', volume: 0.66}),
             phoneguy2: Sound.from({url: './assets/sounds/voiceover2a.wav', volume: 0.66}),
@@ -239,9 +243,7 @@ export default class Game {
 
         this.__ofC = new Container();
         this.__ofC.filters = [fake3D];
-        this._cameraShow.filters = [
-            fake3D,
-        ];
+        Cams.showArea.filters = [fake3D,];
 
 
         //
@@ -282,7 +284,7 @@ export default class Game {
         this._gameActive = true;
         this.win = false;
         this.die = false;
-        this.powerDown = false; this.powerDownMoment = false;
+        this.powerDown = false;
 
         this.night = options.night || 1;
         this.currentNightText.text = `Night ${this.night}`;
@@ -294,6 +296,9 @@ export default class Game {
         this._ONE_HOUR = options.hourLength || 65;
         this.pUsageMultiplier = options.usageMultiplier || 1;
         this.clock = 12;
+
+        this.initialPowerdown = false;
+        this.musicboxplay = false;
         this.powerDownElapsed = 0;
         this.powerDownSecond = 0;
         this.lostPowerGamble = false;
@@ -339,6 +344,9 @@ export default class Game {
         OfficeButtons.__updateLeftSideOffice();
         OfficeButtons.__updateRightSideButtons();
         OfficeButtons.__updateRightSideOffice();
+
+        OfficeButtons._leftButtonClick.visible = true;
+        OfficeButtons._rightButtonClick.visible = true;
 
         Doors.left.resetAnimations(); Doors.left.changeAnimation('close');
         Doors.right.resetAnimations(); Doors.right.changeAnimation('close');
@@ -428,36 +436,13 @@ export default class Game {
         }
     }
 
-    static _updatePower(ticker) {
-        const dt = ticker.deltaTime/ticker.FPS;
-        this._powerTimer += dt;
-        if (this._powerTimer >= 0.99 && this.powerLevel > 0) {
-            this._powerTimer = 0;
-            console.log((this.powerUsage/8.5)*this.pUsageMultiplier, this.pUsageMultiplier);
-            this.powerLevel -= (this.powerUsage/8.5)*this.pUsageMultiplier;
-        }
-        if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
+    static _powerDownSequence(deltaTime) {
         if (this.powerDown && !this.win) {
-            this.powerDownElapsed+=dt;
-            if (this.powerDownElapsed>=10 && !this.lostPowerGamble) {
-                if (this.powerDownElapsed>=20) {
-                    this.lostPowerGamble = true;
-                    this.SOUNDS.jumpscare.play();
-                    setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 300);
-                }
-                if (this.powerDownSecond >= 1) {
-                    this.powerDownSecond = 0;
-                    const chance = Math.floor(Math.random()*4);
-                    if (chance != 0) {
-                        this.lostPowerGamble = true;
-                        this.SOUNDS.jumpscare.play(); setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 300);
-                    }
-                }
-            }
-            if (!this.powerDownMoment) {
-                this.powerDownMoment = true;
+            this.powerDownElapsed+=deltaTime;
+            if (!this.initialPowerdown) {
+                this.initialPowerdown = true;
                 this.powerUsage = 0;
-
+                
                 this.SOUNDS.powerdown.play();
                 this.SOUNDS.doorShut.play();
                 this.SOUNDS.officeNoise.stop(); this.SOUNDS.lightsHum.stop();
@@ -465,30 +450,61 @@ export default class Game {
 
                 this.rightLightOn = false; this.leftLightOn = false;
 
-                if (this.camUp) {
-                    this.camUp = false;
-                    this.cameraRender.visible = false; this.officeRender.visible = true;
-                    CameraTablet._flipDown.gotoAndPlay(0); CameraTablet._flipDown.visible = true;
-                    CameraTablet._flipUp.visible = false;
-                }
+                if (this.camUp) CameraTablet.flip();
 
-                this.changeSprite(this.officeSpritesContainer, Office._sprites['304.png'])
+                Office.sprite.swapTexture('304.png')
                 Office.fanAnim.visible = false;
-                CameraTablet._camFlipButton.visible = false;
+                CameraTablet.camFlipButton.visible = false;
+
+                OfficeButtons._leftButtonClick.visible = false;
+                OfficeButtons._rightButtonClick.visible = false;
 
                 if (this.leftDoorOn) {
                     this.leftDoorOn = false;
-                    Game.changeSprite(Doors.leftDoorContainer, Doors.leftDoorOpenAnim);
-                    Doors.leftDoorOpenAnim.gotoAndPlay(0);
+                    Doors.left.playAnimation('open');
                 }
                 if (this.rightDoorOn) {
                     this.rightDoorOn = false;
-                    Game.changeSprite(Doors.rightDoorContainer, Doors.rightDoorOpenAnim);
-                    Doors.rightDoorOpenAnim.gotoAndPlay(0);
+                    Doors.right.playAnimation('open');
                 }
-            };
-            OfficeButtons.__updateLeftSideButtons(); OfficeButtons.__updateRightSideButtons();
+            }
+            if (this.powerDownElapsed >= this.SOUNDS.powerdown.duration && !this.musicboxplay) {
+                this.powerDownElapsed = 0; this.SOUNDS.musicbox.play(); this.musicboxplay = true;
+            }
+            if (this.SOUNDS.musicbox.isPlaying) {
+                if (Math.floor(this.powerDownElapsed) % 2 === 0) {
+                    Office.sprite.swapTexture('305.png');
+                } else Office.sprite.swapTexture('304.png');
+            }
+            if (this.powerDownElapsed >= this.SOUNDS.musicbox.duration && this.musicboxplay && !this.lostPowerGamble) {
+                this.powerDownSecond+=deltaTime;
+                if (this.powerDownElapsed >= this.SOUNDS.musicbox.duration+15) {
+                    this.lostPowerGamble = true;
+                    Jumpscares.freddyScare.visible = true; Jumpscares.freddyScare.gotoAndPlay(0);
+                    this.SOUNDS.jumpscare.play();
+                    setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 600);
+                }
+                if (this.powerDownSecond >= 3 && this.powerDownElapsed >= this.SOUNDS.musicbox.duration+3) {
+                    if (Math.floor(Math.random()*3) != 0) {
+                        this.lostPowerGamble = true;
+                        Jumpscares.freddyScare.visible = true; Jumpscares.freddyScare.gotoAndPlay(0);
+                        this.SOUNDS.jumpscare.play();
+                        setTimeout(() => {this.SOUNDS.jumpscare.stop(); this.forceGameOver()}, 600);
+                    } else console.log("WON 33%");
+                }
+            }
         }
+    }
+
+    static _updatePower(ticker) {
+        const dt = ticker.deltaTime/ticker.FPS;
+        this._powerTimer += dt;
+        if (this._powerTimer >= 0.99 && this.powerLevel > 0) {
+            this._powerTimer = 0;
+            this.powerLevel -= (this.powerUsage/8.5)*this.pUsageMultiplier;
+        }
+        if (this.powerLevel <= 0 && !this.win) this.powerDown = true;
+        this._powerDownSequence(dt);
         if (this.powerUsage <= 0 && !this.powerDown) this.powerUsage = 1;
         if (this.settings.devMode) {
             this.powerLevelDisplay.text = `Power  left: ${(this.powerLevel)}%`;

@@ -1,4 +1,4 @@
-import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite } from '../../public/pixi.min.mjs';
+import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite, Ticker } from '../../public/pixi.min.mjs';
 import Game from './game.mjs';
 import SpriteLoader from './spriteloader.mjs';
 
@@ -9,6 +9,9 @@ export default class Cams {
         const b = new Graphics()
         .rect(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y, 56*Game.scale.x, 37*Game.scale.y)
         .fill(0xff0000); b.alpha = 0; b.eventMode = 'static'
+        b.callBack = () => {
+            if (Game.currentCam === `CAM${cam}`) callBack();
+        }
         b.onpointerdown = () => {
             if (Game.currentCam === `CAM${cam}`) return;
             Game.currentCam = `CAM${cam}`;
@@ -19,7 +22,8 @@ export default class Cams {
             this.camsMap.swapTexture(`${cam}.png`);
             this._swapTimer = 0;
             this._prevCamButton = null;
-            callBack();
+            if (this.showArea.children[0] === this.kitchen) this.showArea.removeChild(this.kitchen);
+            b.callBack();
         };
         this.mapButtons.addChild(b);
         return b;
@@ -67,7 +71,7 @@ export default class Cams {
 
         //
 
-        const areas = ['Stage', 'Backstage', 'Dining Room', 'Pirate Cove', 'Utility Closet', 'Left Hallway', 'Left Corner', 'Right Hallway', 'Right Corner', 'Restrooms'];
+        const areas = ['Stage', 'Backstage', 'Dining Room', 'Pirate Cove', 'Supply Closet', 'Left Hallway', 'Left Corner', 'Right Hallway', 'Right Corner', 'Restrooms'];
         for (const area of areas) {
             const json = await Assets.load(`./assets/sprites/cams/${area}/spritesheet@0.5x.json`);
             const spritesheet = new Spritesheet(await Assets.load(`./assets/sprites/cams/${area}/spritesheet@0.5x.png`), json.data);
@@ -77,10 +81,10 @@ export default class Cams {
         this.showArea = new Sprite(Object.values(this.stage)[0]);
         this.showArea.setSize(innerWidth*1.2, innerHeight);
 
-        const kitchen = new Graphics()
+        this.kitchen = new Graphics()
         .rect(0, 0, innerWidth, innerHeight)
         .fill(0x000000);
-        kitchen.addChild(new Text({text: '-CAMERA DISABLED-\nAUDIO ONLY',
+        this.kitchen.addChild(new Text({text: '-CAMERA DISABLED-\nAUDIO ONLY',
             style: {
                 fontFamily: 'FNAF', fontSize: 144*(Game.scale.x/2),
                 align: 'center', fill: 0xffffff,
@@ -92,6 +96,22 @@ export default class Cams {
         .rect(0, 0, innerWidth*1.2, innerHeight)
         .fill(0x000000);
         this.blackBox.visible = false;
+
+        this.blackBox.start = () => {
+            if (!this.blackBox.visible) {
+                const sound = Game.SOUNDS[`camError${Math.floor(Math.random()*4)+1}`];
+                console.log(`camError${Math.floor(Math.random()*4)+1}`)
+                sound.play();
+                this.blackBox.visible = true;
+                const timer = new Ticker();
+                timer.maxFPS = 60;
+                let time = 0;
+                timer.add((ticker) => {
+                    time+=ticker.deltaTime/ticker.FPS;
+                    if (time >= 5.00) {this.blackBox.visible = false; timer.destroy(); return;}
+                }); timer.start();
+            }
+        }
 
         //
 
@@ -116,98 +136,98 @@ export default class Cams {
             }
         };
 
-        this.__makeCamButton('1A', -100, -200, () => {
+        this._1A = this.__makeCamButton('1A', -100, -200, () => {
             const fr = Game.animatronics.freddy, bo = Game.animatronics.bonnie, ch = Game.animatronics.chica;
             this.areaName.text = 'Stage';
             if (fr.currentState==='CAM1A' && bo.currentState==='CAM1A' && ch.currentState==='CAM1A') { // the gangs here!
-                Game.changeSprite(Game._cameraShow, this.stageSprites['19.png']);
+                this.showArea.texture = this.stage['19.png'];
             } else if (fr.currentState==='CAM1A' && bo.currentState==='CAM1A' && ch.currentState!=='CAM1A') { // no chica
-                Game.changeSprite(Game._cameraShow, this.stageSprites['223.png']);
+                this.showArea.texture = this.stage['223.png'];
             } else if (fr.currentState==='CAM1A' && bo.currentState!=='CAM1A' && ch.currentState==='CAM1A') { // no bonnie
-                Game.changeSprite(Game._cameraShow, this.stageSprites['68.png']);
+                this.showArea.texture = this.stage['68.png'];
             } else if (fr.currentState==='CAM1A' && bo.currentState!=='CAM1A' && ch.currentState!=='CAM1A') { // no bonnie and chica
-                Game.changeSprite(Game._cameraShow, this.stageSprites['224.png']);
+                this.showArea.texture = this.stage['224.png'];
             } else { // everyones gone rip
                 const chance = Math.floor(Math.random() * 4);
                 if (chance == 1) {
-                    Game.changeSprite(Game._cameraShow, Game._bear5);
+                    this.showArea.texture = Game._bear5.texture;
                 } else {
-                    Game.changeSprite(Game._cameraShow, this.stageSprites['484.png']);
+                    this.showArea.texture = this.stage['484.png'];
                 }
             }
         });
-        this.__makeCamButton('1B', -117, -132, () => {
+        this._1B = this.__makeCamButton('1B', -117, -132, () => {
             this.areaName.text = 'Dining Room';
             if (Game.animatronics.chica.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, this.diningSprites['215.png']);
+                this.showArea.texture = this.diningroom['215.png'];
             } else if (Game.animatronics.bonnie.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, this.diningSprites['90.png']);
+                this.showArea.texture = this.diningroom['90.png'];
             } else if (Game.animatronics.freddy.currentState === "CAM1B") {
-                Game.changeSprite(Game._cameraShow, this.diningSprites['492.png']);
+                this.showArea.texture = this.diningroom['492.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.diningSprites['48.png']);
+                this.showArea.texture = this.diningroom['48.png'];
             }
         });
-        this.__makeCamButton('5', -224, -101, () => {
+        this._5 =this.__makeCamButton('5', -224, -101, () => {
             this.areaName.text = 'Backstage';
             if (Game.animatronics.bonnie.currentState === "CAM5") {
-                Game.changeSprite(Game._cameraShow, this.backStageSprites['205.png']);
+                this.showArea.texture = this.backstage['205.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.backStageSprites['83.png']);
+                this.showArea.texture = this.backstage['83.png'];
             }
         });
-        this.__makeCamButton('1C', -168, -45, () => {
+        this._1C = this.__makeCamButton('1C', -168, -45, () => {
             this.areaName.text = 'Pirate Cove';
             if (Game.animatronics.foxy.currentState==="1") {
-                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['66.png']);
+                this.showArea.texture = this.piratecove['66.png'];
             } else if (Game.animatronics.foxy.currentState==="2") {
-                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['211.png']);
+                this.showArea.texture = this.piratecove['211.png'];
             } else if (Game.animatronics.foxy.currentState==="3") {
-                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['338.png']);
+                this.showArea.texture = this.piratecove['338.png'];
             } else if (Game.animatronics.foxy.currentState==="4") {
-                Game.changeSprite(Game._cameraShow, this.pirateCoveSprites['240.png']);
+                this.showArea.texture = this.piratecove['240.png'];
             }
         });
-        this.__makeCamButton('3', -187, 57, () => {
+        this._3 = this.__makeCamButton('3', -187, 57, () => {
             this.areaName.text = 'Supply Closet';
             if (Game.animatronics.bonnie.currentState === "CAM3") {
-                Game.changeSprite(Game._cameraShow, this.supplyClosetSprites['190.png']);
+                this.showArea.texture =  this.supplycloset['190.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.supplyClosetSprites['62.png']);
+                this.showArea.texture = this.supplycloset['62.png'];
             }
         });
-        this.__makeCamButton('2A', -103, 95, () => {
+        this._2A =this.__makeCamButton('2A', -103, 95, () => {
             this.areaName.text = 'West Hall';
             if (Game.animatronics.bonnie.currentState === "CAM2A") {
-                Game.changeSprite(Game._cameraShow, this.leftHallSprites['206.png']);
+                this.showArea.texture = this.lefthallway['206.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.leftHallSprites['44.png']);
+                this.showArea.texture = this.lefthallway['44.png'];
             }
         });
-        this.__makeCamButton('2B', -103, 138, () => {
+        this._2B =this.__makeCamButton('2B', -103, 138, () => {
             this.areaName.text = 'W. Hall Corner';
             if (Game.animatronics.bonnie.currentState === "CAM2B") {
-                Game.changeSprite(Game._cameraShow, this.leftCornerSprites['188.png']);
+                this.showArea.texture = this.leftcorner['188.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.leftCornerSprites['0.png']);
+                this.showArea.texture = this.leftcorner['0.png'];
             }
         });
-        this.__makeCamButton('7', 134, -114, () => {
+        this._7 = this.__makeCamButton('7', 134, -114, () => {
             this.areaName.text = 'Restrooms';
             if (Game.animatronics.chica.currentState === "CAM7") {
-                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['219.png']);
+                this.showArea.texture = this.restrooms['219.png'];
             } else if (Game.animatronics.freddy.currentState === "CAM7") {
-                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['494.png']);
+                this.showArea.texture = this.restrooms['494.png'];
             } else {
-                Game.changeSprite(Game._cameraShow, this.restRoomsSprites['41.png']);
+                this.showArea.texture = this.restrooms['41.png'];
             }
         });
         this.__makeCamButton('6', 136, 39, () => {
             this.areaName.text = 'Kitchen';
-            Game._cameraShow.x = 0;
-            Game.changeSprite(Game._cameraShow, kitchen);
+            this.showArea.x = 0;
+            Game.changeSprite(this.showArea, this.kitchen);
         });
-        this.__makeCamButton('4A', 0, 95, () => { ///////////////////here
+        this._4A = this.__makeCamButton('4A', 0, 95, () => { 
             this.areaName.text = 'East Hall';
             if (Game.animatronics.chica.currentState === "CAM4A") {
                 this.showArea.texture = this.righthallway['221.png'];
@@ -217,7 +237,7 @@ export default class Cams {
                 this.showArea.texture = this.righthallway['67.png'];
             }
         });
-        this.__makeCamButton('4B', 0, 138, () => {
+        this._4B = this.__makeCamButton('4B', 0, 138, () => {
             this.areaName.text = 'E. Hall Corner';
             if (Game.animatronics.chica.currentState === "CAM4B") {
                 this.showArea.texture = this.rightcorner['220.png'];
