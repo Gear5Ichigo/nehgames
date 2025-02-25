@@ -271,17 +271,7 @@ class Foxy extends Animatronic {
     }
 
     __updateSprites() {
-        if (Game.currentCam === "CAM1C") {
-            if (this.currentState==="1") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['66.png']);
-            } else if (this.currentState==="2") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['211.png']);
-            } else if (this.currentState==="3") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['338.png']);
-            } else if (this.currentState==="4") {
-                Game.changeSprite(Game._cameraShow, Cams.pirateCoveSprites['240.png']);
-            }
-        }
+        if (Game.currentCam === this.currentState || Game.currentCam === this.previousState) Cams._1C();
     }
 }
 
