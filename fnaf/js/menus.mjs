@@ -108,6 +108,25 @@ export default class Menus {
             }, 1000);
         }); this.continueGame.anchor = 0;
 
+        this.day8 = new Button('Night 8', () => {
+            Game.SOUNDS.camBlip.play(); this.bgMusic.stop();
+            this.briefingText.text = `Night 8`;
+            this.briefingScreen.visible = true;
+            setTimeout(() => {
+                this.briefingText.text = `Night 8\n12 : 00  AM`; Game.SOUNDS.camBlip.play();
+                setTimeout(() => {
+                    this.briefingScreen.visible = false;
+                        Game.start({
+                            night: 8,
+                            freddylevel: 1, bonnieLevel: 15, chicaLevel: 10, foxyLevel: 20,
+                            polishFreddyLevel: 10,
+                            settings: this.settings
+                        });
+                        app.setRenderState(app.stage, Game.render);
+                }, 1000);
+            }, 1000);
+        }); this.day8.anchor = 0;
+
         this.customizeNight = new Button('Customize Night', () => {
             app.setRenderState(this.week1, this.customNightMenu);
         }); this.customizeNight.anchor = 0;
@@ -242,6 +261,7 @@ export default class Menus {
             this.continueGame.style.fontSize = 32*(innerWidth/innerHeight);
             this.gotosettings.style.fontSize = 32*(innerWidth/innerHeight);
             this.achievments.style.fontSize = 32*(innerWidth/innerHeight);
+            this.day8.style.fontSize = 32*(innerWidth/innerHeight);
 
             this.title.position.set(150*Game.scale.x, 15*Game.scale.y);
             this.changelog.position.set(this.title.x+this.changelog.width, 10*Game.scale.y)
@@ -250,6 +270,7 @@ export default class Menus {
             this.customizeNight.position.set(this.title.x, this.continueGame.y+this.customizeNight.height);
             this.gotosettings.position.set(this.title.x, this.customizeNight.y+this.gotosettings.height*1.5);
             this.achievments.position.set(this.gotosettings.x+this.achievments.width, this.gotosettings.y+this.gotosettings.height);
+            this.day8.position.set(this.continueGame.x+this.continueGame.width+this.day8.width*1.5, this.continueGame.y);
 
             this.backButton1.position.set(this.title.position.x, this.title.position.y);
             this.backButton2.position.set(this.title.position.x, this.title.position.y);
@@ -286,7 +307,7 @@ export default class Menus {
         );
         this.achievementsDisplay.addChild(this.backButton1, this.a1, this.a2, this.a3, this.a4);
         this.settingsOptions.addChild(this.backButton2, this.disablePlushies, this.devMode, this.cheats, this.clearData);
-        this.titleScreenButtons.addChild(this.newGame, this.continueGame, this.customizeNight, this.gotosettings, this.achievments);
+        this.titleScreenButtons.addChild(this.newGame, this.continueGame, this.customizeNight, this.gotosettings, this.achievments, this.day8);
         this.titleContent.addChild(this.freddyBackground, this.menuStatic, this.titleScreenButtons, this.title, this.changelog);
         this.titleScreen.addChild(this.openingPicture, this.blackBox, this.titleContent);
         this.week1.addChild(this.titleScreen, this.settingsOptions, this.achievementsDisplay, this.customNightMenu, this.briefingScreen);

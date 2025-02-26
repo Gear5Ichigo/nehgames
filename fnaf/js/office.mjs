@@ -36,6 +36,11 @@ export default class Office {
 
         //
 
+        this.polishFreddySprite = new Sprite(await Assets.load('./assets/sprites/office/Funnybeartrashcan.webp'));
+        this.polishFreddySprite.tint = 0xffcccc;
+
+        //
+
         this.plushies = await SpriteLoader.SpriteCollection('/plushies/spritesheet1@0.5x', (sprite) => {
             sprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y);
             sprite.visible = false;
@@ -47,6 +52,7 @@ export default class Office {
         this.plushies.sprites['bear5'].visible = false;
 
         this.plushiesResize = () => {
+            this.polishFreddySprite.position.set(innerWidth/2+100*Game.scale.x, innerHeight/2+125*Game.scale.y);
             this.plushies.forEach(([key, sprite]) => sprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y));
             this.plushies.sprites['powerbean'].scale.set(0.45*Game.scale.x, 0.45*Game.scale.y);
             this.plushies.sprites['bear5'].scale.set(0.2*Game.scale.x, 0.2*Game.scale.y);
@@ -65,6 +71,7 @@ export default class Office {
             this.plushies.sprites['chica.png'], 
             this.plushies.sprites['powerbean'], 
             this.plushies.sprites['bear5'],
+            this.polishFreddySprite,
         );
 
         //

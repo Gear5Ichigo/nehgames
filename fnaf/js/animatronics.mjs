@@ -5,6 +5,7 @@ import Cams from "./cams.mjs";
 import Doors from "./doors.mjs";
 import Game from "./game.mjs";
 import Jumpscares from "./jumpscares.mjs";
+import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
 
 class Animatronic {
@@ -307,6 +308,40 @@ class Goku extends Animatronic {
 class PolishFreddy extends Animatronic {
     constructor(aiLevel) {
         super(aiLevel, 5.00);
+
+        this.trashRemaining = 0;
+        this.rageState = 1;
+    }
+
+    movement(ticker) {
+        console.log(ticker);
+        const dt = ticker.deltaTime/ticker.FPS;
+        this.timeElapsed += dt;
+        if (this.timeElapsed >= this.movementInterval/this.trashRemaining) {
+            this.timeElapsed = 0;
+            this.trashRemaining ++ ;
+            this.rageState ++ ;
+            if (this.trashRemaining > 5) this.trashRemaining = 5;
+            if (this.rageState > 5) this.rageState = 5;
+            this.__updateSprites();
+        }
+    }
+
+    pickUpTrash() {
+
+    }
+
+    feedTrash() {
+
+    }
+
+    __updateSprites() {
+        switch(this.rageState) {
+            case 1: Office.polishFreddySprite.scale.set(1, 1); break;
+            case 2: Office.polishFreddySprite.scale.set(1.2, 1.2); break;
+            case 3: Office.polishFreddySprite.scale.set(1.4, 1.4); break;
+            case 4: Office.polishFreddySprite.scale.set(1.6, 1.6); break;
+        }
     }
 }
 

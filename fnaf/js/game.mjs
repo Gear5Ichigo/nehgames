@@ -1,6 +1,6 @@
 import { Assets, Container, Filter, GlProgram, Graphics, NoiseFilter, Sprite, Text } from '../../public/pixi.min.mjs';
 import { Sound } from "../../public/pixi-sound.mjs";
-import { Bonnie, Chica, Foxy, Freddy } from "./animatronics.mjs";
+import { Bonnie, Chica, Foxy, Freddy, PolishFreddy } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
@@ -327,6 +327,10 @@ export default class Game {
         this.animatronics.chica = new Chica(options.chicaLevel || 0);
         this.animatronics.freddy = new Freddy(options.freddylevel || 0);
         this.animatronics.foxy = new Foxy(options.foxyLevel) || 0;
+
+        if (options.night >= 8) {
+            this.animatronics.polishFreddy = new PolishFreddy(options.polishFreddyLevel || 0);
+        }
 
         Jumpscares.freddyScare.gotoAndStop(0);
         Jumpscares.freddyScare.visible = false;
