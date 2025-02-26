@@ -246,7 +246,7 @@ class Foxy extends Animatronic {
     }
 
     movement(ticker) {
-        if (this.currentState === "4") { return;}
+        if (this.currentState === "4") return;
         if (Game.camUp) { this.movementFailed = true; }
         super.movement(ticker, 'left', () => {
             if (this.movementFailed) this.currentState = this.previousState || "1";
@@ -278,7 +278,7 @@ class Foxy extends Animatronic {
         if (!Game.win || !Game.powerDown || !Game.die) {
             console.log("BRO")
             if (Game.leftDoorOn) {
-                this.currentState = "1"; this.previousState = null;
+                this.currentState = "1"; this.previousState = null; this.__updateSprites();
                 const predictedpower = Game.powerLevel-(1+(this.sucessfulHits*5));
                 this.sucessfulHits+=1; if (this.sucessfulHits>=2) this.sucessfulHits = 2;
                 if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;

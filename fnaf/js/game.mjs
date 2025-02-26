@@ -156,25 +156,23 @@ export default class Game {
                 align: 'center',
                 fontSize: 30 * (Game.scale.x*2),
             }
-        }); this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, Cams.cameraBorder.y+15*Game.scale.y);
-        this.currentNightText = new Text({text: `Night`,
-            style: {
-                fill: 0xffffff,
-                align: 'center',
-                fontFamily: 'FNAF',
-                fontSize: 30*Game.scale.x,
-            },
-        }); this.currentNightText.position.set(this._clockText.position.x, this._clockText.position.y+(50*Game.scale.y));
+        });
+        this.currentNightText = new Text({
+            text: `Night`,
+            style: { fill: 0xffffff, align: 'center', fontFamily: 'FNAF' },
+        });
         this.powerLevelDisplay = new Text({
             text: `Power  left: 100%`,
-            style: {
-                fontFamily: 'FNAF',
-                fill: 0xffffff,
-                fontSize: 30*(Game.scale.x*2),
-            }
+            style: { fontFamily: 'FNAF', fill: 0xffffff, fontSize: 30*(Game.scale.x*2), }
         });
         this.usageDisplay = new Text({text: `Usage:`, style: {fontFamily: 'FNAF' , fill: 0xffffff, fontSize: 30*(Game.scale.x*2)}});
-        this.usageDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
+
+        this.textsResize = () => {
+            this.currentNightText.style.fontSize = 16*(Game.scale.x*2);
+            this._clockText.position.set(Cams.cameraBorder.width-this._clockText.width, Cams.cameraBorder.y+3*Game.scale.y);
+            this.currentNightText.position.set(this._clockText.position.x, this._clockText.position.y+(50*Game.scale.y));
+            this.usageDisplay.position.set(Cams.cameraBorder.x+(40*Game.scale.x), innerHeight-(90*Game.scale.y));
+        }; this.textsResize();
         
 
         //===========================================
@@ -204,14 +202,13 @@ export default class Game {
             let count = 0;
             for (const rect of Object.values(this.usageBar.children)) {
                 rect.setSize(30*Game.scale.x, 45*Game.scale.y);
-                rect.position.set(this.usageDisplay.x+(this.usageDisplay.width*Game.scale.x)+((rect.width+5)*count)-(5*Game.scale.x), this.usageDisplay.y+(7.5*Game.scale.y));
+                rect.position.set(this.usageDisplay.x+(this.usageDisplay.width)+((rect.width+5)*count)+(10*Game.scale.x), this.usageDisplay.y+(rect.height/4));
                 rect.children[0].setSize(0.3, 1);
                 rect.children[0].position.set(1-0.3, 0);
                 count++;
             };
+            this.powerLevelDisplay.position.set(this.usageDisplay.position.x, this.usageDisplay.y-this.usageBar.children[0].height-(5*Game.scale.y));
         }; this.resizeUsageBars();
-
-        this.powerLevelDisplay.position.set(this.usageDisplay.position.x, this.usageDisplay.y-this.usageBar.children[0].height-(5*Game.scale.y));
 
         this.officespritevisible = new Text({text: "SHOW OFFICE SPRITE", style: {fill: 0xffffff, fontFamily: 'FNAF', fontSize: 66*Game.scale.x}, x: innerWidth/2});
         this.officespritevisible.eventMode = 'static';

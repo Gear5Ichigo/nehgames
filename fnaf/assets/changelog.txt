@@ -1,2 +1,2 @@
 Changes: (PART 1)
-- stuff
+- game is almost finished

@@ -203,7 +203,10 @@ export default class Cams {
             if (Game.animatronics.bonnie.currentState === "CAM2B") {
                 this.showArea.texture = this.leftcorner['188.png'];
             } else {
-                this.showArea.texture = this.leftcorner['0.png'];
+                const chance = Math.floor(Math.random() * 100);
+                if (chance <= 1) {
+                    this.showArea.texture = this.leftcorner['540.png'];
+                } else this.showArea.texture = this.leftcorner['0.png'];
             }
         });
         this._7 = this.__makeCamButton('7', 134, -114, () => {

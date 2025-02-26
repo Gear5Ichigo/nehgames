@@ -95,7 +95,8 @@ import OfficeButtons from './officebuttons.mjs';
         Game._clockText.style.fontSize = 30*(Game.scale.x*2);
         Game.powerLevelDisplay.style.fontSize = 30*(Game.scale.x*2);
         Game.usageDisplay.style.fontSize = 30*(Game.scale.x*2);
-        Game.resizeUsageBars()
+        Game.textsResize();
+        Game.resizeUsageBars();
 
         //
 

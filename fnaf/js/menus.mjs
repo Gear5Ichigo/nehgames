@@ -64,6 +64,18 @@ export default class Menus {
             , style: {fontFamily: 'Consolas', fill: 0xffffff}
         });
 
+        /**
+         * Briefing Screen
+         */
+
+            this.briefingScreen = new Container();
+            this.briefingBg = new Graphics().rect(0, 0, innerWidth, innerHeight).fill(0x000000);
+            this.briefingText = new Text({text: 'none', style: {align: 'center', fontFamily: 'FNAF', fill: 0xffffff}});
+            this.briefingText.anchor = 0.5;
+            this.briefingScreen.visible = false;
+
+            this.briefingScreen.addChild(this.briefingBg, this.briefingText);
+
         //
 
         this.backButton1 = new Button('Back', () => app.setRenderState(this.week1, this.titleScreen)); this.backButton1.anchor = 0;
@@ -75,17 +87,25 @@ export default class Menus {
         }); this.newGame.anchor = 0;
 
         this.continueGame = new Button('Continue', () => {
+            Game.SOUNDS.camBlip.play(); this.bgMusic.stop();
             const currentNight = parseInt(localStorage.getItem('Current_Night'));
-            console.log(currentNight);
-            switch (currentNight) {
-                case 1: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                case 2: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 3, chicaLevel: 1, foxyLevel: 1, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                case 3: Game.start({night: currentNight, freddylevel: 1, bonnieLevel: 0, chicaLevel: 5, foxyLevel: 2, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                case 4: Game.start({night: currentNight, freddylevel: 2, bonnieLevel: 2, chicaLevel: 4, foxyLevel: 6, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                case 5: Game.start({night: currentNight, freddylevel: 3, bonnieLevel: 5, chicaLevel: 7, foxyLevel: 5, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                case 6: Game.start({night: currentNight, freddylevel: 4, bonnieLevel: 10, chicaLevel: 12, foxyLevel: 16, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
-                default: break;
-            }
+            this.briefingText.text = `Night ${currentNight}`;
+            this.briefingScreen.visible = true;
+            setTimeout(() => {
+                this.briefingText.text = `Night ${currentNight}\n12 : 00  AM`; Game.SOUNDS.camBlip.play();
+                setTimeout(() => {
+                    this.briefingScreen.visible = false;
+                    switch (currentNight) {
+                        case 1: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        case 2: Game.start({night: currentNight, freddylevel: 0, bonnieLevel: 3, chicaLevel: 1, foxyLevel: 1, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        case 3: Game.start({night: currentNight, freddylevel: 1, bonnieLevel: 0, chicaLevel: 5, foxyLevel: 2, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        case 4: Game.start({night: currentNight, freddylevel: 2, bonnieLevel: 2, chicaLevel: 4, foxyLevel: 6, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        case 5: Game.start({night: currentNight, freddylevel: 3, bonnieLevel: 5, chicaLevel: 7, foxyLevel: 5, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        case 6: Game.start({night: currentNight, freddylevel: 4, bonnieLevel: 10, chicaLevel: 12, foxyLevel: 16, settings: this.settings}); app.setRenderState(app.stage, Game.render); break;
+                        default: break;
+                    }
+                }, 1000);
+            }, 1000);
         }); this.continueGame.anchor = 0;
 
         this.customizeNight = new Button('Customize Night', () => {
@@ -185,13 +205,22 @@ export default class Menus {
         }
 
         this.readyCustomNight = new Button('READY', () => {
-            Game.start({
-                night: 7,
-                freddylevel: this.freddyAi.value, bonnieLevel: this.bonnieAi.value, chicaLevel: this.chicaAi.value, foxyLevel: this.foxyAi.value,
-                hourLength: this.customHour.value, usageMultiplier: this.customUsage.value,
-                settings: this.settings
-            });
-            app.setRenderState(app.stage, Game.render); this.bgMusic.stop(); this.staticSound.stop();
+            Game.SOUNDS.camBlip.play(); this.bgMusic.stop();
+            this.briefingText.text = `Night 7`;
+            this.briefingScreen.visible = true;
+            setTimeout(() => {
+                this.briefingText.text = `Night 7\n12 : 00  AM`; Game.SOUNDS.camBlip.play();
+                setTimeout(() => {
+                    this.briefingScreen.visible = false;
+                    Game.start({
+                        night: 7,
+                        freddylevel: this.freddyAi.value, bonnieLevel: this.bonnieAi.value, chicaLevel: this.chicaAi.value, foxyLevel: this.foxyAi.value,
+                        hourLength: this.customHour.value, usageMultiplier: this.customUsage.value,
+                        settings: this.settings
+                    });
+                    app.setRenderState(app.stage, Game.render); this.bgMusic.stop(); this.staticSound.stop();
+                }, 1000);
+            }, 1000);
         })
 
         //
@@ -201,6 +230,10 @@ export default class Menus {
             this.menuStatic.resize();
             this.openingPicture.setSize(innerWidth, innerHeight);
             this.blackBox.setSize(innerWidth, innerHeight);
+
+            this.briefingBg.setSize(innerWidth, innerHeight);
+            this.briefingText.position.set(innerWidth/2, innerHeight/2)
+            this.briefingText.style.fontSize = 42*Game.scale.x*2;
 
             this.title.style.fontSize = 32*(innerWidth/innerHeight); this.title.style.lineHeight = this.title.style.fontSize+this.title.style.fontSize*0.3;
             this.changelog.style.fontSize = innerWidth*0.012;
@@ -256,7 +289,7 @@ export default class Menus {
         this.titleScreenButtons.addChild(this.newGame, this.continueGame, this.customizeNight, this.gotosettings, this.achievments);
         this.titleContent.addChild(this.freddyBackground, this.menuStatic, this.titleScreenButtons, this.title, this.changelog);
         this.titleScreen.addChild(this.openingPicture, this.blackBox, this.titleContent);
-        this.week1.addChild(this.titleScreen, this.settingsOptions, this.achievementsDisplay, this.customNightMenu);
+        this.week1.addChild(this.titleScreen, this.settingsOptions, this.achievementsDisplay, this.customNightMenu, this.briefingScreen);
 
         this.resetMenu(app);
     }
@@ -280,6 +313,7 @@ export default class Menus {
         this.openingTransition = false;
         this.freddyBackground.playAnimation();
         this.menuStatic.playAnimation();
+        this.bgMusic.stop(); setTimeout(() => { this.bgMusic.play() }, 1);
         this.staticSound.play();
         app.setRenderState(this.week1, this.titleScreen);
     }
@@ -307,11 +341,19 @@ export default class Menus {
 
         const blackScreenWait = (ticker) => {
             if (countedTime>=maxWait) {
-                this.bgMusic.stop();
-                Game.start({night: 1,
-                    freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0,
-                    settings: this.settings});
-                app.setRenderState(app.stage, Game.render); this.bgMusic.stop(); this.staticSound.stop();
+                Game.SOUNDS.camBlip.play(); this.bgMusic.stop();
+                this.briefingText.text = `Night 1`;
+                this.briefingScreen.visible = true;
+                setTimeout(() => {
+                    this.briefingText.text = `Night 1\n12 : 00  AM`; Game.SOUNDS.camBlip.play();
+                    setTimeout(() => {
+                        this.briefingScreen.visible = false;
+                        Game.start({night: 1,
+                            freddylevel: 0, bonnieLevel: 0, chicaLevel: 0, foxyLevel: 0,
+                            settings: this.settings});
+                        app.setRenderState(app.stage, Game.render); this.bgMusic.stop(); this.staticSound.stop();
+                    }, 1000);
+                }, 1000);
                 contentWaitOut.destroy(); return;
             }
             countedTime+=(ticker.deltaTime/ticker.FPS);
