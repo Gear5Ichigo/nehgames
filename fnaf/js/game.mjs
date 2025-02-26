@@ -245,7 +245,6 @@ export default class Game {
         this.__ofC.filters = [fake3D];
         Cams.showArea.filters = [fake3D,];
 
-
         //
 
         /**
@@ -267,7 +266,7 @@ export default class Game {
             this.officespritevisible, this.sethour
         );
 
-        this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, Cams.foxyrun, this.winScreen);
+        this.render.addChild(this.officeRender, this.cameraRender, this.displayHUDContainer, this.jumpScares, this.winScreen);
 
         //
 

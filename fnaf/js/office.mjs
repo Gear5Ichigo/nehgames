@@ -73,7 +73,7 @@ export default class Office {
         .rect(0, 0, innerWidth*0.4, innerHeight)
         .fill(0xff0000); this.leftBox.alpha = 0.5; 
         this.leftBox.eventMode = 'static';
-        this.leftBox.onpointerenter = (event) => this._moveLeft = true;
+        this.leftBox.onpointerenter = (event) => {this._moveLeft = true; this._moveRight = false; this._innerMoveRight = false;}
         this.leftBox.onpointerleave = (event) => {
             const detect = new Graphics().rect(0, 0, innerWidth*0.4, innerHeight).fill(0x000000);
             if (detect.containsPoint(event.global)) return;
@@ -84,7 +84,10 @@ export default class Office {
         .rect(0, 0, this.leftBox.width/2, innerHeight)
         .fill(0x00ff00); this.innerLeftBox.alpha = 0.2;
         this.innerLeftBox.eventMode = 'static';
-        this.innerLeftBox.onpointerenter = (event) => {this._innerMoveLeft = true; this._moveLeft = true;}
+        this.innerLeftBox.onpointerenter = (event) => {
+            this._innerMoveLeft = true; this._moveLeft = true;
+            this._moveRight = false; this._innerMoveRight = false;
+        }
         this.innerLeftBox.onpointerleave = (event) => {
             if (event.global.x < 0) return;
             const detect = new Graphics().rect(0, 0, this.leftBox.width/2, innerHeight).fill(0x000000);
@@ -96,7 +99,7 @@ export default class Office {
         .rect(innerWidth-innerWidth*0.4, 0, innerWidth*0.4, innerHeight)
         .fill(0x0000ff); this.rightBox.alpha = 0.2; 
         this.rightBox.eventMode = 'static';
-        this.rightBox.onpointerenter = (event) => this._moveRight = true;
+        this.rightBox.onpointerenter = (event) => {this._moveRight = true; this._moveLeft = false; this._innerMoveLeft = false;}
         this.rightBox.onpointerleave = (event) => {
             const detect = new Graphics().rect(innerWidth-innerWidth*0.4, 0, innerWidth*0.4, innerHeight).fill(0x000000);
             if (detect.containsPoint(event.global)) return;
@@ -107,7 +110,10 @@ export default class Office {
         .rect(innerWidth-this.rightBox.width/2, 0, this.rightBox.width/2, innerHeight)
         .fill(0x00ff00); this.innerRightBox.alpha = 0.2;
         this.innerRightBox.eventMode = 'static';
-        this.innerRightBox.onpointerenter = (event) => {this._innerMoveRight = true; this._moveRight = true;}
+        this.innerRightBox.onpointerenter = (event) => {
+            this._innerMoveRight = true; this._moveRight = true;
+            this._moveLeft = false; this._innerMoveLeft = false;
+        }
         this.innerRightBox.onpointerleave = (event) => {
             if (event.global.x > innerWidth) return;
             const detect = new Graphics().rect(innerWidth-this.rightBox.width/2, 0, this.rightBox.width/2, innerHeight).fill(0x000000);

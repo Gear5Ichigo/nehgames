@@ -1,4 +1,5 @@
 import { Sound } from "../../public/pixi-sound.mjs";
+import { Ticker } from "../../public/pixi.min.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Cams from "./cams.mjs";
 import Doors from "./doors.mjs";
@@ -48,7 +49,10 @@ class Animatronic {
     };
 
     __updateSprites() {
-        if ((Game.currentCam === this.previousState || Game.currentCam === this.currentState) && Cams.blackBox.visible == false && Game.camUp) Cams.blackBox.start();
+        if ((Game.currentCam === this.previousState || Game.currentCam === this.currentState) && !Cams.blackBox.visible && Game.camUp) {
+            if (Game.currentCam === "CAM2A" && Game.animatronics.foxy.currentState === "5") return;
+            Cams.blackBox.start();
+        }
     };
 }
 
@@ -90,7 +94,7 @@ class Bonnie extends Animatronic {
             Cams._1A.callBack();
             Cams._1B.callBack();
             Cams._5.callBack();
-            Cams._2A.callBack();
+            if (Game.animatronics.foxy.currentState !== "5") Cams._2A.callBack();
             Cams._2B.callBack();
             Cams._3.callBack();
         }
@@ -222,7 +226,7 @@ class Freddy extends Animatronic {
 
 class Foxy extends Animatronic {
 
-    SOUNDS = {run: Sound.from({url: './assets/sounds/run.wav', volume: 1.25})}
+    SOUNDS = {run: Sound.from({url: './assets/sounds/run.wav', volume: 1.5})}
 
     constructor(aiLevel) {
         super(aiLevel, 5.02)
@@ -242,36 +246,55 @@ class Foxy extends Animatronic {
     }
 
     movement(ticker) {
-        if (Game.camUp && this.currentState!=="4") {
-            this.movementFailed = true;
-        }
+        if (this.currentState === "4") { return;}
+        if (Game.camUp) { this.movementFailed = true; }
         super.movement(ticker, 'left', () => {
             if (this.movementFailed) this.currentState = this.previousState || "1";
             this.movementFailed = false;
             if (this.currentState === "4") {
-                setTimeout(() => {
-                    if (!Game.win || !Game.powerDown || !Game.die) {
-                        if (Game.leftDoorOn) {
-                            const predictedpower = Game.powerLevel-(1+(this.sucessfulHits*5));
-                            this.sucessfulHits+=1; if (this.sucessfulHits>=2) this.sucessfulHits = 2;
-                            if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;
-                            Game.SOUNDS.doorBaning.play();
-                        } else {
-                            if (Game.camUp) CameraTablet.flip();
-                            Game.die == true;
-                            Doors.left.visible = false;
-                            Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.gotoAndPlay(0);
-                            Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 1000);
-                        }
+                let timeUp = false, checkedLeftHall = false, killmode = false;
+                const roaming = new Ticker(); roaming.maxFPS = 60;
+                let roamingTime = 0;
+                roaming.add((ticker) => {
+                    const dt = ticker.deltaTime/ticker.FPS;
+                    roamingTime += dt;
+                    if (Game.camUp && Game.currentCam === "CAM2A" && !checkedLeftHall) { 
+                        checkedLeftHall = true;
+                        Game.changeSprite(Cams.showArea, Cams.foxyrun); Cams.foxyrun.playAnimation();
                     }
-                }, 2100);
-                this.SOUNDS.run.play();
+                    if (roamingTime >= 25 && !timeUp) { timeUp = true; }
+                    if ((timeUp || checkedLeftHall) && !killmode) {
+                        killmode = true;
+                        this.SOUNDS.run.play();
+                        setTimeout(() => { this.checkDoor() }, 1700);
+                        roaming.destroy(); return;
+                    }
+                }); roaming.start();
             }
-        }) 
+        });
+    }
+
+    checkDoor() {
+        if (!Game.win || !Game.powerDown || !Game.die) {
+            console.log("BRO")
+            if (Game.leftDoorOn) {
+                this.currentState = "1"; this.previousState = null;
+                const predictedpower = Game.powerLevel-(1+(this.sucessfulHits*5));
+                this.sucessfulHits+=1; if (this.sucessfulHits>=2) this.sucessfulHits = 2;
+                if (predictedpower<=0) {Game.powerLevel = 0.5;} else Game.powerLevel = predictedpower;
+                Game.SOUNDS.doorBaning.play();
+            } else {
+                if (Game.camUp) CameraTablet.flip();
+                Game.die == true;
+                Doors.left.visible = false;
+                Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.gotoAndPlay(0);
+                Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 1000);
+            }
+        }
     }
 
     __updateSprites() {
-        if (Game.currentCam === this.currentState || Game.currentCam === this.previousState) Cams._1C();
+        if (Game.currentCam === "CAM1C") Cams._1C.callBack();
     }
 }
 

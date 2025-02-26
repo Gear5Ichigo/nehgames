@@ -280,7 +280,6 @@ export default class Menus {
         this.openingTransition = false;
         this.freddyBackground.playAnimation();
         this.menuStatic.playAnimation();
-        this.bgMusic.stop(); this.bgMusic.play();
         this.staticSound.play();
         app.setRenderState(this.week1, this.titleScreen);
     }

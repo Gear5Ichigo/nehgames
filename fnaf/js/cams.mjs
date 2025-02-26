@@ -7,11 +7,10 @@ export default class Cams {
     static  __makeCamButton(cam, x, y, callBack) {
         const mapref = this.camsMap;
         const b = new Graphics()
-        .rect(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y, 56*Game.scale.x, 37*Game.scale.y)
+        .rect(0, 0, 56*Game.scale.x, 37*Game.scale.y)
         .fill(0xff0000); b.alpha = 0; b.eventMode = 'static'
-        b.callBack = () => {
-            if (Game.currentCam === `CAM${cam}`) callBack();
-        }
+        b.callBack = () => { if (Game.currentCam === `CAM${cam}`) callBack(); }
+        b.resize = () => { b.position.set(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y); b.setSize(56*Game.scale.x, 37*Game.scale.y) }
         b.onpointerdown = () => {
             if (Game.currentCam === `CAM${cam}`) return;
             Game.currentCam = `CAM${cam}`;
@@ -22,7 +21,7 @@ export default class Cams {
             this.camsMap.swapTexture(`${cam}.png`);
             this._swapTimer = 0;
             this._prevCamButton = null;
-            if (this.showArea.children[0] === this.kitchen) this.showArea.removeChild(this.kitchen);
+            if (this.showArea.children[0]) this.showArea.removeChild(this.showArea.children[0]);
             b.callBack();
         };
         this.mapButtons.addChild(b);
@@ -34,10 +33,10 @@ export default class Cams {
         //
 
         this.cameraBorder = new Graphics()
-        .rect(20*Game.scale.x, 20*Game.scale.y, 1560*Game.scale.x, 680*Game.scale.y).stroke({fill: 0xffffff, width: 3});
+        .rect(0, 0, 1560*Game.scale.x, 680*Game.scale.y).stroke({fill: 0xffffff, width: 3});
 
         this.cameraRecording = new Graphics()
-        .circle(this.cameraBorder.x+(125*Game.scale.x), this.cameraBorder.y+(100*Game.scale.y), 25*Game.scale.x).fill(0xff0000);
+        .circle(0, 0, 25*Game.scale.x).fill(0xff0000);
 
         const blipFlashJson = await Assets.load('./assets/sprites/blipFlashes/spritesheet.json');
         const blipFlashSheet = new Spritesheet(await Assets.load('./assets/sprites/blipFlashes/spritesheet.png'), blipFlashJson.data);
@@ -49,17 +48,12 @@ export default class Cams {
         this.blipFlash1.onComplete = () => this.blipFlash1.visible = false; //this.blipFlash1.animationSpeed = 0.05;
 
         this.staticEffect = await SpriteLoader.AnimatedSprite('/static/spritesheet@0.5x', (animSprite) => {
-            animSprite.alpha = 0.33;
-            animSprite.setSize(innerWidth, innerHeight);
+            animSprite.alpha = 0.22;
         }); this.staticEffect.playAnimation();
 
         this.camsMap = await SpriteLoader.Sprite('/cams/Map/spritesheet@0.5x');
         this.camsMap.swapTexture('1A.png')
-        this.camsMap.resize = () => {
-            this.camsMap.width *= Game.scale.x*1.15; this.camsMap.height*=Game.scale.y*1.125;
-            this.camsMap.anchor = 0.5;
-            this.camsMap.position.set(this.cameraBorder.width-this.camsMap.width/2, this.cameraBorder.height-this.camsMap.height/2+(30*Game.scale.y));
-        }; this.camsMap.resize();
+        this.camsMap.anchor = 0.5;
 
         this.areaName = new Text({text: "Stage",
             style: {
@@ -67,7 +61,7 @@ export default class Cams {
                 fontFamily: 'FNAF',
                 fontSize: 120*(Game.scale.x/2)
             }
-        }); this.areaName.position.set(this.camsMap.x-this.camsMap.width/2, this.camsMap.y-this.camsMap.height/2-(35*Game.scale.y),)
+        });
 
         //
 
@@ -79,7 +73,6 @@ export default class Cams {
             this[area.replace(/ /g,'').toLowerCase()] = spritesheet.textures;
         };
         this.showArea = new Sprite(Object.values(this.stage)[0]);
-        this.showArea.setSize(innerWidth*1.2, innerHeight);
 
         this.kitchen = new Graphics()
         .rect(0, 0, innerWidth, innerHeight)
@@ -89,12 +82,10 @@ export default class Cams {
                 fontFamily: 'FNAF', fontSize: 144*(Game.scale.x/2),
                 align: 'center', fill: 0xffffff,
             },
-            x: innerWidth/2-(166*Game.scale.x), y: innerHeight/2-(144*Game.scale.y)
         }));
 
-        this.foxyrun = await SpriteLoader.AnimatedSprite('/foxyrun/spritesheet@0.5x', (as) => {
-            
-        }); this.foxyrun.playAnimation('main');
+        this.foxyrun = await SpriteLoader.AnimatedSprite('/foxyrun/spritesheet@0.5x', (as) => { as.animationSpeed = 0.66; as.loop = false; });
+        this.foxyrun.visible = true; this.foxyrun.playAnimation();
 
         this.blackBox = new Graphics()
         .rect(0, 0, innerWidth*1.2, innerHeight)
@@ -133,7 +124,6 @@ export default class Cams {
                         this._prevCamButton = Game.currentCam.substring(3)+'.png';
                         this.camsMap.swapTexture('Complete_Map.png');
                     } else {
-                        console.log(this._prevCamButton)
                         this.camsMap.swapTexture(this._prevCamButton);
                     }
                 }
@@ -251,5 +241,20 @@ export default class Cams {
                 this.showArea.texture = this.rightcorner['49.png'];
             }
         });
+
+        this.resize = () => {
+            this.staticEffect.setSize(innerWidth, innerHeight);
+            this.cameraBorder.position.set(20*Game.scale.x, 20*Game.scale.y);
+            this.cameraBorder.setSize(1560*Game.scale.x, 680*Game.scale.y);
+            this.cameraRecording.position.set(this.cameraBorder.x+(125*Game.scale.x), this.cameraBorder.y+(100*Game.scale.y));
+            this.camsMap.scale.set(Game.scale.x*1.15, Game.scale.y*1.125);
+            this.camsMap.position.set(this.cameraBorder.width-this.camsMap.width/2, this.cameraBorder.height-this.camsMap.height/2+(30*Game.scale.y));
+            this.areaName.position.set(this.camsMap.x-this.camsMap.width/2, this.camsMap.y-this.camsMap.height/2-(35*Game.scale.y));
+            // this.foxyrun.setSize(innerWidth*1.2, innerHeight);
+            this.showArea.setSize(innerWidth*1.2, innerHeight);
+            this.kitchen.children[0].position.set(innerWidth/2-(444*Game.scale.x), innerHeight/2-(222*Game.scale.y));
+
+            for (const child of this.mapButtons.children) child.resize();
+        }; this.resize();
     }
 }

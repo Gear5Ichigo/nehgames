@@ -1,8 +1,2 @@
 Changes: (PART 1)
-- New menu
-- started work on settings
-- new game button
-- removed nights 2-6 for now cause im adding the campaign
-- new static filter
-- office sorta resizes based on window
-- press "F" while in game to reutnr to menu
+- stuff

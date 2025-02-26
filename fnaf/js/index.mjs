@@ -2,6 +2,7 @@ import { Sound } from '../../public/pixi-sound.mjs';
 import { Application, Assets, Container, Graphics, Text } from '../../public/pixi.min.mjs';
 import * as PIXI from '../../public/pixi.min.mjs';
 import CameraTablet from './cameratablet.mjs';
+import Cams from './cams.mjs';
 import Doors from './doors.mjs';
 import './game.mjs';
 import Game from './game.mjs';
@@ -10,33 +11,6 @@ import Office from './office.mjs';
 import OfficeButtons from './officebuttons.mjs';
 
 (async () => {
-
-    class Button extends Container {
-
-        constructor(x, y, width, height, text, container) {
-            super({
-                eventMode: 'static'
-            });
-
-            this.rect = new Graphics()
-            .rect(x, y, width, height,)
-            .fill(0xffffff)
-            
-            this.text = new Text({
-                text: text,
-                zIndex: 2,
-                x: x, y: y,
-                style: {
-                    fill: 0x000000,
-                    fontSize: 32,
-                    align: 'center'
-                },
-            })
-
-            this.addChild(this.text, this.rect);
-            container.addChild(this);
-        }
-    }
 
     //
 
@@ -72,9 +46,6 @@ import OfficeButtons from './officebuttons.mjs';
     window.onresize = (event) => {
         Game.scale = {x: innerWidth/1600, y: innerHeight/720};
 
-        app.canvas.width = innerWidth;
-        app.canvas.height = innerHeight;
-
         Game.__ofC.filters = [new PIXI.Filter({
             glProgram: new PIXI.GlProgram({
                 vertex: Game.vert, fragment: Game.frag
@@ -91,7 +62,7 @@ import OfficeButtons from './officebuttons.mjs';
         Office.sprite.position.set(innerWidth/2, innerHeight/2);
         Office.margin = (Office.sprite.width-Office.sprite.width/Office.scale)/2;
 
-        Game.officeContainer.x *= Game.scale.x;
+        Game.officeContainer.x = 0;
 
         Office.fanAnim.forEach(([key, anim]) => Office.fanResize(anim));
         Office.freddyBoop.setSize(10*Game.scale.x, 10*Game.scale.y);
@@ -117,6 +88,7 @@ import OfficeButtons from './officebuttons.mjs';
         OfficeButtons.r_doorClick.setSize(btnSize[0], btnSize[1]);
         OfficeButtons.r_lightClick.setSize(btnSize[0], btnSize[1]);
 
+        Cams.resize();
         CameraTablet.camFlipButton.resize();
         CameraTablet.tablet.forEach(([key, anim]) => anim.setSize(innerWidth, innerHeight));
 
