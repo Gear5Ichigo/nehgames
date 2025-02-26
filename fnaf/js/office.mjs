@@ -43,19 +43,29 @@ export default class Office {
 
         this.plushies.sprites['powerbean'] = new Sprite(await Assets.load('./assets/sprites/plushies/powerbean.png'));
         this.plushies.sprites['powerbean'].visible = false;
+        this.plushies.sprites['bear5'] = new Sprite(await Assets.load('./assets/sprites/plushies/bear5plush@0.5x.png'));
+        this.plushies.sprites['bear5'].visible = false;
 
         this.plushiesResize = () => {
             this.plushies.forEach(([key, sprite]) => sprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y));
-            this.plushies.sprites['powerbean'].scale.set(0.5*Game.scale.x, 0.5*Game.scale.y);
+            this.plushies.sprites['powerbean'].scale.set(0.45*Game.scale.x, 0.45*Game.scale.y);
+            this.plushies.sprites['bear5'].scale.set(0.2*Game.scale.x, 0.2*Game.scale.y);
 
-            this.plushies.sprites['powerbean'].position.set(this.sprite.width/2-(10*Game.scale.x*this.scale), this.sprite.height/2-(44*Game.scale.y));
+            this.plushies.sprites['powerbean'].position.set(this.sprite.width/2-(25*Game.scale.x*this.scale), this.sprite.height/2-(31*Game.scale.y));
+            this.plushies.sprites['bear5'].position.set(this.sprite.width/2+(67*Game.scale.x*this.scale), this.sprite.height/2-(20*Game.scale.y))
             this.plushies.sprites['freddy.png'].position.set(this.sprite.width/2-(350*Game.scale.x*this.scale), this.sprite.height/2-(140*Game.scale.y));
             this.plushies.sprites['bonnie.png'].position.set(this.sprite.width/2-(422*Game.scale.x*this.scale), this.sprite.height/2-(50*Game.scale.y));
             this.plushies.sprites['chica.png'].position.set(this.sprite.width/2-(255*Game.scale.x*this.scale), this.sprite.height/2+(4*Game.scale.y));
         }; this.plushiesResize();
 
         this.plushiesContainer = new Container();
-        this.plushiesContainer.addChild(this.plushies.sprites['freddy.png'], this.plushies.sprites['bonnie.png'], this.plushies.sprites['chica.png'], this.plushies.sprites['powerbean']);
+        this.plushiesContainer.addChild(
+            this.plushies.sprites['freddy.png'], 
+            this.plushies.sprites['bonnie.png'], 
+            this.plushies.sprites['chica.png'], 
+            this.plushies.sprites['powerbean'], 
+            this.plushies.sprites['bear5'],
+        );
 
         //
 

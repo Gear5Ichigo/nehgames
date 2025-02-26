@@ -20,7 +20,8 @@ import OfficeButtons from './officebuttons.mjs';
     Assets.addBundle('fonts', [
         {alias: 'Press Start', src: './assets/fonts/PrStart.ttf'},
         {alias: 'Volter', src: './assets/fonts/Volter__28Goldfish_29.ttf', data: { family: "Volter" }},
-        {alias: 'fnaf', src: './assets/fonts/five-nights-at-freddys.ttf', data: { family: "FNAF" }}
+        {alias: 'fnaf', src: './assets/fonts/five-nights-at-freddys.ttf', data: { family: "FNAF" }},
+        {alias: 'Consolas', src: './assets/fonts/Consolas.ttf', data: { family: "Consolas" }}
     ]); await Assets.loadBundle('fonts');
 
     app.setRenderState = (render, state) => {
