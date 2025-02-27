@@ -27,6 +27,7 @@ export default class Game {
             doorError: Sound.from({url: './assets/sounds/error.wav'}),
             winCheer: Sound.from({url: './assets/sounds/CROWD_SMALL_CHIL_EC049202.wav', volume: 0.33}),
             jumpscare: Sound.from({url: './assets/sounds/XSCREAM.wav', volume: 0.33}),
+            fnaf6jumpscare: Sound.from({url: './assets/sounds/fnaf6jumpscare.mp3', volume: 0.5}),
             powerdown: Sound.from({url: './assets/sounds/powerdown.wav', preload: true}),
             musicbox: Sound.from({url: './assets/sounds/music box.wav', volume: 0.66, preload: true}),
             boop: Sound.from({url: './assets/sounds/PartyFavorraspyPart_AC01__3.wav', volume: 0.125}),
@@ -342,14 +343,17 @@ export default class Game {
             Office.polishFreddySprite.visible = false;
         }
 
-        Jumpscares.freddyScare.gotoAndStop(0);
-        Jumpscares.freddyScare.visible = false;
-        Jumpscares.bonnieScare.gotoAndStop(0);
-        Jumpscares.bonnieScare.visible = false;
-        Jumpscares.chicaScare.gotoAndStop(0);
-        Jumpscares.chicaScare.visible = false;
-        Jumpscares.foxyScare.gotoAndStop(0);
-        Jumpscares.foxyScare.visible = false;
+        // Jumpscares.freddyScare.gotoAndStop(0);
+        // Jumpscares.freddyScare.visible = false;
+        // Jumpscares.bonnieScare.gotoAndStop(0);
+        // Jumpscares.bonnieScare.visible = false;
+        // Jumpscares.chicaScare.gotoAndStop(0);
+        // Jumpscares.chicaScare.visible = false;
+        Jumpscares.foxyScare.resetAnimations(); Jumpscares.foxyScare.visible = false;
+
+        for (const jumpscare of this.jumpScares.children) {
+            jumpscare.visible = false; jumpscare.resetAnimations();
+        };
 
         OfficeButtons.__updateLeftSideButtons();
         OfficeButtons.__updateLeftSideOffice();

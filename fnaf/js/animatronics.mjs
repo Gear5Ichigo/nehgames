@@ -1,5 +1,5 @@
 import { Sound } from "../../public/pixi-sound.mjs";
-import { Assets, Ticker, Sprite } from "../../public/pixi.min.mjs";
+import { Assets, Ticker, Sprite, Graphics } from "../../public/pixi.min.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Cams from "./cams.mjs";
 import Doors from "./doors.mjs";
@@ -289,7 +289,7 @@ class Foxy extends Animatronic {
                 if (Game.camUp) CameraTablet.flip();
                 Game.die == true;
                 Doors.left.visible = false;
-                Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.gotoAndPlay(0);
+                Jumpscares.foxyScare.visible = true; Jumpscares.foxyScare.playAnimation();
                 Game.SOUNDS.jumpscare.play(); setTimeout(() => {Game.SOUNDS.jumpscare.stop(); Game.forceGameOver();}, 1000);
             }
         }
@@ -384,8 +384,26 @@ class PolishFreddy extends Animatronic {
                 Office.polishFreddySprite.tint = rgb;
                 Office.polishFreddySprite.scale.set(Office.polishFreddySprite.scale.x+(dt/5), Office.polishFreddySprite.scale.y+(dt/5));
                 Office.polishFreddySprite.resize();
-                if (prepTime >= 5.00) {
-                    Game.forceGameOver(); killingPrep.stop(); killingPrep.destroy(); return;
+                if (prepTime >= 5.00 && !Jumpscares.polishFreddyScare.animations['main'].playing && !Game.die) {
+                    Jumpscares.polishFreddyScare.playAnimation(); Jumpscares.polishFreddyScare.visible = true;
+                    Game.die = true;
+                    Game.SOUNDS.fnaf6jumpscare.play();
+                    setTimeout(() => {
+                        Jumpscares.polishFreddyScare.currentAnimation.gotoAndStop(0);
+                        setTimeout(() => {
+                            const redscreen = new Graphics().rect(-innerWidth, 0, innerWidth*2, innerHeight).fill(0xff0000);
+                            redscreen.alpha = 0;
+                            Jumpscares.polishFreddyScare.addChild(redscreen);
+                            let time = 0;
+                            const joe = setInterval(() => {
+                                time+=66;
+                                redscreen.alpha+=0.07;
+                                if (time >= 1000) {
+                                    Game.forceGameOver(); killingPrep.stop(); killingPrep.destroy(); clearInterval(joe); Jumpscares.polishFreddyScare.removeChild(redscreen); return;
+                                }
+                            }, 66);
+                        }, 1000);
+                    }, 1000);
                 } 
             }); killingPrep.start();
         }

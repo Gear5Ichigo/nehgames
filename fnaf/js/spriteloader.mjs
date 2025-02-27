@@ -36,7 +36,8 @@ export default class SpriteLoader extends Sprite {
                     this.addChild(this.animations[key]);
                     if (callBack !== undefined || callBack !== null) callBack(this.animations[key]);
                 }
-                this.changeAnimation(this.animations[Object.keys(this.animations)[0]]);
+                this.currentAnimation = this.animations[Object.keys(this.animations)[0]];
+                this.changeAnimation(this.currentAnimation);
             }
 
             forEach(callBack) {
@@ -48,7 +49,7 @@ export default class SpriteLoader extends Sprite {
             changeAnimation(key) {
                 for (const [string, animation] of Object.entries(this.animations)) {
                     animation.visible = false;
-                    if (key === string || key === animation) animation.visible = true;
+                    if (key === string || key === animation) {animation.visible = true; this.currentAnimation = animation;}
                 }
             }
 

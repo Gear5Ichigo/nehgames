@@ -30,13 +30,13 @@ export default class CameraTablet {
                 Game.die = true;
                 if (Game.animatronics.freddy.currentState==="OFFICE") {
                     Jumpscares.freddyScare.visible = true;
-                    Jumpscares.freddyScare.gotoAndPlay(0);
+                    Jumpscares.freddyScare.playAnimation();
                 } else if (Game.animatronics.bonnie.currentState==="OFFICE") {
                     Jumpscares.bonnieScare.visible = true;
-                    Jumpscares.bonnieScare.gotoAndPlay(0);
+                    Jumpscares.bonnieScare.playAnimation();
                 } else if (Game.animatronics.chica.currentState==="OFFICE") {
                     Jumpscares.chicaScare.visible = true;
-                    Jumpscares.chicaScare.gotoAndPlay(0);
+                    Jumpscares.chicaScare.playAnimation();
                 }
                 Game.SOUNDS.jumpscare.play();
                 setTimeout(() => {

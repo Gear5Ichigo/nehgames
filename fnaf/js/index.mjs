@@ -9,6 +9,7 @@ import Game from './game.mjs';
 import Menus from './menus.mjs';
 import Office from './office.mjs';
 import OfficeButtons from './officebuttons.mjs';
+import Jumpscares from './jumpscares.mjs';
 
 (async () => {
 
@@ -70,7 +71,8 @@ import OfficeButtons from './officebuttons.mjs';
         Office.freddyBoop.x *= Game.scale.x;
         Office.plushiesResize();
         Office.movementResize();
-        Office.polishFreddySprite.resize();
+        if (Office.polishFreddySprite.visible) Office.polishFreddySprite.resize();
+        Jumpscares.foxyScare.setSize()
 
         Doors.left.forEach(([key, anim]) => Doors.resize(anim));
         Doors.right.forEach(([key, anim]) => Doors.resize(anim));
