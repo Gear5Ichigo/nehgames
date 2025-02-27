@@ -278,7 +278,6 @@ class Foxy extends Animatronic {
 
     checkDoor() {
         if (!Game.win || !Game.powerDown || !Game.die) {
-            console.log("BRO")
             if (Game.leftDoorOn) {
                 this.currentState = "1"; this.previousState = null; this.__updateSprites();
                 const predictedpower = Game.powerLevel-(1+(this.sucessfulHits*5));
@@ -315,7 +314,7 @@ class PolishFreddy extends Animatronic {
     }
 
     constructor(aiLevel) {
-        super(aiLevel, 5.00);
+        super(aiLevel, 6.00);
 
         this.trashRemaining = 0;
         this.trashObtained = 0;
