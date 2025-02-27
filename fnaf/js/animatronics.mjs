@@ -364,7 +364,6 @@ class PolishFreddy extends Animatronic {
                 trashbag.onpointerdown = () => {
                     if (Cams.blackBox.visible || trashbag.spawn !== Game.currentCam) return;
                     this.trashObtained++;
-                    this.timeElapsed-=(this.movementInterval/this.rageState)/2;
                     if (this.timeElapsed < 0) this.timeElapsed = 0;
                     Cams.cameraScreen.removeChild(trashbag);
                 }
@@ -376,11 +375,14 @@ class PolishFreddy extends Animatronic {
             this._killmodeActive = true;
             const killingPrep = new Ticker(); killingPrep.maxFPS = 60;
             let prepTime = 0;
+            const rgb = [1, 1, 1];
             killingPrep.add(ticker => {
                 if (this.rageState < 5 || Game.win || Game.powerDown) {this.killmode = false; this._killmodeActive = false; killingPrep.stop(); killingPrep.destroy(); return;}
                 const dt = ticker.deltaTime/ticker.FPS;
                 prepTime+=dt;
-                Office.polishFreddySprite.scale.set(Office.polishFreddySprite.scale.x+(dt/4), Office.polishFreddySprite.scale.y+(dt/4));
+                rgb[1] -= dt/5; rgb[2] -= dt/5;
+                Office.polishFreddySprite.tint = rgb;
+                Office.polishFreddySprite.scale.set(Office.polishFreddySprite.scale.x+(dt/5), Office.polishFreddySprite.scale.y+(dt/5));
                 Office.polishFreddySprite.resize();
                 if (prepTime >= 5.00) {
                     Game.forceGameOver(); killingPrep.stop(); killingPrep.destroy(); return;
@@ -402,6 +404,7 @@ class PolishFreddy extends Animatronic {
     feedTrash() {
         if (this.rageState > 1 && this.trashObtained > 0) {
             this.SOUNDS.coin.play();
+            this.timeElapsed = 0;
             if (this.rageState == 2) {
                 this.feedingStreak ++ ;
             } else this.feedingStreak = 0;
@@ -413,11 +416,12 @@ class PolishFreddy extends Animatronic {
 
     __updateSprites() {
         switch(this.rageState) {
-            case 1: Office.polishFreddySprite.scale.set(1, 1); break;
-            case 2: Office.polishFreddySprite.scale.set(1.3, 1.3); break;
-            case 3: Office.polishFreddySprite.scale.set(1.6, 1.6); break;
-            case 4: Office.polishFreddySprite.scale.set(1.7, 1.7); break;
+            case 1: Office.polishFreddySprite.scale.set(1*Game.scale.x, 1*Game.scale.y); break;
+            case 2: Office.polishFreddySprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y); break;
+            case 3: Office.polishFreddySprite.scale.set(1.4*Game.scale.x, 1.4*Game.scale.y); break;
+            case 4: Office.polishFreddySprite.scale.set(1.6*Game.scale.x, 1.6*Game.scale.y); break;
         }
+        Office.polishFreddySprite.tint = 0xffffff;
         Office.polishFreddySprite.resize();
     }
 }

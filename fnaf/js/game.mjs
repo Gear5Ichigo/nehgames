@@ -274,6 +274,10 @@ export default class Game {
         console.log(options.settings);
         this.settings = options.settings;
 
+        for (const sprite of Cams.cameraScreen.children) {
+            if (sprite.texture === Cams.trashTxt) { Cams.cameraScreen.removeChild(sprite); }
+        }
+
         Menus.bgMusic.stop(); Menus.staticSound.stop();
         for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
         this.winScreen.alpha = 0;
@@ -332,6 +336,7 @@ export default class Game {
         if (options.night >= 8) {
             this.animatronics.polishFreddy = new PolishFreddy(options.polishFreddyLevel || 0);
             Office.polishFreddySprite.visible = true;
+            Office.polishFreddySprite.resize();
             this.animatronics.polishFreddy.__updateSprites();
         } else {
             Office.polishFreddySprite.visible = false;
@@ -370,7 +375,7 @@ export default class Game {
         if (localStorage.getItem('Night_5_Finished')) Office.plushies.sprites['chica.png'].visible = true;
         if (localStorage.getItem('Night_6_Finished')) Office.plushies.sprites['freddy.png'].visible = true;
         if (localStorage.getItem('Power_Easter_Egg')) Office.plushies.sprites['powerbean'].visible = true;
-        if (localStorage.getItem('Power_Easter_Egg')) Office.plushies.sprites['bear5'].visible = false;
+        Office.plushies.sprites['bear5'].visible = true;
 
         if (options.settings.disablePlushies) Office.plushies.forEach(([key, value]) => value.visible = false);
 

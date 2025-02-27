@@ -38,15 +38,18 @@ export default class Office {
 
         this.polishFreddySprite = new Sprite(await Assets.load('./assets/sprites/office/Funnybeartrashcan.webp'));
         this.polishFreddySprite.eventMode = 'static'; this.polishFreddySprite.visible = false;
+        this.polishFreddySprite.onpointermove = (event) => {
+            const detect = new Graphics().rect(innerWidth-innerWidth*0.4, 0, innerWidth*0.4, innerHeight).fill(0x000000);
+            if (detect.containsPoint(event.global)) { this.rightBox.onpointerenter();}
+        }
         this.polishFreddySprite.resize = () => {
             this.polishFreddySprite.position.set(
-                innerWidth/2+100*Game.scale.x*this.polishFreddySprite.scale.x,
+                innerWidth/2+166*Game.scale.x-((50*Game.scale.x)*(Game.animatronics.polishFreddy.rageState)/this.polishFreddySprite.scale.x),
                 innerHeight/2+((170*Game.scale.x)/this.polishFreddySprite.scale.y)-(50*Game.scale.x*this.polishFreddySprite.scale.y));
         }
         this.polishFreddySprite.onpointerdown = () => {
             Game.animatronics.polishFreddy.feedTrash();
         }
-        this.polishFreddySprite.resize();
 
         //
 

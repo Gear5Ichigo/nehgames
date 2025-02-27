@@ -118,9 +118,10 @@ export default class Menus {
                     this.briefingScreen.visible = false;
                         Game.start({
                             night: 8,
-                            freddylevel: 10, bonnieLevel: 15, chicaLevel: 0, foxyLevel: 20,
+                            freddylevel: 5, bonnieLevel: 15, chicaLevel: 0, foxyLevel: 20,
                             polishFreddyLevel: 20,
-                            settings: this.settings
+                            settings: this.settings,
+                            hourLength: 55,
                         });
                         app.setRenderState(app.stage, Game.render);
                 }, 1000);
@@ -264,7 +265,7 @@ export default class Menus {
             this.day8.style.fontSize = 32*(innerWidth/innerHeight);
 
             this.title.position.set(150*Game.scale.x, 15*Game.scale.y);
-            this.changelog.position.set(this.title.x+this.changelog.width, 10*Game.scale.y)
+            this.changelog.position.set(this.title.x+this.title.width, 10*Game.scale.y)
             this.newGame.position.set(this.title.x, this.title.height+this.newGame.height);
             this.continueGame.position.set(this.title.x, this.newGame.y+this.customizeNight.height);
             this.customizeNight.position.set(this.title.x, this.continueGame.y+this.customizeNight.height);
