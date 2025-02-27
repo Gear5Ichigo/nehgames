@@ -37,7 +37,16 @@ export default class Office {
         //
 
         this.polishFreddySprite = new Sprite(await Assets.load('./assets/sprites/office/Funnybeartrashcan.webp'));
-        this.polishFreddySprite.tint = 0xffcccc;
+        this.polishFreddySprite.eventMode = 'static'; this.polishFreddySprite.visible = false;
+        this.polishFreddySprite.resize = () => {
+            this.polishFreddySprite.position.set(
+                innerWidth/2+100*Game.scale.x*this.polishFreddySprite.scale.x,
+                innerHeight/2+((170*Game.scale.x)/this.polishFreddySprite.scale.y)-(50*Game.scale.x*this.polishFreddySprite.scale.y));
+        }
+        this.polishFreddySprite.onpointerdown = () => {
+            Game.animatronics.polishFreddy.feedTrash();
+        }
+        this.polishFreddySprite.resize();
 
         //
 
@@ -52,7 +61,6 @@ export default class Office {
         this.plushies.sprites['bear5'].visible = false;
 
         this.plushiesResize = () => {
-            this.polishFreddySprite.position.set(innerWidth/2+100*Game.scale.x, innerHeight/2+125*Game.scale.y);
             this.plushies.forEach(([key, sprite]) => sprite.scale.set(1.2*Game.scale.x, 1.2*Game.scale.y));
             this.plushies.sprites['powerbean'].scale.set(0.45*Game.scale.x, 0.45*Game.scale.y);
             this.plushies.sprites['bear5'].scale.set(0.2*Game.scale.x, 0.2*Game.scale.y);

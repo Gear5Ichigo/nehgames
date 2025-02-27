@@ -1,5 +1,5 @@
 import { Sound } from "../../public/pixi-sound.mjs";
-import { Ticker } from "../../public/pixi.min.mjs";
+import { Assets, Ticker, Sprite } from "../../public/pixi.min.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Cams from "./cams.mjs";
 import Doors from "./doors.mjs";
@@ -26,7 +26,7 @@ class Animatronic {
         if (this.timeElapsed >= this.movementInterval) {
             if (this.currentState==="OFFICE" || Game.win || Game.die || Game.powerDown) return;
             this.timeElapsed = 0;
-            const chance = (Math.random()*20)+1
+            const chance = (Math.random()*19)+1
             if (chance >= 1 && chance <= this.aiLevel) {
                 const currentCam = this._possibleStates[this.currentState];
                 const moveTo = currentCam[Math.floor(Math.random()*currentCam.length)]
@@ -259,6 +259,7 @@ class Foxy extends Animatronic {
                 roaming.add((ticker) => {
                     const dt = ticker.deltaTime/ticker.FPS;
                     roamingTime += dt;
+                    if (Game.die || Game.win || !Game._gameActive || Game.powerDown) {roaming.stop(); roaming.destroy(); return;}
                     if (Game.camUp && Game.currentCam === "CAM2A" && !checkedLeftHall) { 
                         checkedLeftHall = true;
                         Game.changeSprite(Cams.showArea, Cams.foxyrun); Cams.foxyrun.playAnimation();
@@ -306,24 +307,91 @@ class Goku extends Animatronic {
 }
 
 class PolishFreddy extends Animatronic {
+
+    SOUNDS = {
+        oh: Sound.from({url: './assets/sounds/ohcholera.wav', volume: 0.33}),
+        coin: Sound.from({url: './assets/sounds/coin.mp3', volume: 1.25}),
+        vanish: Sound.from({url: './assets/sounds/gaster-vanish.mp3', volume: 1}),
+    }
+
     constructor(aiLevel) {
         super(aiLevel, 5.00);
 
         this.trashRemaining = 0;
+        this.trashObtained = 0;
         this.rageState = 1;
+        this.killmode = false; this._killmodeActive = false;
+        this.feedingStreak = 0;
+        this.full = false;
+        this.cooldownTimer = 0;
     }
 
     movement(ticker) {
-        console.log(ticker);
         const dt = ticker.deltaTime/ticker.FPS;
         this.timeElapsed += dt;
-        if (this.timeElapsed >= this.movementInterval/this.trashRemaining) {
+
+        if (this.feedingStreak >= 4) {
+            this.cooldownTimer+=dt;
+            if (this.cooldownTimer >= 10.00) {
+                this.feedingStreak = 0; this.cooldownTimer = 0;
+                this.timeElapsed = 0; Office.polishFreddySprite.visible = true;
+            }
+            return;
+        }
+
+        if (this.timeElapsed >= this.movementInterval/this.rageState && this.rageState <= 5) {
             this.timeElapsed = 0;
-            this.trashRemaining ++ ;
-            this.rageState ++ ;
-            if (this.trashRemaining > 5) this.trashRemaining = 5;
-            if (this.rageState > 5) this.rageState = 5;
-            this.__updateSprites();
+            const chance = Math.floor(Math.random()*20)+1;
+            console.log(chance, chance <= this.aiLevel);
+            if (chance <= this.aiLevel) {
+                if (this.rageState == 5) {
+                    this.killmode = true;
+                    return;
+                }
+
+                this.SOUNDS.oh.stop(); this.SOUNDS.oh.play();
+                this.trashRemaining ++ ;
+                this.rageState ++ ;
+
+                this.__updateSprites();
+
+                const spawns = ["CAM3", "CAM2A", "CAM2B"];
+                const spawn = spawns[Math.floor(Math.random()*spawns.length)];
+
+                const trashbag = new Sprite(Cams.trashTxt); trashbag.eventMode = 'static'; trashbag.spawn = spawn;
+                trashbag.scale.set(0.1*Game.scale.x, 0.1*Game.scale.y);
+                trashbag.position.set(innerWidth/2+(Math.floor(Math.random()*750)-500)*Game.scale.x, innerHeight/2+(Math.floor(Math.random()*250)-200)*Game.scale.y);
+                trashbag.onpointerdown = () => {
+                    if (Cams.blackBox.visible || trashbag.spawn !== Game.currentCam) return;
+                    this.trashObtained++;
+                    this.timeElapsed-=(this.movementInterval/this.rageState)/2;
+                    if (this.timeElapsed < 0) this.timeElapsed = 0;
+                    Cams.cameraScreen.removeChild(trashbag);
+                }
+                Cams.cameraScreen.addChild(trashbag)
+
+            }
+        }
+        if (this.killmode && !this._killmodeActive) {
+            this._killmodeActive = true;
+            const killingPrep = new Ticker(); killingPrep.maxFPS = 60;
+            let prepTime = 0;
+            killingPrep.add(ticker => {
+                if (this.rageState < 5 || Game.win || Game.powerDown) {this.killmode = false; this._killmodeActive = false; killingPrep.stop(); killingPrep.destroy(); return;}
+                const dt = ticker.deltaTime/ticker.FPS;
+                prepTime+=dt;
+                Office.polishFreddySprite.scale.set(Office.polishFreddySprite.scale.x+(dt/4), Office.polishFreddySprite.scale.y+(dt/4));
+                Office.polishFreddySprite.resize();
+                if (prepTime >= 5.00) {
+                    Game.forceGameOver(); killingPrep.stop(); killingPrep.destroy(); return;
+                } 
+            }); killingPrep.start();
+        }
+        for (const bag of Object.values(Cams.cameraScreen.children)) {
+            if (bag.texture === Cams.trashTxt) {
+                if (bag.spawn === Game.currentCam) bag.visible = true;
+                else bag.visible = false;
+            }
         }
     }
 
@@ -332,16 +400,25 @@ class PolishFreddy extends Animatronic {
     }
 
     feedTrash() {
-
+        if (this.rageState > 1 && this.trashObtained > 0) {
+            this.SOUNDS.coin.play();
+            if (this.rageState == 2) {
+                this.feedingStreak ++ ;
+            } else this.feedingStreak = 0;
+            if (this.feedingStreak >= 4) {Office.polishFreddySprite.visible = false; this.SOUNDS.vanish.play();}
+            this.rageState--; this.trashObtained--;
+            this.__updateSprites();
+        }
     }
 
     __updateSprites() {
         switch(this.rageState) {
             case 1: Office.polishFreddySprite.scale.set(1, 1); break;
-            case 2: Office.polishFreddySprite.scale.set(1.2, 1.2); break;
-            case 3: Office.polishFreddySprite.scale.set(1.4, 1.4); break;
-            case 4: Office.polishFreddySprite.scale.set(1.6, 1.6); break;
+            case 2: Office.polishFreddySprite.scale.set(1.3, 1.3); break;
+            case 3: Office.polishFreddySprite.scale.set(1.6, 1.6); break;
+            case 4: Office.polishFreddySprite.scale.set(1.7, 1.7); break;
         }
+        Office.polishFreddySprite.resize();
     }
 }
 

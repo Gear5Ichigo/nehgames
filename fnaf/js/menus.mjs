@@ -118,8 +118,8 @@ export default class Menus {
                     this.briefingScreen.visible = false;
                         Game.start({
                             night: 8,
-                            freddylevel: 1, bonnieLevel: 15, chicaLevel: 10, foxyLevel: 20,
-                            polishFreddyLevel: 10,
+                            freddylevel: 10, bonnieLevel: 15, chicaLevel: 0, foxyLevel: 20,
+                            polishFreddyLevel: 20,
                             settings: this.settings
                         });
                         app.setRenderState(app.stage, Game.render);

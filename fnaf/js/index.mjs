@@ -70,6 +70,7 @@ import OfficeButtons from './officebuttons.mjs';
         Office.freddyBoop.x *= Game.scale.x;
         Office.plushiesResize();
         Office.movementResize();
+        Office.polishFreddySprite.resize();
 
         Doors.left.forEach(([key, anim]) => Doors.resize(anim));
         Doors.right.forEach(([key, anim]) => Doors.resize(anim));

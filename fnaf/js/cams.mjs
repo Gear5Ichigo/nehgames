@@ -32,6 +32,8 @@ export default class Cams {
 
         //
 
+        this.cameraScreen = new Container();
+
         this.cameraBorder = new Graphics()
         .rect(0, 0, 1560*Game.scale.x, 680*Game.scale.y).stroke({fill: 0xffffff, width: 3});
 
@@ -55,6 +57,8 @@ export default class Cams {
         this.camsMap.swapTexture('1A.png')
         this.camsMap.anchor = 0.5;
 
+        this.trashTxt = await Assets.load('./assets/sprites/trash.png');
+
         this.areaName = new Text({text: "Stage",
             style: {
                 fill: 0xffffff,
@@ -73,6 +77,7 @@ export default class Cams {
             this[area.replace(/ /g,'').toLowerCase()] = spritesheet.textures;
         };
         this.showArea = new Sprite(Object.values(this.stage)[0]);
+        this.cameraScreen.addChild(this.showArea);
 
         this.kitchen = new Graphics()
         .rect(0, 0, innerWidth, innerHeight)
@@ -85,7 +90,7 @@ export default class Cams {
         }));
 
         this.foxyrun = await SpriteLoader.AnimatedSprite('/foxyrun/spritesheet@0.5x', (as) => { as.animationSpeed = 0.66; as.loop = false; });
-        this.foxyrun.visible = true; this.foxyrun.playAnimation();
+        this.foxyrun.visible = true;
 
         this.blackBox = new Graphics()
         .rect(0, 0, innerWidth*1.2, innerHeight)

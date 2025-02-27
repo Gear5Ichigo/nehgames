@@ -48,6 +48,7 @@ export default class Game {
             phoneguy3: Sound.from({url: './assets/sounds/voiceover3.wav', volume: 0.66}),
             phoneguy4: Sound.from({url: './assets/sounds/voiceover4.wav', volume: 0.66}),
             phoneguy5: Sound.from({url: './assets/sounds/voiceover5.wav', volume: 0.66}),
+            phoneguy8: Sound.from({url: './assets/sounds/phoneguy8.wav', volume: 0.66}),
         }
 
         this.clock = 12;
@@ -240,7 +241,7 @@ export default class Game {
 
         this.__ofC = new Container();
         this.__ofC.filters = [fake3D];
-        Cams.showArea.filters = [fake3D,];
+        Cams.cameraScreen.filters = [fake3D];
 
         //
 
@@ -250,7 +251,7 @@ export default class Game {
 
         this.displayHUDContainer.addChild(this._clockText, this.currentNightText, this.usageDisplay, this.powerLevelDisplay, this.usageBar, CameraTablet.camFlipButton);
 
-        this._finalCameraShow.addChild(Cams.showArea, Cams.blackBox, Cams.staticEffect);
+        this._finalCameraShow.addChild(Cams.cameraScreen, Cams.blackBox, Cams.staticEffect);
         this._cameraGUI.addChild(Cams.cameraBorder, Cams.cameraRecording, Cams.camsMap, Cams.areaName, Cams.mapButtons);
         this.cameraRender.addChild(this._finalCameraShow, Cams.blipFlash1, this._cameraGUI);
         this.__ofC.addChild(Office.sprite, Jumpscares.foxyScare, Doors.container, Office.fanAnim, Office.plushiesContainer, OfficeButtons.container);
@@ -285,7 +286,7 @@ export default class Game {
         this.night = options.night || 1;
         this.currentNightText.text = `Night ${this.night}`;
 
-        if (this.night != 7) localStorage.setItem(`Current_Night`, this.night);
+        if (this.night < 7) localStorage.setItem(`Current_Night`, this.night);
 
         this.randomSoundTimer = 0;
         this.timeElapsed = 0;
@@ -330,6 +331,10 @@ export default class Game {
 
         if (options.night >= 8) {
             this.animatronics.polishFreddy = new PolishFreddy(options.polishFreddyLevel || 0);
+            Office.polishFreddySprite.visible = true;
+            this.animatronics.polishFreddy.__updateSprites();
+        } else {
+            Office.polishFreddySprite.visible = false;
         }
 
         Jumpscares.freddyScare.gotoAndStop(0);

@@ -1,2 +1,4 @@
 Changes: (PART 1)
-- game is almost finished
+- Week 2 Night 1 prototype (Night 8) includes Polish Freddy
+    - AI Levels
+        - FREDDY: 10 | BONNIE: 15 | CHICA: 0 | FOXY: 20 | POLISH FREDDY: 20
