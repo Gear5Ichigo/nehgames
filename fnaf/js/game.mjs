@@ -1,6 +1,6 @@
 import { Assets, Container, Filter, GlProgram, Graphics, NoiseFilter, Sprite, Text } from '../../public/pixi.min.mjs';
 import { Sound } from "../../public/pixi-sound.mjs";
-import { Bonnie, Chica, Foxy, Freddy, PolishFreddy } from "./animatronics.mjs";
+import { Bonnie, Chica, Foxy, Freddy, Goku, PolishFreddy } from "./animatronics.mjs";
 import CameraTablet from "./cameratablet.mjs";
 import Office from "./office.mjs";
 import OfficeButtons from "./officebuttons.mjs";
@@ -17,6 +17,7 @@ export default class Game {
             camFlip: Sound.from({url: './assets/sounds/put down.wav'}),
             windowscare: Sound.from({url: './assets/sounds/windowscare.wav'}),
             gokuscare: Sound.from({url: './assets/sounds/gokuscare.mp3', volume: 0.75}),
+            itsmegoku: Sound.from({url: './assets/sounds/hey-its-me-goku.mp3', volume: 1.25}),
             powerscare: Sound.from({url: './assets/sounds/powerscare.wav', volume: 1.5}),
             lightsHum: Sound.from({url: './assets/sounds/BallastHumMedium2.wav', loop: true}),
             doorShut: Sound.from({url: './assets/sounds/SFXBible_12478.wav'}),
@@ -338,12 +339,19 @@ export default class Game {
         this.animatronics.foxy = new Foxy(options.foxyLevel) || 0;
 
         if (options.night >= 8) {
+
             this.animatronics.polishFreddy = new PolishFreddy(options.polishFreddyLevel || 0);
+            this.animatronics.goku = new Goku(options.gokuLevel || 0)
+
+
             Office.polishFreddySprite.visible = true;
             Office.polishFreddySprite.resize();
             this.animatronics.polishFreddy.__updateSprites();
+
+            Cams._8A.visible = true; Cams._8B.visible = true;
         } else {
             Office.polishFreddySprite.visible = false;
+            Cams._8A.visible = false; Cams._8B.visible = false;
         }
         Jumpscares.foxyScare.resetAnimations(); Jumpscares.foxyScare.visible = false;
 

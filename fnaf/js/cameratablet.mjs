@@ -48,6 +48,8 @@ export default class CameraTablet {
 
             Cams.blipFlash1.gotoAndPlay(0); Cams.blipFlash1.visible = true;
             Cams[`_${Game.currentCam.substring(3)}`].callBack();
+
+            if (Game.currentCam === "CAM8B") Game.SOUNDS.itsmegoku.play();
             
             Game.SOUNDS.cams.play();
             if (Game.leftLightOn || Game.rightLightOn) {

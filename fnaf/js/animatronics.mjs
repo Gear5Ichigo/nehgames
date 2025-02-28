@@ -301,7 +301,43 @@ class Foxy extends Animatronic {
 
 class Goku extends Animatronic {
     constructor(aiLevel) {
-        super(aiLevel, 5.02);
+        super(aiLevel, 0.1);
+
+        this.progress = 0;
+        this.spawned = false;
+
+        if (Cams.showArea.children.indexOf(Cams.gokuSprite) !== -1) Cams.showArea.removeChild(Cams.gokuSprite);
+        Cams.gokuSprite.scale.set(0.04, 0.04);
+        Cams.gokuSprite.position.set(200*Game.scale.x, 75*Game.scale.y);
+    }
+
+    movement(ticker) {
+        const dt = ticker.deltaTime/ticker.FPS;
+        this.timeElapsed += dt;
+        if (this.timeElapsed >= 0 && !this.spawned) {
+            this.spawned = true;
+        }
+        if (this.timeElapsed >= this.movementInterval && this.spawned) {
+            this.timeElapsed = 0;
+            this.progress++;
+        }
+        this.__updateSprites();
+    }
+
+    __updateSprites() {
+        if (this.spawned) {
+            if (Game.currentCam !== 'CAM8B' && Cams.showArea.children.indexOf(Cams.gokuSprite) > -1) {
+                Cams.showArea.removeChild(Cams.gokuSprite);
+            } else if (Cams.showArea.children.indexOf(Cams.gokuSprite) <= -1 && Game.currentCam === 'CAM8B' ) {
+                Cams.showArea.addChild(Cams.gokuSprite);
+            }
+
+            if (Cams.showArea.children.indexOf(Cams.gokuSprite) > -1) {
+                Cams.gokuSprite.scale.set(Cams.gokuSprite.scale.x*1.002, Cams.gokuSprite.scale.y*1.002);
+                Cams.gokuSprite.y += (1*Game.scale.y)/100;
+                Cams.gokuSprite.x -= (1*Game.scale.x)/100;
+            }
+        }
     }
 }
 
@@ -426,7 +462,7 @@ class PolishFreddy extends Animatronic {
             if (this.rageState == 2) {
                 this.feedingStreak ++ ;
             } else this.feedingStreak = 0;
-            if (this.feedingStreak >= 4) {Office.polishFreddySprite.visible = false; this.SOUNDS.vanish.play();}
+            if (this.feedingStreak >= 3) {Office.polishFreddySprite.visible = false; this.SOUNDS.vanish.play();}
             this.rageState--; this.trashObtained--;
             this.__updateSprites();
         }
@@ -446,7 +482,7 @@ class PolishFreddy extends Animatronic {
 
 class Bear5 extends Animatronic {
     constructor(aiLevel) {
-        super(aiLevel, 5.00);
+        super(aiLevel, 5);
     }
 }
 

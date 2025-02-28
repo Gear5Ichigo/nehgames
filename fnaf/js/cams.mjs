@@ -1,4 +1,4 @@
-import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite, Ticker } from '../../public/pixi.min.mjs';
+import { Assets, Spritesheet, Sprite, Container, Graphics, Text, AnimatedSprite, Ticker, AssetsClass } from '../../public/pixi.min.mjs';
 import Game from './game.mjs';
 import SpriteLoader from './spriteloader.mjs';
 
@@ -6,24 +6,50 @@ export default class Cams {
 
     static  __makeCamButton(cam, x, y, callBack) {
         const mapref = this.camsMap;
-        const b = new Graphics()
-        .rect(0, 0, 56*Game.scale.x, 37*Game.scale.y)
-        .fill(0xff0000); b.alpha = 0; b.eventMode = 'static'
+        let b = null;
+
+        if (!(`${cam}.png` in this.camsMap.spritesheet.textures)) {
+            b = new Sprite(this.gray);
+            b.addChild(new Text({text: `CAM`, style: {fontFamily: 'FNAF', fill: 0xffffff, lineHeight: 0}}));
+            b.addChild(new Text({text: `${cam}`, style: {fontFamily: 'FNAF', fill: 0xffffff, lineHeight: 0}}));
+            b.resize = () => {
+                const text = b.children[0], camText = b.children[1];
+                text.position.set(10*Game.scale.x, 2*Game.scale.y);
+                camText.position.set(text.x, text.y+10*Game.scale.y);
+                b.scale.set(Game.scale.x, Game.scale.y);
+                b.position.set(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y);
+            }
+
+        } else {
+            b = new Graphics()
+            .rect(0, 0, 56*Game.scale.x, 37*Game.scale.y)
+            .fill(0xff0000); b.alpha = 0;
+            b.resize = () => { b.position.set(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y); b.setSize(56*Game.scale.x, 37*Game.scale.y); }
+        }
+
+        b.eventMode = 'static'
         b.callBack = () => { if (Game.currentCam === `CAM${cam}`) callBack(); }
-        b.resize = () => { b.position.set(mapref.position.x+x*Game.scale.x, mapref.position.y+y*Game.scale.y); b.setSize(56*Game.scale.x, 37*Game.scale.y) }
         b.onpointerdown = () => {
             if (Game.currentCam === `CAM${cam}`) return;
             Game.currentCam = `CAM${cam}`;
 
             this.blipFlash1.gotoAndPlay(0); this.blipFlash1.visible = true;
+            for (const sprite of this.mapButtons.children) { if (sprite.texture === this.green) sprite.texture = this.gray; }
             
-            Game.SOUNDS.camBlip.play({volume: 1.5})
-            this.camsMap.swapTexture(`${cam}.png`);
+            Game.SOUNDS.camBlip.play({volume: 1.5});
             this._swapTimer = 0;
-            this._prevCamButton = null;
-            if (this.showArea.children[0]) this.showArea.removeChild(this.showArea.children[0]);
+            if (`${cam}.png` in this.camsMap.spritesheet.textures) {
+                this.camsMap.swapTexture(`${cam}.png`);
+                this._prevCamButton = null;
+                if (this.showArea.children[0]) this.showArea.removeChild(this.showArea.children[0]);
+            } else {
+                b.texture = this.green;
+                this._prevCamButton = 'Complete_Map.png';
+            }
             b.callBack();
+            this.showArea.setSize(innerWidth*1.2, innerHeight);
         };
+
         this.mapButtons.addChild(b);
         return b;
     }
@@ -57,6 +83,9 @@ export default class Cams {
         this.camsMap.swapTexture('1A.png')
         this.camsMap.anchor = 0.5;
 
+        this.green = await Assets.load('./assets/sprites/cams/Map/166.png');
+        this.gray = await Assets.load('./assets/sprites/cams/Map/167.png');
+
         this.trashTxt = await Assets.load('./assets/sprites/trash.png');
 
         this.areaName = new Text({text: "Stage",
@@ -79,6 +108,11 @@ export default class Cams {
         this.showArea = new Sprite(Object.values(this.stage)[0]);
         this.cameraScreen.addChild(this.showArea);
 
+        this.parkingLot = await Assets.load('./assets/sprites/cams/Parking Lot/parkinglot.jpg');
+        this.outside = await Assets.load('./assets/sprites/cams/Outside/outside.webp');
+
+        this.gokuSprite = new Sprite(await Assets.load('./assets/sprites/cams/goku.png'));
+
         this.kitchen = new Graphics()
         .rect(0, 0, innerWidth, innerHeight)
         .fill(0x000000);
@@ -100,7 +134,6 @@ export default class Cams {
         this.blackBox.start = () => {
             if (!this.blackBox.visible) {
                 const sound = Game.SOUNDS[`camError${Math.floor(Math.random()*4)+1}`];
-                console.log(`camError${Math.floor(Math.random()*4)+1}`)
                 sound.play();
                 this.blackBox.visible = true;
                 const timer = new Ticker();
@@ -125,7 +158,7 @@ export default class Cams {
                 this._swapTimer += dt;
                 if (this._swapTimer >= 0.5) {
                     this._swapTimer = 0;
-                    if (this.camsMap.texture !== this.camsMap.spritesheet.textures['Complete_Map.png']) {
+                    if (this.camsMap.texture !== this.camsMap.spritesheet.textures['Complete_Map.png'] && Game.currentCam.substring(3)+'.png' in this.camsMap.spritesheet.textures) {
                         this._prevCamButton = Game.currentCam.substring(3)+'.png';
                         this.camsMap.swapTexture('Complete_Map.png');
                     } else {
@@ -249,6 +282,15 @@ export default class Cams {
                 this.showArea.texture = this.rightcorner['49.png'];
             }
         });
+        this._8A = this.__makeCamButton('8A', 70, -165, () => {
+            this.areaName.text = 'Outside';
+            this.showArea.texture = this.outside;
+        });
+        this._8B = this.__makeCamButton('8B', 70, -225, () => {
+            this.areaName.text = 'Parking Lot';
+            this.showArea.texture = this.parkingLot;
+        });
+
 
         this.resize = () => {
             this.staticEffect.setSize(innerWidth, innerHeight);
