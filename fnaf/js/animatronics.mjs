@@ -326,6 +326,7 @@ class PolishFreddy extends Animatronic {
     }
 
     movement(ticker) {
+        if (Game.win || Game.die || Game.powerDown) return;
         const dt = ticker.deltaTime/ticker.FPS;
         this.timeElapsed += dt;
 
@@ -406,7 +407,7 @@ class PolishFreddy extends Animatronic {
                 } 
             }); killingPrep.start();
         }
-        for (const bag of Object.values(Cams.cameraScreen.children)) {
+        for (const bag of Cams.cameraScreen.children) {
             if (bag.texture === Cams.trashTxt) {
                 if (bag.spawn === Game.currentCam) bag.visible = true;
                 else bag.visible = false;

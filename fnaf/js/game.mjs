@@ -275,9 +275,12 @@ export default class Game {
         console.log(options.settings);
         this.settings = options.settings;
 
-        for (const sprite of Cams.cameraScreen.children) {
-            if (sprite.texture === Cams.trashTxt) { Cams.cameraScreen.removeChild(sprite); }
+        while (Cams.cameraScreen.children.length > 1) {
+            for (const sprite of Cams.cameraScreen.children) {
+                if (sprite != Cams.showArea) {Cams.cameraScreen.removeChild(sprite); console.log("YEAH!")};
+             }
         }
+        for (const sprite of Cams.cameraScreen.children) console.log(sprite);
 
         Menus.bgMusic.stop(); Menus.staticSound.stop();
         for (const sound of Object.entries(this.SOUNDS)) sound[1].stop();
@@ -342,13 +345,6 @@ export default class Game {
         } else {
             Office.polishFreddySprite.visible = false;
         }
-
-        // Jumpscares.freddyScare.gotoAndStop(0);
-        // Jumpscares.freddyScare.visible = false;
-        // Jumpscares.bonnieScare.gotoAndStop(0);
-        // Jumpscares.bonnieScare.visible = false;
-        // Jumpscares.chicaScare.gotoAndStop(0);
-        // Jumpscares.chicaScare.visible = false;
         Jumpscares.foxyScare.resetAnimations(); Jumpscares.foxyScare.visible = false;
 
         for (const jumpscare of this.jumpScares.children) {
