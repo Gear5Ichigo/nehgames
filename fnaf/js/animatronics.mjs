@@ -359,6 +359,7 @@ class PolishFreddy extends Animatronic {
         this.feedingStreak = 0;
         this.full = false;
         this.cooldownTimer = 0;
+        this.feedingStreakCap = 3;
     }
 
     movement(ticker) {
@@ -366,7 +367,7 @@ class PolishFreddy extends Animatronic {
         const dt = ticker.deltaTime/ticker.FPS;
         this.timeElapsed += dt;
 
-        if (this.feedingStreak >= 4) {
+        if (this.feedingStreak >= this.feedingStreakCap) {
             this.cooldownTimer+=dt;
             if (this.cooldownTimer >= 10.00) {
                 this.feedingStreak = 0; this.cooldownTimer = 0;
@@ -462,7 +463,7 @@ class PolishFreddy extends Animatronic {
             if (this.rageState == 2) {
                 this.feedingStreak ++ ;
             } else this.feedingStreak = 0;
-            if (this.feedingStreak >= 3) {Office.polishFreddySprite.visible = false; this.SOUNDS.vanish.play();}
+            if (this.feedingStreak >= this.feedingStreakCap) {Office.polishFreddySprite.visible = false; this.SOUNDS.vanish.play();}
             this.rageState--; this.trashObtained--;
             this.__updateSprites();
         }
